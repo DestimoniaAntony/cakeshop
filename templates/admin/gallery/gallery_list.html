@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Gallery Management - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Gallery Management</h3>
+    </div>
+
+    <!-- Filters & Actions -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <form method="get" class="d-flex gap-2">
+                <select name="event" class="form-select" style="max-width: 200px;">
+                  <option value="">All Events</option>
+                  {% for ev in events %}
+                  <option value="{{ ev.id }}" {% if event_filter == ev.id|stringformat:'s' %}selected{% endif %}>{{ ev.event_name }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                <a href="{% url 'admin_gallery' %}" class="btn btn-secondary">Clear</a>
+              </form>
+              <a href="{% url 'admin_gallery_add' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Add Image
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="row">
+      {% for image in images %}
+      <div class="col-md-3 mb-4">
+        <div class="card">
+          <div class="card-body p-0">
+            <div style="position: relative;">
+              <img src="{{ image.image.url }}" class="img-fluid" style="width: 100%; height: 200px; object-fit: cover;">
+              {% if image.is_featured %}
+              <span class="badge badge-warning" style="position: absolute; top: 10px; right: 10px;">Featured</span>
+              {% endif %}
+            </div>
+            <div class="p-3">
+              <p class="mb-2"><strong>{{ image.caption|default:"No caption" }}</strong></p>
+              {% if image.event_type %}
+              <p class="mb-2"><small><i class="fas fa-tag"></i> {{ image.event_type.event_name }}</small></p>
+              {% endif %}
+              <p class="text-muted small">{{ image.uploaded_at|date:"d M Y" }}</p>
+              <div class="btn-group w-100">
+                <a href="{% url 'admin_gallery_edit' image.id %}" class="btn btn-sm btn-primary flex-fill">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'admin_gallery_delete' image.id %}" class="btn btn-sm btn-danger flex-fill" onclick="return confirm('Delete?')">
+                  <i class="fas fa-trash"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body text-center py-5">
+            <i class="fas fa-images fa-4x text-muted mb-3"></i>
+            <h4>No gallery images</h4>
+            <p>Upload your best cake photos to showcase</p>
+            <a href="{% url 'admin_gallery_add' %}" class="btn btn-primary">Add Image</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

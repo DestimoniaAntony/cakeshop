@@ -1,0 +1,143 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}{{ gift_box.name }} - Cakes by Desti{% endblock %}
+
+{% block content %}
+<!-- Page Title -->
+<section class="page-title" style="background-image: url({% static 'images/background/2.jpg' %}); padding: 100px 0 50px;">
+    <div class="auto-container">
+        <div class="content-box">
+            <div class="content-wrapper">
+                <div class="title">
+                    <h1>{{ gift_box.name }}</h1>
+                </div>
+                <ul class="bread-crumb clearfix">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'gift_boxes' %}">Gift Boxes</a></li>
+                    <li>{{ gift_box.name }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gift Box Detail Section -->
+<section class="shop-single" style="padding: 60px 0;">
+    <div class="auto-container">
+        <div class="row clearfix">
+            <!-- Image Column -->
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="image-box" style="position: sticky; top: 100px;">
+                    {% if gift_box.main_image %}
+                    <img src="{{ gift_box.main_image.url }}" alt="{{ gift_box.name }}" style="width: 100%; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+                    {% else %}
+                    <div style="width: 100%; height: 500px; background: linear-gradient(135deg, #FFE5EC 0%, #FFF0F5 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-gift fa-5x" style="color: #FF6B9D; opacity: 0.3;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Content Column -->
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="content-box" style="padding-left: 30px;">
+                    <h2 style="color: #333; font-weight: 700; margin-bottom: 15px;">{{ gift_box.name }}</h2>
+                    
+                    <div class="price" style="margin-bottom: 20px;">
+                        <span style="color: #FF6B9D; font-size: 36px; font-weight: 700;">₹{{ gift_box.total_price|floatformat:0 }}</span>
+                        {% if gift_box.pricing_type == 'discounted' and gift_box.discount_percentage %}
+                        <span class="badge" style="background: #ff6b9d; color: white; padding: 5px 12px; border-radius: 15px; font-size: 14px; margin-left: 10px;">
+                            {{ gift_box.discount_percentage }}% OFF
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="description" style="color: #666; line-height: 1.8; margin-bottom: 30px;">
+                        <p>{{ gift_box.description }}</p>
+                    </div>
+
+                    <!-- What's Inside -->
+                    <div class="items-included" style="background: #FFF9F5; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
+                        <h4 style="color: #333; margin-bottom: 20px; font-weight: 600;">
+                            <i class="fas fa-box-open" style="color: #FF6B9D; margin-right: 10px;"></i>
+                            What's Inside ({{ gift_box.items_count }} items)
+                        </h4>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            {% for item in items %}
+                            <li style="padding: 12px 0; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between;">
+                                <div style="display: flex; align-items: center;">
+                                    <span style="background: #FF6B9D; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: 600;">
+                                        {{ item.quantity }}
+                                    </span>
+                                    <div>
+                                        <strong style="color: #333;">{{ item.product.name }}</strong>
+                                        <small style="color: #999; display: block;">{{ item.size.name }}</small>
+                                    </div>
+                                </div>
+                                <span style="color: #FF6B9D; font-weight: 600;">₹{{ item.subtotal }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- Order Button -->
+                    <div class="order-section" style="background: white; padding: 25px; border-radius: 15px; border: 2px solid #FFE5EC;">
+                        <div style="margin-bottom: 20px;">
+                            <h5 style="color: #333; margin-bottom: 10px;">Ready to Order?</h5>
+                            <p style="color: #999; font-size: 14px; margin: 0;">Perfect for gifts, celebrations, or treating yourself!</p>
+                        </div>
+                        
+                        <a href="{% url 'gift_box_order' gift_box.id %}" class="theme-btn btn-style-one" style="width: 100%; text-align: center; padding: 15px; font-size: 18px; border-radius: 30px; display: block;">
+                            <span class="btn-title">
+                                <i class="fas fa-shopping-cart" style="margin-right: 10px;"></i>
+                                Order This Gift Box
+                            </span>
+                        </a>
+                        
+                        <div style="margin-top: 15px; text-align: center;">
+                            <small style="color: #999;">
+                                <i class="fas fa-truck" style="margin-right: 5px;"></i>
+                                Free delivery on orders above ₹1000
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="additional-info" style="margin-top: 30px;">
+                        <div class="row">
+                            <div class="col-4 text-center" style="padding: 15px;">
+                                <i class="fas fa-heart" style="font-size: 28px; color: #FF6B9D; margin-bottom: 10px; display: block;"></i>
+                                <small style="color: #666;">Made with Love</small>
+                            </div>
+                            <div class="col-4 text-center" style="padding: 15px;">
+                                <i class="fas fa-certificate" style="font-size: 28px; color: #FF6B9D; margin-bottom: 10px; display: block;"></i>
+                                <small style="color: #666;">Premium Quality</small>
+                            </div>
+                            <div class="col-4 text-center" style="padding: 15px;">
+                                <i class="fas fa-gift" style="font-size: 28px; color: #FF6B9D; margin-bottom: 10px; display: block;"></i>
+                                <small style="color: #666;">Beautiful Packaging</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .theme-btn.btn-style-one {
+        background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+        color: white;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .theme-btn.btn-style-one:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255,107,157,0.3);
+    }
+</style>
+{% endblock %}
+

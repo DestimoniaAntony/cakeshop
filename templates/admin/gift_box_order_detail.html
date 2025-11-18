@@ -1,0 +1,227 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}Gift Box Order #{{ order.order_number }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-inner">
+        <div class="page-header">
+            <h3 class="fw-bold mb-3">Gift Box Order Details</h3>
+            <ul class="breadcrumbs mb-3">
+                <li class="nav-home">
+                    <a href="{% url 'admin_dashboard' %}">
+                        <i class="icon-home"></i>
+                    </a>
+                </li>
+                <li class="separator">
+                    <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'admin_gift_box_orders' %}">Gift Box Orders</a>
+                </li>
+                <li class="separator">
+                    <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">{{ order.order_number }}</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4 class="card-title">Order #{{ order.order_number }}</h4>
+                            <div>
+                                {% if order.status == 'pending' %}
+                                <span class="badge badge-warning">Pending</span>
+                                {% elif order.status == 'confirmed' %}
+                                <span class="badge badge-info">Confirmed</span>
+                                {% elif order.status == 'preparing' %}
+                                <span class="badge badge-primary">Preparing</span>
+                                {% elif order.status == 'ready' %}
+                                <span class="badge badge-success">Ready</span>
+                                {% elif order.status == 'completed' %}
+                                <span class="badge badge-success">Completed</span>
+                                {% else %}
+                                <span class="badge badge-secondary">Cancelled</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="mb-3">Gift Box Details</h5>
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                {% if order.gift_box.image %}
+                                <img src="{{ order.gift_box.image.url }}" alt="{{ order.gift_box.name }}" class="img-fluid rounded">
+                                {% else %}
+                                <div class="bg-light text-center py-5 rounded">
+                                    <i class="fas fa-gift fa-3x text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <h4>{{ order.gift_box.name }}</h4>
+                                <p class="text-muted">{{ order.gift_box.description }}</p>
+                                <div class="row mt-3">
+                                    <div class="col-6">
+                                        <strong>Quantity:</strong> {{ order.quantity }}
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>Unit Price:</strong> ₹{{ order.unit_price }}
+                                    </div>
+                                    <div class="col-6 mt-2">
+                                        <strong>Total Price:</strong> <span class="text-primary h5">₹{{ order.total_price }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="mb-3">Items in Gift Box</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Size</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in items %}
+                                    <tr>
+                                        <td>{{ item.product.name }}</td>
+                                        <td>{{ item.size.name }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>₹{{ item.unit_price }}</td>
+                                        <td>₹{{ item.subtotal }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h5 class="mb-3 mt-4">Delivery Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Delivery Date:</strong> {{ order.delivery_date|date:"d M Y" }}</p>
+                                {% if order.delivery_time %}
+                                <p><strong>Delivery Time:</strong> {{ order.delivery_time }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {% if order.event %}
+                                <p><strong>Event/Occasion:</strong> {{ order.event.name }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if order.special_instructions %}
+                        <div class="mt-3">
+                            <h6>Special Instructions:</h6>
+                            <p class="bg-light p-3 rounded">{{ order.special_instructions }}</p>
+                        </div>
+                        {% endif %}
+
+                        <div class="mt-3">
+                            <p class="text-muted">
+                                <small><strong>Order Created:</strong> {{ order.created_at|date:"d M Y, h:i A" }}</small><br>
+                                <small><strong>Last Updated:</strong> {{ order.updated_at|date:"d M Y, h:i A" }}</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Customer Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <h5>{{ order.customer.name }}</h5>
+                        <p class="mb-2">
+                            <i class="fas fa-phone text-primary"></i> 
+                            <a href="tel:{{ order.customer.phone_number }}">{{ order.customer.phone_number }}</a>
+                        </p>
+                        {% if order.customer.email %}
+                        <p class="mb-2">
+                            <i class="fas fa-envelope text-primary"></i> 
+                            <a href="mailto:{{ order.customer.email }}">{{ order.customer.email }}</a>
+                        </p>
+                        {% endif %}
+                        {% if order.customer.address %}
+                        <p class="mb-2">
+                            <i class="fas fa-map-marker-alt text-primary"></i> 
+                            {{ order.customer.address }}
+                        </p>
+                        {% endif %}
+                        
+                        <div class="mt-3">
+                            <a href="{% url 'admin_customer_detail' order.customer.id %}" class="btn btn-sm btn-info btn-block">
+                                <i class="fas fa-user"></i> View Customer Profile
+                            </a>
+                            <a href="{{ order.customer.whatsapp_link }}" target="_blank" class="btn btn-sm btn-success btn-block mt-2">
+                                <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h4 class="card-title">Actions</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if order.status == 'pending' %}
+                        <form method="post" action="{% url 'admin_accept_gift_box_order' order.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-block mb-2">
+                                <i class="fas fa-check"></i> Accept Order
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        <a href="{% url 'admin_gift_box_orders' %}" class="btn btn-secondary btn-block">
+                            <i class="fas fa-arrow-left"></i> Back to Orders
+                        </a>
+
+                        {% if order.status != 'completed' and order.status != 'cancelled' %}
+                        <button type="button" class="btn btn-danger btn-block mt-2" onclick="confirmDelete()">
+                            <i class="fas fa-trash"></i> Delete Order
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete() {
+        if (confirm('Are you sure you want to delete order {{ order.order_number }}? This action cannot be undone.')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{% url "admin_delete_gift_box_order" order.id %}';
+            
+            const csrfToken = '{{ csrf_token }}';
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+{% endblock %}
+

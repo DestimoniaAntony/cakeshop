@@ -1,0 +1,145 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Loyalty History - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<section class="page-title" style="background-image: url({% static 'images/background/page-title.jpg' %});">
+    <div class="auto-container">
+        <h1>Loyalty History</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'loyalty_dashboard' %}">Loyalty</a></li>
+            <li>History</li>
+        </ul>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section style="padding: 50px 0; background: #FFF9F5;">
+    <div class="container">
+        <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:stretch; margin-bottom: 20px;">
+            <div style="flex:1; min-width:260px; background:white; border-radius:15px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.08);">
+                <div style="color:#999; font-size:0.9rem;">Tier</div>
+                <div style="font-weight:700; font-size:1.4rem; color:#333;">{{ loyalty_card.get_tier_display }}</div>
+            </div>
+            <div style="flex:1; min-width:260px; background:white; border-radius:15px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.08);">
+                <div style="color:#999; font-size:0.9rem;">Points Balance</div>
+                <div style="font-weight:700; font-size:1.8rem; color:#4CAF50;">{{ loyalty_card.points_balance }}</div>
+            </div>
+            <div style="flex:1; min-width:260px; background:white; border-radius:15px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.08);">
+                <div style="color:#999; font-size:0.9rem;">Total Orders</div>
+                <div style="font-weight:700; font-size:1.4rem; color:#333;">{{ loyalty_card.total_orders }}</div>
+            </div>
+            <div style="flex:1; min-width:260px; background:white; border-radius:15px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.08);">
+                <div style="color:#999; font-size:0.9rem;">Lifetime Points</div>
+                <div style="font-weight:700; font-size:1.4rem; color:#333;">{{ loyalty_card.lifetime_points }}</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6" style="margin-bottom: 20px;">
+                <div style="background:white; border-radius:15px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
+                    <h3 style="margin:0 0 15px 0; color:#333;">Orders</h3>
+                    <div style="max-height: 420px; overflow-y: auto;">
+                        {% for order in orders %}
+                        <div style="padding:12px 0; border-bottom:1px solid #f0f0f0;">
+                            <div style="display:flex; justify-content:space-between;">
+                                <div>
+                                    <div style="font-weight:600; color:#333;">#{{ order.order_number }}</div>
+                                    <small style="color:#999;">{{ order.created_at|date:"M d, Y h:i A" }}</small>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div style="color:#4CAF50; font-weight:700;">₹{{ order.total_price }}</div>
+                                    <small style="color:#666; text-transform:capitalize;">{{ order.status }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div style="text-align:center; color:#999; padding:20px;">No orders yet.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6" style="margin-bottom: 20px;">
+                <div style="background:white; border-radius:15px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
+                    <h3 style="margin:0 0 15px 0; color:#333;">Points Activity</h3>
+                    <div style="max-height: 420px; overflow-y: auto;">
+                        {% for tx in transactions %}
+                        <div style="padding:12px 0; border-bottom:1px solid #f0f0f0; display:flex; justify-content:space-between;">
+                            <div>
+                                <div style="font-weight:600; color:#333;">{{ tx.reason|default:'Loyalty activity' }}</div>
+                                <small style="color:#999;">{{ tx.created_at|date:"M d, Y h:i A" }}</small>
+                            </div>
+                            <div style="font-weight:700; {% if tx.transaction_type == 'earned' %}color:#4CAF50{% else %}color:#FF5252{% endif %}">
+                                {% if tx.transaction_type == 'earned' %}+{% else %}-{% endif %}{{ tx.points }}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div style="text-align:center; color:#999; padding:20px;">No points activity yet.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6" style="margin-bottom: 20px;">
+                <div style="background:white; border-radius:15px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
+                    <h3 style="margin:0 0 15px 0; color:#333;">Rewards</h3>
+                    <h5 style="color:#4CAF50; margin-top:10px;">Active</h5>
+                    {% for r in rewards_active %}
+                    <div style="padding:10px; background:#E8F5E9; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between;">
+                        <span><b>{{ r.discount_percentage }}% OFF</b> • {{ r.get_reward_type_display }}</span>
+                        <small>Expires {{ r.expiry_date|date:"M d, Y" }}</small>
+                    </div>
+                    {% empty %}
+                    <div style="color:#999;">No active rewards.</div>
+                    {% endfor %}
+
+                    {% if rewards_used %}
+                    <h5 style="color:#2196F3; margin-top:15px;">Used</h5>
+                    {% for r in rewards_used|slice:':5' %}
+                    <div style="padding:10px; background:#E3F2FD; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between;">
+                        <span><b>{{ r.discount_percentage }}% OFF</b> • {{ r.get_reward_type_display }}</span>
+                        <small>Used {{ r.used_date|date:"M d, Y" }}</small>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    {% if rewards_expired %}
+                    <h5 style="color:#9E9E9E; margin-top:15px;">Expired</h5>
+                    {% for r in rewards_expired|slice:':5' %}
+                    <div style="padding:10px; background:#F5F5F5; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between;">
+                        <span><b>{{ r.discount_percentage }}% OFF</b> • {{ r.get_reward_type_display }}</span>
+                        <small>Expired {{ r.expiry_date|date:"M d, Y" }}</small>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-6" style="margin-bottom: 20px;">
+                <div style="background:white; border-radius:15px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
+                    <h3 style="margin:0 0 15px 0; color:#333;">Achievements</h3>
+                    {% for ca in achievements_unlocked %}
+                    <div style="padding:12px; border-left:4px solid #FFD700; background:#FFFDE7; border-radius:10px; margin-bottom:10px;">
+                        <div style="font-weight:700; color:#333;">{{ ca.achievement.name }}</div>
+                        <div style="color:#666; font-size:0.95rem;">{{ ca.achievement.description }}</div>
+                        <small style="color:#999;">Unlocked {{ ca.unlocked_at|date:"M d, Y" }}</small>
+                    </div>
+                    {% empty %}
+                    <div style="text-align:center; color:#999; padding:20px;">No achievements yet.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align:center; margin-top:20px;">
+            <a href="{% url 'loyalty_dashboard' %}" class="btn" style="background: linear-gradient(135deg, #FF6B9D, #C06C84); color:white; padding:12px 30px; border-radius:25px; text-decoration:none; font-weight:600;">Back to Dashboard</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

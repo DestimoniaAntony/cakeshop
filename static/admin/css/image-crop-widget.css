@@ -1,0 +1,478 @@
+/**
+ * Image Crop Widget Styles
+ * Styling for the drag-and-crop interface
+ */
+
+.image-crop-container {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.crop-preview-section {
+    animation: slideDown 0.3s ease-out;
+}
+
+.crop-preview-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.crop-preview-section h3::before {
+    content: '📐';
+    margin-right: 10px;
+    font-size: 24px;
+}
+
+.crop-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.crop-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.crop-actions button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.crop-actions button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.btn-crop-apply {
+    background: #28a745;
+    color: white;
+}
+
+.btn-crop-apply:hover {
+    background: #218838;
+}
+
+.btn-crop-reset {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-crop-reset:hover {
+    background: #5a6268;
+}
+
+.btn-crop-cancel {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-crop-cancel:hover {
+    background: #c82333;
+}
+
+.crop-image-wrapper {
+    max-width: 100%;
+    max-height: 600px;
+    overflow: hidden;
+    background: #f5f5f5;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.crop-image-wrapper img {
+    max-width: 100%;
+    display: block;
+}
+
+.crop-info {
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+}
+
+.crop-info p {
+    margin: 0;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.crop-info strong {
+    color: #007bff;
+    font-size: 15px;
+}
+
+.crop-preview-result {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px dashed #28a745;
+}
+
+.crop-preview-result h4 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.crop-preview-result img {
+    border: 2px solid #28a745;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* Cropper.js custom styling */
+.cropper-container {
+    font-size: 0;
+    line-height: 0;
+    position: relative;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    direction: ltr;
+    -ms-touch-action: none;
+    touch-action: none;
+}
+
+.cropper-crop-box {
+    z-index: 1;
+}
+
+.cropper-view-box {
+    display: block;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    outline: 1px solid #007bff;
+    outline-color: rgba(0, 123, 255, 0.75);
+}
+
+.cropper-dashed {
+    border: 0 dashed #ddd;
+    display: block;
+    opacity: 0.5;
+    position: absolute;
+}
+
+.cropper-dashed.dashed-h {
+    border-bottom-width: 1px;
+    border-top-width: 1px;
+    height: calc(100% / 3);
+    left: 0;
+    top: calc(100% / 3);
+    width: 100%;
+}
+
+.cropper-dashed.dashed-v {
+    border-left-width: 1px;
+    border-right-width: 1px;
+    height: 100%;
+    left: calc(100% / 3);
+    top: 0;
+    width: calc(100% / 3);
+}
+
+.cropper-point {
+    background-color: #007bff;
+    height: 10px;
+    opacity: 0.9;
+    position: absolute;
+    width: 10px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+}
+
+.cropper-point.point-e {
+    right: -5px;
+    top: 50%;
+    margin-top: -5px;
+    cursor: e-resize;
+}
+
+.cropper-point.point-n {
+    left: 50%;
+    margin-left: -5px;
+    top: -5px;
+    cursor: n-resize;
+}
+
+.cropper-point.point-w {
+    left: -5px;
+    top: 50%;
+    margin-top: -5px;
+    cursor: w-resize;
+}
+
+.cropper-point.point-s {
+    bottom: -5px;
+    left: 50%;
+    margin-left: -5px;
+    cursor: s-resize;
+}
+
+.cropper-point.point-ne {
+    right: -5px;
+    top: -5px;
+    cursor: ne-resize;
+}
+
+.cropper-point.point-nw {
+    left: -5px;
+    top: -5px;
+    cursor: nw-resize;
+}
+
+.cropper-point.point-sw {
+    bottom: -5px;
+    left: -5px;
+    cursor: sw-resize;
+}
+
+.cropper-point.point-se {
+    bottom: -5px;
+    right: -5px;
+    cursor: se-resize;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+/* Message styling */
+.crop-message {
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .crop-actions {
+        flex-direction: column;
+    }
+    
+    .crop-actions button {
+        width: 100%;
+    }
+    
+    .crop-image-wrapper {
+        max-height: 400px;
+    }
+}
+
+/* Tooltip styling */
+.crop-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* Loading indicator */
+.crop-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+}
+
+.crop-loading::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin: 10px auto;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Enhanced File Input Styling */
+.field-main_image input[type="file"] {
+    transition: all 0.3s ease;
+}
+
+.field-main_image input[type="file"]:hover {
+    border-color: #0056b3 !important;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.field-main_image input[type="file"]:focus {
+    outline: none;
+    border-color: #0056b3 !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Button Hover Effects */
+.btn-crop-apply:hover {
+    background: #218838 !important;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4) !important;
+}
+
+.btn-crop-reset:hover {
+    background: #5a6268 !important;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4) !important;
+}
+
+.btn-crop-cancel:hover {
+    background: #c82333 !important;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4) !important;
+}
+
+.btn-crop-apply:active,
+.btn-crop-reset:active,
+.btn-crop-cancel:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Image Preview Enhancement */
+.field-main_image img {
+    transition: all 0.3s ease;
+}
+
+.field-main_image img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Crop Section Animation */
+.crop-preview-section {
+    animation: slideDown 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Success Message Enhancement */
+.crop-preview-result {
+    animation: fadeIn 0.5s ease-in, pulse 2s infinite;
+}
+
+/* Loading State */
+.crop-image-wrapper.loading {
+    position: relative;
+}
+
+.crop-image-wrapper.loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+    z-index: 10;
+}
+
+/* Tooltip Enhancement */
+.crop-info {
+    transition: all 0.3s ease;
+}
+
+.crop-info:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+/* Badge Styling */
+.image-dimensions-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    animation: pulse 2s infinite;
+}
+

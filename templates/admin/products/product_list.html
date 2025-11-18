@@ -1,0 +1,96 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Products Management - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Products Management</h3>
+      <ul class="breadcrumbs mb-3">
+        <li class="nav-home"><a href="{% url 'admin_dashboard' %}"><i class="icon-home"></i></a></li>
+        <li class="separator"><i class="icon-arrow-right"></i></li>
+        <li class="nav-item">Products</li>
+      </ul>
+    </div>
+
+    <!-- Filters & Actions -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <form method="get" class="d-flex gap-2 flex-grow-1">
+                <select name="category" class="form-select" style="max-width: 200px;">
+                  <option value="">All Categories</option>
+                  {% for category in categories %}
+                  <option value="{{ category.id }}" {% if category_filter == category.id|stringformat:'s' %}selected{% endif %}>
+                    {{ category.name }}
+                  </option>
+                  {% endfor %}
+                </select>
+                <input type="text" name="search" class="form-control" placeholder="Search products..." value="{{ search }}" style="max-width: 300px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+                <a href="{% url 'admin_products' %}" class="btn btn-secondary">Clear</a>
+              </form>
+              <a href="{% url 'admin_product_add' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Add Product
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="row">
+      {% for product in products %}
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="text-center mb-3">
+              {% if product.main_image %}
+              <img src="{{ product.main_image.url }}" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;" alt="{{ product.name }}">
+              {% else %}
+              <div style="height: 200px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                <i class="fas fa-birthday-cake fa-4x text-muted"></i>
+              </div>
+              {% endif %}
+            </div>
+            <h5 class="mb-2">{{ product.name }}</h5>
+            <p class="text-muted small">{{ product.category.name }}</p>
+            <p class="mb-3">{{ product.description|truncatewords:15 }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge {% if product.is_active %}badge-success{% else %}badge-danger{% endif %}">
+                {% if product.is_active %}Active{% else %}Inactive{% endif %}
+              </span>
+              <div class="btn-group">
+                <a href="{% url 'admin_product_edit' product.id %}" class="btn btn-sm btn-primary" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'admin_product_delete' product.id %}" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure?')">
+                  <i class="fas fa-trash"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body text-center py-5">
+            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+            <h4>No products found</h4>
+            <p>Start by adding your first product</p>
+            <a href="{% url 'admin_product_add' %}" class="btn btn-primary">Add Product</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

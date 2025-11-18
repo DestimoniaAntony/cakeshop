@@ -1,0 +1,249 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+<link rel="stylesheet" href="{% static 'admin/css/image-crop-widget.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<!-- Cropper.js JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script src="{% static 'admin/js/image-crop-widget.js' %}"></script>
+{% endblock %}
+
+{% block title %}{% if offer %}Edit{% else %}Add{% endif %} Carousel Slide - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">🎠 {% if offer %}Edit{% else %}Add{% endif %} Carousel Slide</h3>
+      <p class="text-muted">Create a beautiful slide for your homepage carousel</p>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Slide Content</h4>
+          </div>
+          <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              
+              <!-- Slide Content Section -->
+              <h5 class="mb-3"><i class="fas fa-align-left"></i> Slide Content</h5>
+              
+              <div class="form-group">
+                <label for="title">Main Title/Heading </label>
+                <input type="text" class="form-control" id="title" name="title" value="{{ slide.title }}"  placeholder="e.g., Welcome to Cakes by Desti">
+                <small class="form-text text-muted">This will be the large heading on the slide</small>
+              </div>
+
+              <div class="form-group">
+                <label for="subtitle">Subtitle (Optional)</label>
+                <input type="text" class="form-control" id="subtitle" name="subtitle" value="{{ slide.subtitle }}" placeholder="e.g., We offer delicious homemade cakes">
+                <small class="form-text text-muted">Small text above the main title</small>
+              </div>
+
+              <div class="form-group">
+                <label for="description">Description *</label>
+                <textarea class="form-control" id="description" name="description" rows="3" placeholder="e.g., Made with love for every celebration">{{ slide.description }}</textarea>
+                <small class="form-text text-muted">Additional text below the title</small>
+              </div>
+
+              <div class="form-group field-image">
+                <label for="image">Slider Background Image *</label>
+
+                <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+                            padding: 15px; border-radius: 8px; border: 2px dashed #007bff; 
+                            margin-bottom: 10px;">
+                  <input type="file" class="form-control" id="image" name="image" accept="image/*" {% if not slide %}required{% endif %}>
+                  <small class="form-text text-muted mt-2"><strong>Recommended size: 1920×1080 pixels (Full HD)</strong></small>
+                </div>
+
+                {% if slide and slide.image %}
+                <div class="mt-2">
+                  <img src="{{ slide.image.url }}" style="max-width: 100%; max-height: 300px; object-fit: cover;" class="img-thumbnail">
+                  <p class="text-muted mt-1"><small>Current image</small></p>
+                </div>
+                {% else %}
+                <div class="alert alert-info mt-2">
+                  <i class="fas fa-info-circle"></i> You can use images from <code>media/banners/</code> folder: slider_bg_1.png, slider_bg_2.png, etc.
+                </div>
+                {% endif %}
+
+                <!-- Image Crop Interface -->
+                <div class="image-crop-container" style="margin-top: 12px;">
+                  <input type="hidden" id="id_image_crop_data" name="image_crop_data" value="">
+                  <input type="hidden" id="id_image_aspect_ratio" value="1.7777777777777777">
+                  <input type="hidden" id="id_image_target_width" value="1920">
+                  <input type="hidden" id="id_image_target_height" value="1080">
+
+                  <div class="crop-preview-section" style="display:none; margin-top: 12px; padding: 18px; border-radius: 8px; border: 2px solid #007bff; background: #fff;">
+                    <div style="text-align: center; margin-bottom: 12px;">
+                      <h4 style="color: #007bff; margin: 0; font-weight: 700;"><i class="fas fa-crop-alt"></i> Crop Your Slide Image</h4>
+                      <small class="text-muted">Target: <strong>1920×1080</strong> | Ratio: <strong>16:9</strong></small>
+                    </div>
+
+                    <div style="text-align:center; margin-bottom: 12px;">
+                      <button type="button" class="btn btn-success btn-crop-apply" style="min-width:120px; margin-right:8px;"><i class="fas fa-check"></i> Apply Crop</button>
+                      <button type="button" class="btn btn-secondary btn-crop-reset" style="min-width:120px; margin-right:8px;"><i class="fas fa-redo"></i> Reset</button>
+                      <button type="button" class="btn btn-danger btn-crop-cancel" style="min-width:120px;"><i class="fas fa-times"></i> Cancel</button>
+                    </div>
+
+                    <div class="crop-image-wrapper" style="max-width:100%; max-height:500px; overflow:hidden; border-radius:6px; border:1px solid #ddd; padding:6px; background: #f7f7f7;">
+                      <img id="crop-image-image" style="max-width:100%; display:block; border-radius:4px;">
+                    </div>
+
+                    <div class="crop-preview-result" style="display:none; margin-top:12px; text-align:center;">
+                      <h5 style="color:#28a745;"><i class="fas fa-check-circle"></i> Preview - Final Result</h5>
+                      <div style="display:inline-block; border-radius:8px; overflow:hidden; border:2px solid #28a745; padding:6px; background:white;">
+                        <img id="crop-preview-image" style="max-width:640px; max-height:360px; display:block;">
+                        <div style="position:relative; margin-top:6px; font-weight:600; color:#155724;">1920×1080</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+
+              <hr class="my-4">
+
+              <!-- Call to Action Section -->
+              <h5 class="mb-3"><i class="fas fa-mouse-pointer"></i> Call to Action Button</h5>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="button_text">Button Text *</label>
+                    <input type="text" class="form-control" id="button_text" name="button_text" value="{{ slide.button_text|default:'Order Now' }}" placeholder="e.g., Order Now">
+                    <small class="form-text text-muted">Text shown on the button</small>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="button_link">Button Link/URL *</label>
+                    <select class="form-control" id="button_link" name="button_link" required>
+                      <option value="/" {% if slide.button_link == '/' %}selected{% endif %}>Index Page</option>
+                      <option value="/order/" {% if slide.button_link == '/order/' or not slide %}selected{% endif %}>Order Page (/order/)</option>
+                      <option value="/products/" {% if slide.button_link == '/products/' %}selected{% endif %}>Products Page (/products/)</option>
+                      <option value="/gallery/" {% if slide.button_link == '/gallery/' %}selected{% endif %}>Gallery (/gallery/)</option>
+                      <option value="/contact/" {% if slide.button_link == '/contact/' %}selected{% endif %}>Contact Page (/contact/)</option>
+                      <option value="/about/" {% if slide.button_link == '/about/' %}selected{% endif %}>About Page (/about/)</option>
+                    </select>
+                    <small class="form-text text-muted">Where the button should link to</small>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="my-4">
+
+              <!-- Display Settings -->
+              <h5 class="mb-3"><i class="fas fa-cog"></i> Display Settings</h5>
+
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="display_order">Display Order *</label>
+                    <input type="number" class="form-control" id="display_order" name="display_order" value="{{ slide.display_order|default:0 }}" required min="0" placeholder="0">
+                    <small class="form-text text-muted">Lower numbers appear first (0, 1, 2...)</small>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="start_date">Start Date *</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="{% if slide %}{{ slide.start_date|date:'Y-m-d' }}{% else %}{{ today|date:'Y-m-d' }}{% endif %}" required>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="end_date">End Date </label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="{% if slide %}{{ slide.end_date|date:'Y-m-d' }}{% endif %}" >
+                    <small class="form-text text-muted">Set far future for permanent slides</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if not slide or slide.is_active %}checked{% endif %}>
+                <label class="form-check-label" for="is_active">
+                  <strong>Active</strong> (Uncheck to hide this slide temporarily)
+                </label>
+              </div>
+
+              <div class="mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                  <i class="fas fa-save"></i> Save Slide
+                </button>
+                <a href="{% url 'admin_carousel' %}" class="btn btn-secondary">
+                  <i class="fas fa-times"></i> Cancel
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview/Help Section -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="fas fa-question-circle"></i> Help & Tips</h4>
+          </div>
+          <div class="card-body">
+            <h6><i class="fas fa-image"></i> Image Guidelines</h6>
+            <ul class="text-muted" style="font-size: 14px;">
+              <li><strong>Size:</strong> 1920×1080 pixels (Full HD)</li>
+              <li><strong>Format:</strong> JPG or PNG</li>
+              <li><strong>File Size:</strong> Under 2MB</li>
+              <li><strong>Content:</strong> High-quality cake photos</li>
+            </ul>
+
+            <hr>
+
+            <h6><i class="fas fa-sort-numeric-down"></i> Display Order</h6>
+            <p class="text-muted" style="font-size: 14px;">
+              Controls slide sequence:<br>
+              • 0 = First slide<br>
+              • 1 = Second slide<br>
+              • 2 = Third slide, etc.
+            </p>
+
+            <hr>
+
+            <h6><i class="fas fa-calendar-alt"></i> Validity Period</h6>
+            <p class="text-muted" style="font-size: 14px;">
+              Slides automatically activate/deactivate based on dates. Set a far future date for permanent slides.
+            </p>
+
+            <hr>
+
+            <h6><i class="fas fa-folder"></i> Sample Images</h6>
+            <p class="text-muted" style="font-size: 14px;">
+              Ready-to-use images in:<br>
+              <code>media/banners/</code>
+            </p>
+            <ul style="font-size: 13px;">
+              <li>slider_bg_1.png</li>
+              <li>slider_bg_2.png</li>
+              <li>slider_bg_3.png</li>
+              <li>slider_bg_4.png</li>
+            </ul>
+
+            <hr>
+
+            <a href="/" target="_blank" class="btn btn-success btn-sm btn-block">
+              <i class="fas fa-eye"></i> Preview Homepage
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

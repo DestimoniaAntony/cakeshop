@@ -1,0 +1,79 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Flavors - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Flavors</h3>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <a href="{% url 'admin_flavor_add' %}" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add Flavor
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Price per kg</th>
+                    <th>Display Order</th>
+                    <th>Description</th>
+                    <th>Custom Orders</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for flavor in flavors %}
+                  <tr>
+                    <td><strong>{{ flavor.name }}</strong></td>
+                    <td><span class="badge badge-success">₹{{ flavor.price_per_kg }}/kg</span></td>
+                    <td><span class="badge badge-secondary">{{ flavor.display_order }}</span></td>
+                    <td>{{ flavor.description|truncatewords:10 }}</td>
+                    <td><span class="badge badge-info">{{ flavor.order_count }}</span></td>
+                    <td>
+                      {% if flavor.is_active %}
+                      <span class="badge badge-success">Active</span>
+                      {% else %}
+                      <span class="badge badge-danger">Inactive</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <a href="{% url 'admin_flavor_edit' flavor.id %}" class="btn btn-sm btn-primary">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin_flavor_delete' flavor.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="7" class="text-center py-4">No flavors found</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

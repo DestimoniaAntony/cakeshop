@@ -1,0 +1,220 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}About Us - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<!--Page Title-->
+
+{% include 'partials/page_title.html' with banner=page_title_banners.about title_fallback='About Us' %}
+<!--End Page Title-->
+{% endblock %}
+
+
+{% block content %}
+<!-- About Section Two -->
+<section class="about-section-two alternate" style="background-image: url({% static 'images/main-slider/slider_bg_2.png' %});">
+    <div class="auto-container">
+        <div class="sec-title text-center">
+            <div class="divider"><img src="{% static 'images/icons/divider_1.png' %}" alt=""></div>
+            <h2>Our Story</h2>
+        </div>
+        <div class="content-box">
+            <span class="devider_icon_one"></span>
+            <p>Welcome to Cakes by Desti, where baking is not just a profession—it's a passion that runs deep in our hearts. Our story began with a simple dream: to create cakes that don't just taste amazing, but tell a story and bring people together.</p>
+            <p>Founded by Desti, a passionate baker with over 8 years of experience in the culinary arts, our bakery started as a small home-based business. What began as baking cakes for family and friends quickly grew into something much bigger when people couldn't stop talking about our delicious creations.</p>
+            <p>Today, we're proud to serve our community with handcrafted cakes made from the finest ingredients, traditional recipes passed down through generations, and innovative designs that make every celebration special.</p>
+        </div>
+        <div class="btn-box text-center">
+            <a href="{% url 'products' %}" class="theme-btn btn-style-two regular"><span></span>Our Products<span></span></a>
+        </div>
+    </div>
+</section>
+<!--End About Section -->
+
+<!-- Features Section -->
+<div class="features-section style-two">
+    <div class="shape_wrapper shape_one">
+        <div class="shape_inner shape_two" style="background-image: url({% static 'images/main-slider/slider_bg_3.png' %});"><div class="overlay"></div></div>
+    </div>
+
+    <div class="auto-container">
+        <div class="sec-title text-center light">
+            <h2>Our Mission</h2>
+            <div class="text">We believe that every occasion deserves a perfect cake, whether it's a birthday celebration, wedding, anniversary, or just because you deserve something sweet. Our commitment to quality, creativity, and customer satisfaction has made us the go-to bakery for memorable moments.</div>
+        </div>
+        <div class="row">
+            <!-- Feature Block -->
+            <div class="feature-block col-lg-3 col-md-6 col-sm-12">
+                <div class="inner-box">
+                    <div class="icon-box">
+                        <div class="icon-frame"><svg x="0px" y="0px" viewBox="0 0 500 500"> <path d="M488.5,274.5L488.5,274.5l1.8-0.5l-2,0.5c-2.4-8.7-4.5-16.9-4.5-24.5c0-8,2.3-16.5,4.7-25.5 c3.5-13,7.1-26.5,3.7-39.5c-3.6-13.2-13.5-23.1-23.1-32.7c-6.5-6.5-12.6-12.6-16.6-19.4c-3.9-6.8-6.1-15.2-8.5-24.1 c-3.5-13.1-7.1-26.7-16.7-36.3c-9.5-9.5-22.9-13.1-35.9-16.6c-9-2.4-17.5-4.6-24.4-8.7c-6.5-3.8-12.5-9.8-18.9-16.2 c-9.7-9.8-19.6-19.8-33.2-23.4c-13.5-3.7-27.3,0.1-40.4,3.7c-8.7,2.4-16.9,4.6-24.5,4.6c-8,0-16.5-2.3-25.5-4.7 c-9.3-2.5-18.8-5-28.1-5c-3.8,0-7.6,0.4-11.3,1.4C172,11.1,162,21.1,152.4,30.7c-6.5,6.5-12.6,12.6-19.4,16.6 c-6.8,3.9-15.2,6.1-24.1,8.5c-13.1,3.5-26.7,7.1-36.3,16.7c-9.5,9.5-13.1,23-16.6,36c-2.4,9-4.6,17.5-8.7,24.4 c-3.8,6.5-9.8,12.5-16.2,18.9c-9.8,9.7-19.7,19.6-23.4,33.2c-3.7,13.5,0.1,27.3,3.7,40.5c2.4,8.7,4.6,16.9,4.6,24.5 c0,8-2.3,16.5-4.6,25.5c-3.5,13-7.1,26.6-3.7,39.5c3.6,13.2,13.5,23.1,23.1,32.7c6.5,6.5,12.6,12.6,16.6,19.4 c3.9,6.8,6.1,15.1,8.5,24c3.5,13.1,7.1,26.8,16.7,36.4c9.5,9.5,23,13.1,35.9,16.6c9,2.4,17.5,4.6,24.4,8.7 c6.5,3.8,12.5,9.8,18.9,16.2c9.7,9.8,19.6,19.8,33.2,23.5c3.8,1,7.6,1.5,11.8,1.5c9.6,0,19.3-2.7,28.5-5.1c8.8-2.4,17-4.6,24.5-4.6 c8,0,16.5,2.3,25.5,4.6c13,3.6,26.6,7.1,39.5,3.7c13.2-3.6,23.1-13.5,32.7-23.1c6.5-6.5,12.6-12.6,19.4-16.6 c6.7-3.9,15.1-6.1,24-8.5c13.1-3.5,26.8-7.1,36.4-16.8c9.5-9.5,13.1-23,16.6-36c2.4-9,4.6-17.5,8.7-24.4c3.8-6.5,9.8-12.5,16.2-18.9 c9.8-9.7,19.9-19.7,23.6-33.3C495.7,301.4,494.4,287.7,488.5,274.5z"></path></svg>
+                        </div>
+
+                        <!-- cake img -->
+                        <div class="icon flaticon-technology"></div>
+                    </div>
+                    <h3>Tradition</h3>
+                    <p>We use traditional recipes passed down through generations, ensuring authentic flavors and time-tested techniques in every cake we create.</p>
+                </div>
+            </div>
+
+            <!-- Feature Block -->
+            <div class="feature-block col-lg-3 col-md-6 col-sm-12">
+                <div class="inner-box">
+                    <div class="icon-box">
+                        <div class="icon-frame"><svg x="0px" y="0px" viewBox="0 0 500 500"> <path d="M488.5,274.5L488.5,274.5l1.8-0.5l-2,0.5c-2.4-8.7-4.5-16.9-4.5-24.5c0-8,2.3-16.5,4.7-25.5 c3.5-13,7.1-26.5,3.7-39.5c-3.6-13.2-13.5-23.1-23.1-32.7c-6.5-6.5-12.6-12.6-16.6-19.4c-3.9-6.8-6.1-15.2-8.5-24.1 c-3.5-13.1-7.1-26.7-16.7-36.3c-9.5-9.5-22.9-13.1-35.9-16.6c-9-2.4-17.5-4.6-24.4-8.7c-6.5-3.8-12.5-9.8-18.9-16.2 c-9.7-9.8-19.6-19.8-33.2-23.4c-13.5-3.7-27.3,0.1-40.4,3.7c-8.7,2.4-16.9,4.6-24.5,4.6c-8,0-16.5-2.3-25.5-4.7 c-9.3-2.5-18.8-5-28.1-5c-3.8,0-7.6,0.4-11.3,1.4C172,11.1,162,21.1,152.4,30.7c-6.5,6.5-12.6,12.6-19.4,16.6 c-6.8,3.9-15.2,6.1-24.1,8.5c-13.1,3.5-26.7,7.1-36.3,16.7c-9.5,9.5-13.1,23-16.6,36c-2.4,9-4.6,17.5-8.7,24.4 c-3.8,6.5-9.8,12.5-16.2,18.9c-9.8,9.7-19.7,19.6-23.4,33.2c-3.7,13.5,0.1,27.3,3.7,40.5c2.4,8.7,4.6,16.9,4.6,24.5 c0,8-2.3,16.5-4.6,25.5c-3.5,13-7.1,26.6-3.7,39.5c3.6,13.2,13.5,23.1,23.1,32.7c6.5,6.5,12.6,12.6,16.6,19.4 c3.9,6.8,6.1,15.1,8.5,24c3.5,13.1,7.1,26.8,16.7,36.4c9.5,9.5,23,13.1,35.9,16.6c9,2.4,17.5,4.6,24.4,8.7 c6.5,3.8,12.5,9.8,18.9,16.2c9.7,9.8,19.6,19.8,33.2,23.5c3.8,1,7.6,1.5,11.8,1.5c9.6,0,19.3-2.7,28.5-5.1c8.8-2.4,17-4.6,24.5-4.6 c8,0,16.5,2.3,25.5,4.6c13,3.6,26.6,7.1,39.5,3.7c13.2-3.6,23.1-13.5,32.7-23.1c6.5-6.5,12.6-12.6,19.4-16.6 c6.7-3.9,15.1-6.1,24-8.5c13.1-3.5,26.8-7.1,36.4-16.8c9.5-9.5,13.1-23,16.6-36c2.4-9,4.6-17.5,8.7-24.4c3.8-6.5,9.8-12.5,16.2-18.9 c9.8-9.7,19.9-19.7,23.6-33.3C495.7,301.4,494.4,287.7,488.5,274.5z"></path></svg>
+                        </div>
+
+                        <!-- cake img -->
+                        <div class="icon flaticon-food-7"></div>
+                    </div>
+                    <h3>Quality</h3>
+                    <p>We use only the finest, freshest ingredients and traditional techniques to ensure every cake meets our high standards of excellence.</p>
+                </div>
+            </div>
+
+            <!-- Feature Block -->
+            <div class="feature-block col-lg-3 col-md-6 col-sm-12">
+                <div class="inner-box">
+                    <div class="icon-box">
+                        <div class="icon-frame"><svg x="0px" y="0px" viewBox="0 0 500 500"> <path d="M488.5,274.5L488.5,274.5l1.8-0.5l-2,0.5c-2.4-8.7-4.5-16.9-4.5-24.5c0-8,2.3-16.5,4.7-25.5 c3.5-13,7.1-26.5,3.7-39.5c-3.6-13.2-13.5-23.1-23.1-32.7c-6.5-6.5-12.6-12.6-16.6-19.4c-3.9-6.8-6.1-15.2-8.5-24.1 c-3.5-13.1-7.1-26.7-16.7-36.3c-9.5-9.5-22.9-13.1-35.9-16.6c-9-2.4-17.5-4.6-24.4-8.7c-6.5-3.8-12.5-9.8-18.9-16.2 c-9.7-9.8-19.6-19.8-33.2-23.4c-13.5-3.7-27.3,0.1-40.4,3.7c-8.7,2.4-16.9,4.6-24.5,4.6c-8,0-16.5-2.3-25.5-4.7 c-9.3-2.5-18.8-5-28.1-5c-3.8,0-7.6,0.4-11.3,1.4C172,11.1,162,21.1,152.4,30.7c-6.5,6.5-12.6,12.6-19.4,16.6 c-6.8,3.9-15.2,6.1-24.1,8.5c-13.1,3.5-26.7,7.1-36.3,16.7c-9.5,9.5-13.1,23-16.6,36c-2.4,9-4.6,17.5-8.7,24.4 c-3.8,6.5-9.8,12.5-16.2,18.9c-9.8,9.7-19.7,19.6-23.4,33.2c-3.7,13.5,0.1,27.3,3.7,40.5c2.4,8.7,4.6,16.9,4.6,24.5 c0,8-2.3,16.5-4.6,25.5c-3.5,13-7.1,26.6-3.7,39.5c3.6,13.2,13.5,23.1,23.1,32.7c6.5,6.5,12.6,12.6,16.6,19.4 c3.9,6.8,6.1,15.1,8.5,24c3.5,13.1,7.1,26.8,16.7,36.4c9.5,9.5,23,13.1,35.9,16.6c9,2.4,17.5,4.6,24.4,8.7 c6.5,3.8,12.5,9.8,18.9,16.2c9.7,9.8,19.6,19.8,33.2,23.5c3.8,1,7.6,1.5,11.8,1.5c9.6,0,19.3-2.7,28.5-5.1c8.8-2.4,17-4.6,24.5-4.6 c8,0,16.5,2.3,25.5,4.6c13,3.6,26.6,7.1,39.5,3.7c13.2-3.6,23.1-13.5,32.7-23.1c6.5-6.5,12.6-12.6,19.4-16.6 c6.7-3.9,15.1-6.1,24-8.5c13.1-3.5,26.8-7.1,36.4-16.8c9.5-9.5,13.1-23,16.6-36c2.4-9,4.6-17.5,8.7-24.4c3.8-6.5,9.8-12.5,16.2-18.9 c9.8-9.7,19.9-19.7,23.6-33.3C495.7,301.4,494.4,287.7,488.5,274.5z"></path></svg>
+                        </div>
+
+                        <!-- cake img -->
+                        <div class="icon flaticon-strawberry"></div>
+                    </div>
+                    <h3>Creativity</h3>
+                    <p>From classic designs to custom creations, we bring your vision to life with artistic flair and innovative techniques that make every cake unique.</p>
+                </div>
+            </div>
+
+            <!-- Feature Block -->
+            <div class="feature-block col-lg-3 col-md-6 col-sm-12">
+                <div class="inner-box">
+                    <div class="icon-box">
+                        <div class="icon-frame"><svg x="0px" y="0px" viewBox="0 0 500 500"> <path d="M488.5,274.5L488.5,274.5l1.8-0.5l-2,0.5c-2.4-8.7-4.5-16.9-4.5-24.5c0-8,2.3-16.5,4.7-25.5 c3.5-13,7.1-26.5,3.7-39.5c-3.6-13.2-13.5-23.1-23.1-32.7c-6.5-6.5-12.6-12.6-16.6-19.4c-3.9-6.8-6.1-15.2-8.5-24.1 c-3.5-13.1-7.1-26.7-16.7-36.3c-9.5-9.5-22.9-13.1-35.9-16.6c-9-2.4-17.5-4.6-24.4-8.7c-6.5-3.8-12.5-9.8-18.9-16.2 c-9.7-9.8-19.6-19.8-33.2-23.4c-13.5-3.7-27.3,0.1-40.4,3.7c-8.7,2.4-16.9,4.6-24.5,4.6c-8,0-16.5-2.3-25.5-4.7 c-9.3-2.5-18.8-5-28.1-5c-3.8,0-7.6,0.4-11.3,1.4C172,11.1,162,21.1,152.4,30.7c-6.5,6.5-12.6,12.6-19.4,16.6 c-6.8,3.9-15.2,6.1-24.1,8.5c-13.1,3.5-26.7,7.1-36.3,16.7c-9.5,9.5-13.1,23-16.6,36c-2.4,9-4.6,17.5-8.7,24.4 c-3.8,6.5-9.8,12.5-16.2,18.9c-9.8,9.7-19.7,19.6-23.4,33.2c-3.7,13.5,0.1,27.3,3.7,40.5c2.4,8.7,4.6,16.9,4.6,24.5 c0,8-2.3,16.5-4.6,25.5c-3.5,13-7.1,26.6-3.7,39.5c3.6,13.2,13.5,23.1,23.1,32.7c6.5,6.5,12.6,12.6,16.6,19.4 c3.9,6.8,6.1,15.1,8.5,24c3.5,13.1,7.1,26.8,16.7,36.4c9.5,9.5,23,13.1,35.9,16.6c9,2.4,17.5,4.6,24.4,8.7 c6.5,3.8,12.5,9.8,18.9,16.2c9.7,9.8,19.6,19.8,33.2,23.5c3.8,1,7.6,1.5,11.8,1.5c9.6,0,19.3-2.7,28.5-5.1c8.8-2.4,17-4.6,24.5-4.6 c8,0,16.5,2.3,25.5,4.6c13,3.6,26.6,7.1,39.5,3.7c13.2-3.6,23.1-13.5,32.7-23.1c6.5-6.5,12.6-12.6,19.4-16.6 c6.7-3.9,15.1-6.1,24-8.5c13.1-3.5,26.8-7.1,36.4-16.8c9.5-9.5,13.1-23,16.6-36c2.4-9,4.6-17.5,8.7-24.4c3.8-6.5,9.8-12.5,16.2-18.9 c9.8-9.7,19.9-19.7,23.6-33.3C495.7,301.4,494.4,287.7,488.5,274.5z"></path></svg>
+                        </div>
+
+                        <!-- cake img -->
+                        <div class="icon flaticon-food-1"></div>
+                    </div>
+                    <h3>Passion</h3>
+                    <p>We pour our heart and soul into every cake we create. Baking isn't just our job—it's our passion, and it shows in every bite.</p>
+                </div>
+            </div>                
+        </div>
+    </div>
+</div>
+<!-- End Features Section -->
+
+<!-- Chef Section -->
+<section class="chef-section" style="background-image: url({% static 'images/main-slider/slider_bg_4.png' %});">
+    <div class="auto-container">
+        <div class="row">
+            <div class="content-column col-lg-6 col-md-12 col-sm-12 order-2">
+                <div class="inner-column">                    
+                    <div class="content">
+                        <div class="sec-title text-center">
+                            <div class="divider"><img src="{% static 'images/icons/divider_1.png' %}" alt=""></div>
+                            <h2>Desti</h2>
+                        </div>
+                        <h4>Head Baker & Founder</h4>
+                        <div class="divider"><img src="{% static 'images/icons/icon-devider.png' %}" alt=""></div>
+                        <p>With over 8 years of baking experience, Desti brings creativity and expertise to every cake. Specializing in custom designs and traditional recipes, she ensures every creation is perfect. Her passion for baking started in her grandmother's kitchen and has grown into a thriving business that serves the community with love and dedication.</p>
+                        <div class="btn-box">
+                            <a href="{% url 'place_order' %}" class="theme-btn btn-style-two regular alt"><span></span>Order Now<span></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="image-column col-lg-6 col-md-12 col-sm-12">
+                <div class="inner-column">
+                    <figure class="image"><img src="{% static 'images/main-slider/slider_bg_1.png' %}" alt="Desti - Head Baker"></figure>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Chef Section -->
+
+<!-- Testimonial Section -->
+<section class="testimonial-section style-two">
+    <div class="shape_wrapper shape_one">
+        <div class="shape_inner shape_two" style="background-image: url({% static 'images/main-slider/slider_bg_2.png' %});"><div class="overlay"></div></div>
+    </div>
+
+    <div class="auto-container">
+        <div class="sec-title light text-center">
+            <h2>What Our Customers Say</h2>
+        </div>
+
+        <!-- Testimonial Carousel -->
+        <div class="testimonial-carousel owl-carousel owl-theme">
+            <!-- Testimonial Block -->
+            <div class="testimonial-block">
+                <div class="inner-box">
+                    <div class="text">"Absolutely amazing! The cake was not only beautiful but tasted incredible. Desti went above and beyond to make my daughter's birthday special. Highly recommended!"</div>
+                    <div class="author-info">
+                        <h4>Priya Sharma</h4>
+                        <div class="designation">Happy Customer</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial Block -->
+            <div class="testimonial-block">
+                <div class="inner-box">
+                    <div class="text">"The custom wedding cake was perfect! Every detail was exactly as we discussed. The quality and taste exceeded our expectations. Thank you for making our day so special!"</div>
+                    <div class="author-info">
+                        <h4>Raj & Meera</h4>
+                        <div class="designation">Wedding Couple</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial Block -->
+            <div class="testimonial-block">
+                <div class="inner-box">
+                    <div class="text">"I've ordered multiple cakes from Cakes by Desti, and each one has been exceptional. Fresh ingredients, beautiful designs, and always delivered on time. Love this bakery!"</div>
+                    <div class="author-info">
+                        <h4>Amit Kumar</h4>
+                        <div class="designation">Regular Customer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--End Testimonial Section -->
+
+<!-- Our Standards -->
+<section class="our-standards" style="background-image: url({% static 'images/main-slider/slider_bg_3.png' %});">
+    <div class="auto-container">
+        <div class="row">
+            <div class="content-column col-lg-6 col-md-12 col-sm-12">              
+                <div class="content">
+                    <div class="sec-title text-center">
+                        <div class="divider"><img src="{% static 'images/icons/divider_1.png' %}" alt=""></div>
+                        <h2>Our Standards</h2>
+                    </div>
+                    <div class="divider"><img src="{% static 'images/icons/icon-devider.png' %}" alt=""></div>
+                    <p>We maintain the highest standards in everything we do</p>
+                    <span class="icon fa fa-heart"></span>
+                    <p>Fresh ingredients sourced daily from trusted suppliers</p>
+                    <span class="icon fa fa-heart"></span>
+                    <p>Handcrafted with attention to every detail</p>
+                    <span class="icon fa fa-heart"></span>
+                    <p>Custom designs tailored to your special occasion</p>
+                    <span class="icon fa fa-heart"></span>
+                    <p>Timely delivery ensuring your cake arrives fresh</p>
+                    <span class="icon fa fa-heart"></span>
+                    <p>Customer satisfaction guaranteed on every order</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Our Standards -->
+{% endblock %}

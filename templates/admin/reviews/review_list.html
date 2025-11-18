@@ -1,0 +1,110 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Reviews Management - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Reviews Management</h3>
+    </div>
+
+    <!-- Alert for pending reviews -->
+    {% if pending_count > 0 %}
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="alert alert-info">
+          <strong>📝 {{ pending_count }} Pending Review{{ pending_count|pluralize }}</strong> - Waiting for approval
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Filters -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <form method="get" class="d-flex gap-2">
+              <select name="status" class="form-select" style="max-width: 200px;">
+                <option value="">All Reviews</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending Approval</option>
+                <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+              </select>
+              <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ search }}" style="max-width: 300px;">
+              <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+              <a href="{% url 'admin_reviews' %}" class="btn btn-secondary">Clear</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews Grid -->
+    <div class="row">
+      {% for review in reviews %}
+      <div class="col-md-6 mb-4">
+        <div class="card {% if not review.is_approved %}border-warning{% endif %}">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h5 class="mb-0">{{ review.customer_name }}</h5>
+                <small class="text-muted">{{ review.created_at|date:"d M Y H:i" }}</small>
+              </div>
+              <div>
+                {% if review.is_approved %}
+                <span class="badge badge-success">Approved</span>
+                {% else %}
+                <span class="badge badge-warning">Pending</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="mb-2">
+              {% for i in "12345" %}
+                {% if forloop.counter <= review.rating %}
+                  <i class="fas fa-star text-warning"></i>
+                {% else %}
+                  <i class="far fa-star text-muted"></i>
+                {% endif %}
+              {% endfor %}
+              <strong class="ms-2">{{ review.rating }}/5</strong>
+            </div>
+
+            {% if review.product %}
+            <p class="mb-2"><i class="fas fa-birthday-cake"></i> <strong>{{ review.product.name }}</strong></p>
+            {% endif %}
+
+            <p class="mb-3">{{ review.comment }}</p>
+
+            <div class="btn-group w-100">
+              {% if not review.is_approved %}
+              <a href="{% url 'admin_review_approve' review.id %}" class="btn btn-sm btn-success flex-fill">
+                <i class="fas fa-check"></i> Approve
+              </a>
+              {% endif %}
+              <a href="{% url 'admin_review_delete' review.id %}" class="btn btn-sm btn-danger flex-fill" onclick="return confirm('Delete?')">
+                <i class="fas fa-trash"></i> Delete
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body text-center py-5">
+            <i class="fas fa-star fa-4x text-muted mb-3"></i>
+            <h4>No reviews yet</h4>
+            <p>Customer reviews will appear here</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

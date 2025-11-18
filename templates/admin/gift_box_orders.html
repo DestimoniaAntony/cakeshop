@@ -1,0 +1,162 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}Gift Box Orders - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-inner">
+        <div class="page-header">
+            <h3 class="fw-bold mb-3">Gift Box Orders</h3>
+            <ul class="breadcrumbs mb-3">
+                <li class="nav-home">
+                    <a href="{% url 'admin_dashboard' %}">
+                        <i class="icon-home"></i>
+                    </a>
+                </li>
+                <li class="separator">
+                    <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">Gift Box Orders</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center">
+                            <h4 class="card-title">All Gift Box Orders</h4>
+                            <div class="ms-auto">
+                                <div class="btn-group">
+                                    <a href="?" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+                                    <a href="?status=pending" class="btn btn-sm {% if status_filter == 'pending' %}btn-warning{% else %}btn-outline-warning{% endif %}">Pending</a>
+                                    <a href="?status=confirmed" class="btn btn-sm {% if status_filter == 'confirmed' %}btn-info{% else %}btn-outline-info{% endif %}">Confirmed</a>
+                                    <a href="?status=completed" class="btn btn-sm {% if status_filter == 'completed' %}btn-success{% else %}btn-outline-success{% endif %}">Completed</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="giftBoxOrdersTable" class="display table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Customer</th>
+                                        <th>Gift Box</th>
+                                        <th>Quantity</th>
+                                        <th>Total Price</th>
+                                        <th>Delivery Date</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    <tr>
+                                        <td><strong>{{ order.order_number }}</strong></td>
+                                        <td>
+                                            <a href="{% url 'admin_customer_detail' order.customer.id %}">
+                                                {{ order.customer.name }}<br>
+                                                <small class="text-muted">{{ order.customer.phone_number }}</small>
+                                            </a>
+                                        </td>
+                                        <td>{{ order.gift_box.name }}</td>
+                                        <td>{{ order.quantity }}</td>
+                                        <td><strong>₹{{ order.total_price }}</strong></td>
+                                        <td>{{ order.delivery_date|date:"d M Y" }}{% if order.delivery_time %} <br><small>{{ order.delivery_time }}</small>{% endif %}</td>
+                                        <td>
+                                            {% if order.status == 'pending' %}
+                                            <span class="badge badge-warning">Pending</span>
+                                            {% elif order.status == 'confirmed' %}
+                                            <span class="badge badge-info">Confirmed</span>
+                                            {% elif order.status == 'preparing' %}
+                                            <span class="badge badge-primary">Preparing</span>
+                                            {% elif order.status == 'ready' %}
+                                            <span class="badge badge-success">Ready</span>
+                                            {% elif order.status == 'completed' %}
+                                            <span class="badge badge-success">Completed</span>
+                                            {% else %}
+                                            <span class="badge badge-secondary">Cancelled</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ order.created_at|date:"d M Y" }}</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                {% if order.status == 'pending' %}
+                                                <form method="post" action="{% url 'admin_accept_gift_box_order' order.id %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-success" title="Accept Order">
+                                                        <i class="fas fa-check"></i> Accept
+                                                    </button>
+                                                </form>
+                                                {% endif %}
+                                                
+                                                <a href="{% url 'admin_gift_box_order_detail' order.id %}" class="btn btn-sm btn-info" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                
+                                                {% if order.status != 'completed' and order.status != 'cancelled' %}
+                                                <button type="button" class="btn btn-sm btn-danger" 
+                                                        onclick="confirmDelete('{{ order.order_number }}', {{ order.id }})" 
+                                                        title="Delete Order">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="9" class="text-center">
+                                            <div style="padding: 40px;">
+                                                <i class="fas fa-shopping-bag fa-3x" style="color: #ddd;"></i>
+                                                <p class="mt-3">No gift box orders yet.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#giftBoxOrdersTable').DataTable({
+            "pageLength": 25,
+            "order": [[7, "desc"]]
+        });
+    });
+
+    function confirmDelete(orderNumber, orderId) {
+        if (confirm('Are you sure you want to delete order ' + orderNumber + '? This action cannot be undone.')) {
+            // Create a form and submit it
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/gift-boxes/orders/' + orderId + '/delete/';
+            
+            // Add CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+{% endblock %}
+

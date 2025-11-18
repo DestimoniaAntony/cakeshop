@@ -1,0 +1,156 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Gift Boxes - Cakes by Desti{% endblock %}
+{% block page_title %}
+{% include 'partials/page_title.html' with banner=page_title_banners.gift_boxes title_fallback='Gift Boxes' %}
+{% endblock %}
+
+{% block content %}
+<!-- Gift Boxes Section -->
+<section class="shop-section">
+    <div class="auto-container">
+        <div class="sec-title text-center">
+            <span class="sub-title">Special Collections</span>
+            <h2>Our Gift Boxes</h2>
+            <div class="text">Perfect combinations of delicious treats for every occasion!</div>
+        </div>
+
+        <div class="row clearfix">
+            {% for gift_box in gift_boxes %}
+            <div class="shop-item col-lg-4 col-md-6 col-sm-12">
+                <div class="inner-box" style="border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                    <div class="image">
+                        {% if gift_box.main_image %}
+                        <a href="{% url 'gift_box_detail' gift_box.id %}">
+                            <img src="{{ gift_box.main_image.url }}" alt="{{ gift_box.name }}" style="width: 100%; height: 280px; object-fit: cover;">
+                        </a>
+                        {% else %}
+                        <a href="{% url 'gift_box_detail' gift_box.id %}">
+                            <div style="width: 100%; height: 280px; background: linear-gradient(135deg, #FFE5EC 0%, #FFF0F5 100%); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-gift fa-5x" style="color: #FF6B9D; opacity: 0.3;"></i>
+                            </div>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Badge -->
+                        {% if gift_box.pricing_type == 'discounted' %}
+                        <span class="badge" style="position: absolute; top: 15px; right: 15px; background: #ff6b9d; color: white; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                            {{ gift_box.discount_percentage }}% OFF
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="lower-content" style="padding: 25px;">
+                        <h4 style="margin-bottom: 10px;">
+                            <a href="{% url 'gift_box_detail' gift_box.id %}" style="color: #333; font-weight: 600;">{{ gift_box.name }}</a>
+                        </h4>
+                        
+                        <div class="text" style="color: #666; font-size: 14px; margin-bottom: 15px; min-height: 60px;">
+                            {{ gift_box.description|truncatewords:15 }}
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <div>
+                                <small style="color: #999; display: block;">Includes</small>
+                                <strong style="color: #FF6B9D;">{{ gift_box.items_count }} items</strong>
+                            </div>
+                            <div style="text-align: right;">
+                                <span class="price" style="color: #FF6B9D; font-size: 24px; font-weight: 700;">₹{{ gift_box.total_price|floatformat:0 }}</span>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'gift_box_detail' gift_box.id %}" class="theme-btn add-to-cart" style="width: 100%; text-align: center; padding: 12px 25px; border-radius: 30px; background: #ff6b9d; border: 2px solid #ff6b9d; color: white; font-weight: 600; transition: all 0.3s ease; text-decoration: none;">
+                            <span class="btn-title">View Details</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div style="text-align: center; padding: 80px 20px; background: #FFF9F5; border-radius: 15px;">
+                    <i class="fas fa-gift fa-4x" style="color: #ddd; margin-bottom: 20px;"></i>
+                    <h3 style="color: #999; margin-bottom: 10px;">No Gift Boxes Available</h3>
+                    <p style="color: #aaa;">Check back soon for amazing gift box collections!</p>
+                    <a href="{% url 'products' %}" class="theme-btn add-to-cart" style="margin-top: 20px; padding: 12px 25px; border-radius: 30px; background: #ff6b9d; border: 2px solid #ff6b9d; color: white; font-weight: 600; transition: all 0.3s ease; display: inline-block; text-decoration: none;">
+                        <span class="btn-title">Browse Products</span>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+    .shop-item {
+        margin-bottom: 30px;
+    }
+    
+    .shop-item .inner-box {
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .shop-item .inner-box:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    }
+    
+    .shop-item .image {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .shop-item .image img {
+        transition: all 0.3s ease;
+    }
+    
+    .shop-item .inner-box:hover .image img {
+        transform: scale(1.05);
+    }
+    
+    .theme-btn.add-to-cart {
+        background: #ff6b9d !important;
+        color: white !important;
+        padding: 12px 25px;
+        display: inline-block;
+        transition: all 0.3s ease;
+        border: 2px solid #ff6b9d;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .theme-btn.add-to-cart:hover {
+        background: white !important;
+        color: #ff6b9d !important;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 157, 0.2);
+    }
+
+    .theme-btn.add-to-cart:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease;
+        z-index: 1;
+    }
+
+    .theme-btn.add-to-cart:hover:after {
+        transform: translateX(200%);
+    }
+
+    .theme-btn.add-to-cart .btn-title {
+        position: relative;
+        z-index: 2;
+    }
+</style>
+{% endblock %}
+

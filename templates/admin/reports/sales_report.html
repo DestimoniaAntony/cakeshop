@@ -1,0 +1,194 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Sales Report - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Sales Report</h3>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <form method="get" class="row align-items-end">
+              <div class="col-md-3">
+                <label>From Date</label>
+                <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+              </div>
+              <div class="col-md-3">
+                <label>To Date</label>
+                <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+              </div>
+              <div class="col-md-2">
+                <label>Status</label>
+                <select name="status" class="form-select">
+                  <option value="">All</option>
+                  <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                  <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                <a href="?export=csv{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="btn btn-success">
+                  <i class="fas fa-file-csv"></i> Export CSV
+                </a>
+                <a href="{% url 'admin_sales_report' %}" class="btn btn-secondary">Clear</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="card card-stats card-round">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-icon">
+                <div class="icon-big text-center icon-primary bubble-shadow-small">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+              </div>
+              <div class="col col-stats ms-3 ms-sm-0">
+                <div class="numbers">
+                  <p class="card-category">Total Orders</p>
+                  <h4 class="card-title">{{ total_orders }}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card card-stats card-round">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-icon">
+                <div class="icon-big text-center icon-success bubble-shadow-small">
+                  <i class="fas fa-rupee-sign"></i>
+                </div>
+              </div>
+              <div class="col col-stats ms-3 ms-sm-0">
+                <div class="numbers">
+                  <p class="card-category">Total Sales</p>
+                  <h4 class="card-title">₹{{ total_sales|floatformat:2 }}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card card-stats card-round">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-icon">
+                <div class="icon-big text-center icon-info bubble-shadow-small">
+                  <i class="fas fa-calculator"></i>
+                </div>
+              </div>
+              <div class="col col-stats ms-3 ms-sm-0">
+                <div class="numbers">
+                  <p class="card-category">Average Order</p>
+                  <h4 class="card-title">₹{% if total_orders > 0 %}{{ total_sales|floatformat:2|div:total_orders }}{% else %}0{% endif %}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Breakdown -->
+    {% if monthly_data %}
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Monthly Breakdown</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Orders</th>
+                    <th>Total Sales</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for data in monthly_data %}
+                  <tr>
+                    <td><strong>{{ data.month|date:"F Y" }}</strong></td>
+                    <td><span class="badge badge-info">{{ data.order_count }}</span></td>
+                    <td><strong class="text-success">₹{{ data.total_sales|floatformat:2 }}</strong></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Orders List -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Order Details</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Size</th>
+                    <th>Qty</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in orders %}
+                  <tr>
+                    <td><a href="{% url 'admin_order_detail' order.id %}">{{ order.order_number }}</a></td>
+                    <td>{{ order.created_at|date:"d M Y" }}</td>
+                    <td>{{ order.customer.name }}</td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.size.name }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td><strong>₹{{ order.total_price }}</strong></td>
+                    <td><span class="badge badge-success">{{ order.get_status_display }}</span></td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="8" class="text-center py-4">No orders found for selected criteria</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

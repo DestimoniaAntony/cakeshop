@@ -1,0 +1,1393 @@
+{% extends "customer/base.html" %}
+{% load static %}
+
+{% block title %}Build Your Custom Cake - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+{% include 'partials/page_title.html' with banner=page_title_banners.custom_cakes title_fallback='Build Your Dream Cake' %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .custom-cake-hero {
+        background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+        color: white;
+        padding: 4rem 0 3rem;
+        text-align: center;
+    }
+    
+    .custom-cake-hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+    
+    .custom-cake-hero p {
+        font-size: 1.2rem;
+        opacity: 0.95;
+    }
+    
+    .builder-section {
+        padding: 3rem 0;
+        background: white;
+    }
+    
+    .builder-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .step-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .step-number {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #FF6B9D, #C06C84);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+    
+    .step-header h3 {
+        color: #C06C84;
+        margin: 0;
+    }
+    
+    .options-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .option-card {
+        border: 3px solid #E8D5C4;
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+    }
+    
+    .option-card:hover {
+        border-color: #FF6B9D;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(255, 107, 157, 0.2);
+    }
+    
+    .option-card.selected {
+        border-color: #FF6B9D;
+        background: linear-gradient(135deg, rgba(255, 107, 157, 0.1), rgba(192, 108, 132, 0.1));
+    }
+    
+    .option-card input[type="radio"],
+    .option-card input[type="checkbox"] {
+        display: none;
+    }
+    
+    .option-card .check-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        background: #FF6B9D;
+        color: white;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+    }
+    
+    .option-card.selected .check-icon {
+        display: flex !important;
+    }
+    
+    .decoration-card .check-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        background: #FF6B9D;
+        color: white;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+    }
+    
+    .decoration-card.selected .check-icon {
+        display: flex !important;
+    }
+    
+    .option-card h4 {
+        color: #333;
+        margin: 1rem 0 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .option-price {
+        color: #FF6B9D;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    .option-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        background: #FFE5EC;
+        color: #FF6B9D;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+    
+    .decorations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .decoration-card {
+        border: 2px solid #E8D5C4;
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .decoration-card:hover {
+        border-color: #FF6B9D;
+        transform: scale(1.05);
+    }
+    
+    .decoration-card.selected {
+        border-color: #FF6B9D;
+        background: rgba(255, 107, 157, 0.1);
+    }
+    
+    .price-estimate {
+        position: sticky;
+        top: 20px;
+        background: linear-gradient(135deg, #FF6B9D, #C06C84);
+        color: white;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
+    }
+    
+    .price-estimate h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+    }
+    
+    .price-breakdown {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .price-row:last-child {
+        border-bottom: none;
+    }
+    
+    .total-price {
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: center;
+        padding: 1rem 0;
+        border-top: 2px solid rgba(255, 255, 255, 0.3);
+        margin-top: 1rem;
+    }
+    
+    .disclaimer {
+        background: #FFF9F5;
+        border-left: 4px solid #FF6B9D;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-radius: 5px;
+    }
+    
+    .weight-slider-container {
+        padding: 1rem 0;
+    }
+    
+    .weight-display {
+        font-size: 2rem;
+        color: #FF6B9D;
+        font-weight: 700;
+        text-align: center;
+        margin: 1rem 0;
+    }
+    
+    input[type="range"] {
+        width: 100%;
+        height: 8px;
+        border-radius: 5px;
+        background: #E8D5C4;
+        outline: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #FF6B9D;
+        cursor: pointer;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #FF6B9D;
+        cursor: pointer;
+    }
+    
+    .submit-section {
+        background: #FFF9F5;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-top: 2rem;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #FF6B9D, #C06C84);
+        color: white;
+        padding: 1rem 3rem;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: block;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+    }
+    
+    .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    /* Weight Input Styles */
+    .weight-input-container {
+        padding: 1rem 0;
+    }
+    
+    .weight-input-wrapper {
+        position: relative;
+        max-width: 300px;
+        margin: 0 auto 1rem;
+    }
+    
+    .weight-input {
+        width: 100%;
+        padding: 1rem 3rem 1rem 1rem;
+        border: 2px solid #E8D5C4;
+        border-radius: 15px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        text-align: center;
+        color: #FF6B9D;
+        background: #FFF9F5;
+    }
+    
+    .weight-input:focus {
+        outline: none;
+        border-color: #FF6B9D;
+        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+    }
+    
+    .weight-unit {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #FF6B9D;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .weight-suggestions {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .weight-suggestion {
+        padding: 0.5rem 1rem;
+        background: #FFF9F5;
+        border: 2px solid #E8D5C4;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #666;
+    }
+    
+    .weight-suggestion:hover {
+        border-color: #FF6B9D;
+        background: rgba(255, 107, 157, 0.1);
+        color: #FF6B9D;
+    }
+    
+    /* Flavor Input Styles */
+    .flavor-input-container {
+        padding: 1rem 0;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 600;
+    }
+    
+    .form-group label.required::after {
+        content: " *";
+        color: #FF6B9D;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid #E8D5C4;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background-color: #FFFFFF;
+        color: #333333;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #FF6B9D;
+        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+    }
+    
+    /* Select dropdown specific styling */
+    select.form-control {
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23FF6B9D' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+        color: #333333 !important;
+        background-color: #FFFFFF !important;
+    }
+    
+    select.form-control option {
+        padding: 10px;
+        background-color: #FFFFFF !important;
+        color: #333333 !important;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    select.form-control option:hover {
+        background-color: #FFF3F8 !important;
+        color: #FF6B9D !important;
+        font-weight: 600;
+    }
+    
+    select.form-control option:checked,
+    select.form-control option:selected {
+        background-color: #E8F5E9 !important;
+        color: #2E7D32 !important;
+        font-weight: 700;
+    }
+    
+    .form-text {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.25rem;
+    }
+    
+    /* Image Upload Styles */
+    .image-upload-container {
+        padding: 1rem 0;
+    }
+    
+    .upload-area {
+        border: 3px dashed #E8D5C4;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: #FFF9F5;
+    }
+    
+    .upload-area:hover {
+        border-color: #FF6B9D;
+        background: rgba(255, 107, 157, 0.05);
+    }
+    
+    .upload-area.dragover {
+        border-color: #FF6B9D;
+        background: rgba(255, 107, 157, 0.1);
+    }
+    
+    .upload-icon {
+        font-size: 3rem;
+        color: #FF6B9D;
+        margin-bottom: 1rem;
+    }
+    
+    .upload-content h4 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .upload-content p {
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+    
+    .upload-info {
+        font-size: 0.85rem;
+        color: #999;
+    }
+    
+    .image-preview-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .image-preview {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .image-preview img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+    }
+    
+    .image-preview .remove-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 25px;
+        height: 25px;
+        background: rgba(255, 0, 0, 0.8);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+    }
+    
+    /* Customer Details Styles */
+    .customer-details-card {
+        background: linear-gradient(135deg, #FFF9F5 0%, #F8F0F0 100%);
+    }
+    
+    .customer-details-grid {
+        display: grid;
+        gap: 2rem;
+    }
+    
+    .detail-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    
+    .section-title {
+        color: #C06C84;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-bottom: 2px solid #FFE5EC;
+        padding-bottom: 0.5rem;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-row .form-group {
+        margin-bottom: 0;
+    }
+    
+    /* Order Summary Styles */
+    .order-summary {
+        position: sticky;
+        top: 20px;
+        background: linear-gradient(135deg, #FF6B9D, #C06C84);
+        color: white;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
+    }
+    
+    .order-summary h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+    }
+    
+    .summary-section {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    
+    .summary-section h5 {
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+    
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.25rem 0;
+        font-size: 0.9rem;
+    }
+    
+    .summary-item .label {
+        opacity: 0.8;
+    }
+    
+    .summary-note {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .summary-note i {
+        margin-right: 0.5rem;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .weight-suggestions {
+            gap: 0.25rem;
+        }
+        
+        .weight-suggestion {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        
+        .image-preview-container {
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        }
+        
+        .customer-details-grid {
+            gap: 1rem;
+        }
+        
+        .detail-section {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<!-- <section class="custom-cake-hero">
+    <div class="container">
+        <h1>🎂 Build Your Dream Cake</h1>
+        <p>Design a custom cake perfectly tailored for your special celebration</p>
+    </div>
+</section> -->
+
+<!-- Builder Section -->
+<section class="builder-section">
+    <div class="container">
+        <form method="post" action="{% url 'add_custom_to_cart' %}" enctype="multipart/form-data" id="customCakeForm">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <!-- Step 1: Choose Shape -->
+                    <div class="builder-card">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            <h3>Choose Cake Shape <span style="margin-left:8px; font-size: 0.85rem; color: #B00020; background:#FDECEA; border:1px solid #F8BBD0; padding:2px 8px; border-radius:12px;">Required</span></h3>
+                        </div>
+                        
+                        <div class="options-grid">
+                            {% for shape in shapes %}
+                            <div class="option-card" data-shape-price="{{ shape.base_price_per_kg }}" style="cursor: pointer;">
+                                <input type="radio" name="shape_id" value="{{ shape.id }}" required style="display: none;">
+                                <div class="check-icon"><i class="fas fa-check"></i></div>
+                                {% if shape.image %}
+                                <img src="{{ shape.image.url }}" alt="{{ shape.name }}" style="width: 80px; height: 80px; margin: 0 auto; pointer-events: none;">
+                                {% else %}
+                                <div style="font-size: 3rem; pointer-events: none;"></div>
+                                {% endif %}
+                                <h4 style="pointer-events: none;">{{ shape.name }}</h4>
+                                <!-- <div class="option-price" style="pointer-events: none;">₹{{ shape.base_price_per_kg }}/kg</div> -->
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Choose Tier -->
+                    <div class="builder-card">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
+                            <h3>Choose Tier Structure <span style="margin-left:8px; font-size: 0.85rem; color: #B00020; background:#FDECEA; border:1px solid #F8BBD0; padding:2px 8px; border-radius:12px;">Required</span></h3>
+                        </div>
+                        
+                        <div class="options-grid">
+                            {% for tier in tiers %}
+                            <div class="option-card" data-tier-multiplier="{{ tier.price_multiplier }}" style="cursor: pointer;">
+                                <input type="radio" name="tier_id" value="{{ tier.id }}" required style="display: none;">
+                                <div class="check-icon"><i class="fas fa-check"></i></div>
+                                {% if tier.image %}
+                                <img src="{{ tier.image.url }}" alt="{{ tier.name }}" style="width: 80px; height: 80px; margin: 0 auto; pointer-events: none;">
+                                {% else %}
+                                <div style="font-size: 3rem; pointer-events: none;">⭕🎂</div>
+                                {% endif %}
+                                <h4 style="pointer-events: none;">{{ tier.name }}</h4>
+                                <!-- <div class="option-badge" style="pointer-events: none;">{{ tier.tiers_count }} Tier{{ tier.tiers_count|pluralize }}</div> -->
+                                <!-- <div class="option-price" style="pointer-events: none;">{{ tier.price_multiplier }}x</div> -->
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Enter Weight (only for custom flavor option) -->
+                    <div class="builder-card" id="weightInputCard">
+                        <div class="step-header">
+                            <div class="step-number">3</div>
+                            <h3>Enter Total Weight <span style="margin-left:8px; font-size: 0.85rem; color: #8a6d3b; background:#FFF3CD; border:1px solid #FFECB5; padding:2px 8px; border-radius:12px;">Required when building custom flavor</span></h3>
+                        </div>
+                        
+                        <div class="weight-input-container">
+                            <div class="weight-input-wrapper">
+                                <input type="number" id="weightInput" name="total_weight" min="0.5" max="50" step="0.5" value="1.0" 
+                                       class="weight-input" placeholder="Enter weight in kg">
+                                <span class="weight-unit">kg</span>
+                            </div>
+                            <div class="weight-suggestions">
+                                <span class="weight-suggestion" data-weight="0.5">0.5kg</span>
+                                <span class="weight-suggestion" data-weight="1.0">1kg</span>
+                                <span class="weight-suggestion" data-weight="2.0">2kg</span>
+                                <span class="weight-suggestion" data-weight="3.0">3kg</span>
+                                <span class="weight-suggestion" data-weight="5.0">5kg</span>
+                            </div>
+                        </div>
+                        <div class="alert" style="background: #FFF9F5; border-left: 4px solid #FF6B9D; padding: 1rem; margin-top: 1rem; border-radius: 5px;">
+                            <i class="fas fa-info-circle" style="color: #FF6B9D;"></i>
+                            <small style="color: #666; margin-left: 0.5rem;">
+                                <strong>Note:</strong> When selecting a product, weight is determined by the size you choose.
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Choose Base Option -->
+                    <div class="builder-card">
+                        <div class="step-header">
+                            <div class="step-number">4</div>
+                            <h3>Choose Flavor Option <span style="margin-left:8px; font-size: 0.85rem; color: #B00020; background:#FDECEA; border:1px solid #F8BBD0; padding:2px 8px; border-radius:12px;">Required</span></h3>
+                        </div>
+                        
+                        <div class="flavor-option-container">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="option-type-card" id="productOptionCard" style="border: 3px solid #E8D5C4; border-radius: 15px; padding: 1.5rem; cursor: pointer; transition: all 0.3s;">
+                                        <input type="radio" name="flavor_option" value="product" id="productOption" style="display: none;">
+                                        <div class="text-center">
+                                            <i class="fas fa-birthday-cake" style="font-size: 3rem; color: #FF6B9D; margin-bottom: 1rem;"></i>
+                                            <h5>Select from Our Products</h5>
+                                            <p class="text-muted">Choose an existing cake flavor with fixed pricing</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="option-type-card" id="customOptionCard" style="border: 3px solid #E8D5C4; border-radius: 15px; padding: 1.5rem; cursor: pointer; transition: all 0.3s;">
+                                        <input type="radio" name="flavor_option" value="custom" id="customOption" style="display: none;">
+                                        <div class="text-center">
+                                            <i class="fas fa-palette" style="font-size: 3rem; color: #FF6B9D; margin-bottom: 1rem;"></i>
+                                            <h5>Build Custom Flavor</h5>
+                                            <p class="text-muted">Choose or type your own unique flavor</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Product Selection (hidden by default) -->
+                            <div id="productSelectionSection" style="display: none;">
+                                <div style="background: #FFF9F5; border-radius: 15px; padding: 1.5rem; margin-bottom: 1rem;">
+                                    <h6 style="color: #FF6B9D; margin-bottom: 1rem;"><i class="fas fa-birthday-cake"></i> Choose Your Cake</h6>
+                                    
+                                    <div class="form-group mb-3">
+                                        <label style="font-weight: 600; color: #333; font-size: 1rem; margin-bottom: 0.5rem; display: block;"><strong>Select Product</strong> <span class="text-danger">*</span></label>
+                                        <select class="form-control" name="product_id" id="productSelect" 
+                                                style="border: 2px solid #E8D5C4; border-radius: 10px; padding: 1rem 1.5rem; font-size: 0.95rem; min-height: 55px; line-height: 1.8; background-color: #FFFFFF; color: #333;">
+                                            <option value="" style="color: #999; font-size: 0.95rem;">-- Select a Product --</option>
+                                            {% for product in products %}
+                                            <option value="{{ product.id }}" style="color: #333; padding: 10px; font-size: 0.95rem;">{{ product.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="form-text text-muted" style="color: #666; margin-top: 0.5rem; display: block;">Choose from our cake flavors</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label style="font-weight: 600; color: #333; font-size: 1rem; margin-bottom: 0.5rem; display: block;"><strong>Select Size</strong> <span class="text-danger">*</span></label>
+                                        <select class="form-control" name="size_id" id="sizeSelect" disabled 
+                                                style="border: 2px solid #E8D5C4; border-radius: 10px; padding: 1rem 1.5rem; font-size: 0.95rem; min-height: 55px; line-height: 1.8; background-color: #FFFFFF; color: #333;">
+                                            <option value="" style="color: #999; font-size: 0.95rem;">-- First select a product --</option>
+                                        </select>
+                                        <small class="form-text text-muted" style="color: #666; margin-top: 0.5rem; display: block;">Choose the weight/size</small>
+                                    </div>
+                                    
+                                    <div id="selectedPrice" class="mt-3" style="display: none; background: white; padding: 1rem; border-radius: 10px; border: 2px solid #25D366;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span><i class="fas fa-check-circle" style="color: #25D366;"></i> <strong>Base Price:</strong></span>
+                                            <span class="text-success" id="priceDisplay" style="font-size: 1.5rem; font-weight: 700;"></span>
+                                        </div>
+                                        <small class="text-muted mt-2 d-block">This price will be multiplied by tier multiplier and decorations will be added</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Custom Flavor Selection (hidden by default) -->
+                            <div id="customFlavorSection" style="display: none;">
+                                <div class="form-group">
+                                    <label style="font-weight: 600; color: #333; font-size: 1.1rem; margin-bottom: 0.75rem; display: block;">
+                                        <i class="fas fa-ice-cream" style="color: #FF6B9D; margin-right: 0.5rem;"></i>
+                                        Select Flavor from List
+                                    </label>
+                                    <select class="form-control" name="flavor_id" id="flavorSelect" 
+                                            style="border: 2px solid #E8D5C4; border-radius: 10px; padding: 1rem 1.5rem; font-size: 0.95rem; min-height: 55px; line-height: 1.8; background-color: #FFFFFF; color: #333;">
+                                        <option value="" style="color: #999; font-size: 0.95rem;">-- Select from Available Flavors --</option>
+                                        {% for flavor in flavors %}
+                                        <option value="{{ flavor.id }}" data-price="{{ flavor.price_per_kg }}" style="color: #333; padding: 10px; font-size: 0.95rem;">
+                                            {{ flavor.name }} (+₹{{ flavor.price_per_kg }}/kg)
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text" style="color: #666; margin-top: 0.5rem; display: block;">
+                                        <i class="fas fa-info-circle"></i> Choose from our standard flavors
+                                    </small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Or Enter Custom Flavor</label>
+                                    <input type="text" class="form-control" name="flavor_description" id="customFlavorInput"
+                                           placeholder="e.g., Mixed Berry, Pineapple, Coffee Caramel, etc.">
+                                    <small class="form-text">Leave blank if you selected a flavor above</small>
+                                </div>
+                                
+                                <div class="alert" style="background: #FFF9F5; border-left: 4px solid #FF6B9D; padding: 1rem; margin-top: 1rem; border-radius: 5px;">
+                                    <i class="fas fa-info-circle" style="color: #FF6B9D;"></i>
+                                    <small style="color: #666; margin-left: 0.5rem;">
+                                        <strong>Note:</strong> Select a standard flavor for accurate pricing, or enter a custom flavor for us to quote.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 5: Upload Reference Images -->
+                    <div class="builder-card">
+                        <div class="step-header">
+                            <div class="step-number">5</div>
+                            <h3>Upload Reference Images (Optional)</h3>
+                        </div>
+                        
+                        <div class="image-upload-container">
+                            <div class="upload-area" id="uploadArea">
+                                <div class="upload-content">
+                                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                    <h4>Drop images here or click to browse</h4>
+                                    <p>Upload reference images of your desired cake design</p>
+                                    <p class="upload-info">Supports: JPG, PNG, GIF (Max 5MB each)</p>
+                                </div>
+                                <input type="file" id="imageInput" name="reference_images" multiple 
+                                       accept="image/*" style="display: none;">
+                            </div>
+                            
+                            <div class="image-preview-container" id="imagePreviewContainer">
+                                <!-- Preview images will be added here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 6: Add Decorations -->
+                    <div class="builder-card">
+                        <div class="step-header">
+                            <div class="step-number">6</div>
+                            <h3>Add Decorations (Optional)</h3>
+                        </div>
+                        
+                        {% for category, items in decorations_by_category.items %}
+                        <h5 style="color: #C06C84; margin-top: 1.5rem; margin-bottom: 1rem;">{{ category }}</h5>
+                        <div class="decorations-grid">
+                            {% for decoration in items %}
+                            <div class="decoration-card" data-decoration-price="{{ decoration.price }}" data-decoration-id="{{ decoration.id }}" style="cursor: pointer;">
+                                <input type="checkbox" class="decoration-checkbox" data-decoration-id="{{ decoration.id }}" style="display: none;">
+                                <input type="hidden" name="decoration_ids" value="{{ decoration.id }}" disabled>
+                                <div class="check-icon" style="position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; font-size: 0.7rem;"><i class="fas fa-check"></i></div>
+                                {% if decoration.image %}
+                                <img src="{{ decoration.image.url }}" alt="{{ decoration.name }}" style="width: 60px; height: 60px; margin: 0 auto; pointer-events: none;">
+                                {% else %}
+                                <div style="font-size: 2rem; pointer-events: none;">✨</div>
+                                {% endif %}
+                                <h5 style="font-size: 0.9rem; margin: 0.5rem 0; pointer-events: none;">{{ decoration.name }}</h5>
+                                <div class="option-price" style="font-size: 1rem; pointer-events: none;">₹{{ decoration.price }}</div>
+                                <div class="quantity-input-wrapper" style="margin-top: 0.5rem; display: none;">
+                                    <label style="font-size: 0.75rem; color: #666; display: block;">Quantity:</label>
+                                    <input type="number" name="decoration_quantities" class="form-control quantity-input" 
+                                           style="text-align: center; padding: 0.3rem; font-size: 0.85rem;" 
+                                           min="1" value="1" disabled onclick="event.stopPropagation();">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Customer Details moved to Cart Page -->
+                    
+                    <!-- Submit Button -->
+                    <div class="submit-section">
+                        <button type="submit" class="btn-submit" id="submitBtn" disabled>
+                            <i class="fas fa-shopping-cart"></i> Add Custom Cake to Cart
+                        </button>
+                        <div style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: #666;">
+                            <i class="fas fa-info-circle"></i> Required steps: 1) Shape, 2) Tier, 4) Flavor option. Step 3 (Weight) is required only for Custom Flavor.
+                        </div>
+                        <div class="disclaimer" style="margin-top: 1.5rem;">
+                            <p style="margin: 0; text-align: center; color: #666;">
+                                <i class="fas fa-info-circle"></i> 
+                                <strong>Note:</strong> We will review your custom cake request and provide a detailed quote via WhatsApp. 
+                                Price will be determined based on design complexity and requirements.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Summary Sidebar -->
+                <div class="col-md-4">
+                    <div class="order-summary">
+                        <h3>📋 Order Summary</h3>
+                        
+                        <div class="summary-section">
+                            <h5>🎂 Cake Details</h5>
+                            <div class="summary-item">
+                                <span class="label">Shape:</span>
+                                <span id="selectedShape">Not selected</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Tier:</span>
+                                <span id="selectedTier">Not selected</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Weight:</span>
+                                <span id="selectedWeight">1.0 kg</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Flavor:</span>
+                                <span id="selectedFlavor">Not specified</span>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-section">
+                            <h5>✨ Decorations</h5>
+                            <div class="summary-item">
+                                <span id="selectedDecorations">None selected</span>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-section">
+                            <h5>📸 Reference Images</h5>
+                            <div class="summary-item">
+                                <span id="imageCount">No images uploaded</span>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-note">
+                            <i class="fas fa-info-circle"></i>
+                            <p>We'll provide a detailed quote after reviewing your requirements via WhatsApp.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing custom cake builder...');
+    
+    // Delivery date handled on cart page
+
+    // Variables for tracking selections
+    let selectedShape = null;
+    let selectedTier = null;
+    let weight = 1.0;
+    let selectedDecorations = [];
+    let uploadedImages = [];
+
+    // Weight input handling
+    const weightInput = document.getElementById('weightInput');
+    const weightSuggestions = document.querySelectorAll('.weight-suggestion');
+
+    weightInput.addEventListener('input', function() {
+        weight = parseFloat(this.value) || 1.0;
+        updateSummary();
+    });
+
+    // Weight suggestion clicks
+    weightSuggestions.forEach(suggestion => {
+        suggestion.addEventListener('click', function() {
+            const suggestedWeight = this.dataset.weight;
+            weightInput.value = suggestedWeight;
+            weight = parseFloat(suggestedWeight);
+            updateSummary();
+        });
+    });
+
+    // Shape selection - click on card
+    document.querySelectorAll('[data-shape-price]').forEach(card => {
+        card.addEventListener('click', function() {
+            console.log('Shape card clicked:', this);
+            const radio = this.querySelector('input[name="shape_id"]');
+            radio.checked = true;
+            
+            document.querySelectorAll('[data-shape-price]').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedShape = this.querySelector('h4').textContent;
+            
+            console.log('Shape selected:', selectedShape);
+            console.log('Card classes:', this.className);
+            console.log('Check icon:', this.querySelector('.check-icon'));
+            
+            updateSummary();
+        });
+    });
+
+    // Tier selection - click on card
+    document.querySelectorAll('[data-tier-multiplier]').forEach(card => {
+        card.addEventListener('click', function() {
+            console.log('Tier card clicked:', this);
+            const radio = this.querySelector('input[name="tier_id"]');
+            radio.checked = true;
+            
+            document.querySelectorAll('[data-tier-multiplier]').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedTier = this.querySelector('h4').textContent;
+            
+            console.log('Tier selected:', selectedTier);
+            console.log('Card classes:', this.className);
+            console.log('Check icon:', this.querySelector('.check-icon'));
+            
+            updateSummary();
+        });
+    });
+
+    // Flavor option selection (Product vs Custom)
+    const productOptionCard = document.getElementById('productOptionCard');
+    const customOptionCard = document.getElementById('customOptionCard');
+    const productOption = document.getElementById('productOption');
+    const customOption = document.getElementById('customOption');
+    const productSelectionSection = document.getElementById('productSelectionSection');
+    const customFlavorSection = document.getElementById('customFlavorSection');
+    const weightInputCard = document.getElementById('weightInputCard');
+    
+    // Handle product option selection
+    productOptionCard.addEventListener('click', function() {
+        productOption.checked = true;
+        customOption.checked = false;
+        productOptionCard.style.borderColor = '#FF6B9D';
+        productOptionCard.style.background = 'rgba(255, 107, 157, 0.1)';
+        customOptionCard.style.borderColor = '#E8D5C4';
+        customOptionCard.style.background = 'white';
+        productSelectionSection.style.display = 'block';
+        customFlavorSection.style.display = 'none';
+        
+        // Hide weight input - size will determine weight
+        weightInputCard.style.opacity = '0.5';
+        weightInputCard.style.pointerEvents = 'none';
+        weightInput.required = false;
+        
+        updateSummary();
+    });
+    
+    // Handle custom option selection
+    customOptionCard.addEventListener('click', function() {
+        customOption.checked = true;
+        productOption.checked = false;
+        customOptionCard.style.borderColor = '#FF6B9D';
+        customOptionCard.style.background = 'rgba(255, 107, 157, 0.1)';
+        productOptionCard.style.borderColor = '#E8D5C4';
+        productOptionCard.style.background = 'white';
+        customFlavorSection.style.display = 'block';
+        productSelectionSection.style.display = 'none';
+        
+        // Show weight input - needed for custom builds
+        weightInputCard.style.opacity = '1';
+        weightInputCard.style.pointerEvents = 'auto';
+        weightInput.required = true;
+        
+        updateSummary();
+    });
+    
+    // Product selection - fetch sizes
+    const productSelect = document.getElementById('productSelect');
+    const sizeSelect = document.getElementById('sizeSelect');
+    const selectedPrice = document.getElementById('selectedPrice');
+    const priceDisplay = document.getElementById('priceDisplay');
+    
+    productSelect.addEventListener('change', function() {
+        const productId = this.value;
+        if (productId) {
+            console.log('Fetching sizes for product:', productId);
+            // Fetch sizes for this product via AJAX
+            fetch(`/api/product-sizes-prices/?product_id=${productId}`)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Sizes data:', data);
+                    sizeSelect.innerHTML = '<option value="">-- Select Size --</option>';
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = `${item.name} - ₹${item.price}`;
+                        option.dataset.price = item.price;
+                        option.dataset.weight = item.weight_in_kg;
+                        sizeSelect.appendChild(option);
+                    });
+                    sizeSelect.disabled = false;
+                    selectedPrice.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error fetching sizes:', error);
+                    alert('Error loading sizes: ' + error.message + '. Please try again.');
+                });
+        } else {
+            sizeSelect.innerHTML = '<option value="">-- First select a product --</option>';
+            sizeSelect.disabled = true;
+            selectedPrice.style.display = 'none';
+        }
+        updateSummary();
+    });
+    
+    // Size selection - show price and set weight
+    sizeSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption && selectedOption.dataset.price) {
+            priceDisplay.textContent = `₹${selectedOption.dataset.price}`;
+            selectedPrice.style.display = 'block';
+            
+            // Auto-set weight from size
+            if (selectedOption.dataset.weight) {
+                weightInput.value = selectedOption.dataset.weight;
+                weight = parseFloat(selectedOption.dataset.weight);
+                console.log('Weight auto-set from size:', weight, 'kg');
+            }
+        } else {
+            selectedPrice.style.display = 'none';
+        }
+        updateSummary();
+    });
+
+    // Flavor input handling
+    const flavorSelect = document.getElementById('flavorSelect');
+    const customFlavorInput = document.getElementById('customFlavorInput');
+
+    // Handle flavor dropdown
+    flavorSelect.addEventListener('change', function() {
+        if (this.value) {
+            // Clear custom flavor input when standard flavor is selected
+            customFlavorInput.value = '';
+            customFlavorInput.disabled = true;
+        } else {
+            customFlavorInput.disabled = false;
+        }
+        updateSummary();
+    });
+
+    // Handle custom flavor input
+    customFlavorInput.addEventListener('input', function() {
+        if (this.value.trim()) {
+            // Clear flavor dropdown when custom flavor is entered
+            flavorSelect.value = '';
+        }
+        updateSummary();
+    });
+
+    // Decoration card click handling
+    document.querySelectorAll('.decoration-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            console.log('Decoration card clicked:', this);
+            // Don't toggle if clicking on quantity input
+            if (e.target.classList.contains('quantity-input')) {
+                return;
+            }
+            
+            const checkbox = this.querySelector('.decoration-checkbox');
+            const quantityWrapper = this.querySelector('.quantity-input-wrapper');
+            const quantityInput = this.querySelector('input[name="decoration_quantities"]');
+            const hiddenInput = this.querySelector('input[name="decoration_ids"]');
+            const decorationName = this.querySelector('h5').textContent;
+            
+            // Toggle checkbox
+            checkbox.checked = !checkbox.checked;
+            
+            console.log('Decoration checkbox checked:', checkbox.checked);
+            console.log('Decoration name:', decorationName);
+            
+            if (checkbox.checked) {
+                this.classList.add('selected');
+                quantityWrapper.style.display = 'block';
+                quantityInput.disabled = false;
+                hiddenInput.disabled = false;
+                
+                const quantity = quantityInput.value || 1;
+                selectedDecorations.push(`${quantity}× ${decorationName}`);
+                
+                console.log('Decoration selected, classes:', this.className);
+                console.log('Check icon:', this.querySelector('.check-icon'));
+            } else {
+                this.classList.remove('selected');
+                quantityWrapper.style.display = 'none';
+                quantityInput.disabled = true;
+                hiddenInput.disabled = true;
+                
+                selectedDecorations = selectedDecorations.filter(item => !item.includes(decorationName));
+                
+                console.log('Decoration deselected, classes:', this.className);
+            }
+            updateSummary();
+        });
+    });
+
+    // Decoration quantity change
+    document.querySelectorAll('input[name="decoration_quantities"]').forEach(quantityInput => {
+        quantityInput.addEventListener('input', function() {
+            const card = this.closest('.decoration-card');
+            const decorationName = card.querySelector('h5').textContent;
+            const checkbox = card.querySelector('.decoration-checkbox');
+            
+            if (checkbox.checked) {
+                // Update the decoration in the array with new quantity
+                selectedDecorations = selectedDecorations.filter(item => !item.includes(decorationName));
+                const quantity = this.value || 1;
+                selectedDecorations.push(`${quantity}× ${decorationName}`);
+                updateSummary();
+            }
+        });
+    });
+
+    // Image upload handling
+    const uploadArea = document.getElementById('uploadArea');
+    const imageInput = document.getElementById('imageInput');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
+    uploadArea.addEventListener('click', () => imageInput.click());
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        handleImageFiles(files);
+    });
+
+    imageInput.addEventListener('change', (e) => {
+        handleImageFiles(e.target.files);
+    });
+
+    function handleImageFiles(files) {
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) { // 5MB limit
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imagePreview = document.createElement('div');
+                    imagePreview.className = 'image-preview';
+                    imagePreview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <button type="button" class="remove-btn" onclick="removeImage(this)">×</button>
+                    `;
+                    imagePreviewContainer.appendChild(imagePreview);
+                    uploadedImages.push(file);
+                    updateSummary();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please select valid image files under 5MB each.');
+            }
+        });
+    }
+
+    window.removeImage = function(button) {
+        const imagePreview = button.closest('.image-preview');
+        const index = Array.from(imagePreviewContainer.children).indexOf(imagePreview);
+        imagePreviewContainer.removeChild(imagePreview);
+        uploadedImages.splice(index, 1);
+        updateSummary();
+    }
+
+    // Update summary display
+    function updateSummary() {
+        // Update shape
+        document.getElementById('selectedShape').textContent = selectedShape || 'Not selected';
+        
+        // Update tier
+        document.getElementById('selectedTier').textContent = selectedTier || 'Not selected';
+        
+        // Update weight
+        document.getElementById('selectedWeight').textContent = `${weight} kg`;
+        
+        // Update flavor
+        const flavorSelect = document.getElementById('flavorSelect');
+        const customFlavorInput = document.getElementById('customFlavorInput');
+        
+        let flavorValue = '';
+        if (flavorSelect && flavorSelect.selectedIndex > 0) {
+            flavorValue = flavorSelect.options[flavorSelect.selectedIndex].text;
+        } else if (customFlavorInput && customFlavorInput.value.trim()) {
+            flavorValue = customFlavorInput.value.trim() + ' (custom)';
+        }
+        
+        document.getElementById('selectedFlavor').textContent = flavorValue || 'Not specified';
+        
+        // Update decorations
+        if (selectedDecorations.length > 0) {
+            document.getElementById('selectedDecorations').textContent = selectedDecorations.join(', ');
+        } else {
+            document.getElementById('selectedDecorations').textContent = 'None selected';
+        }
+        
+        // Update image count
+        const imageCount = uploadedImages.length;
+        if (imageCount > 0) {
+            document.getElementById('imageCount').textContent = `${imageCount} image${imageCount > 1 ? 's' : ''} uploaded`;
+        } else {
+            document.getElementById('imageCount').textContent = 'No images uploaded';
+        }
+        
+        // Enable submit button if required fields are filled (customer fields now on cart page)
+        // Check flavor/product selection based on chosen option
+        let hasFlavorOrProduct = false;
+        
+        if (productOption && productOption.checked) {
+            // Product option: Check if both product and size are selected
+            hasFlavorOrProduct = (productSelect && productSelect.value) && (sizeSelect && sizeSelect.value);
+        } else if (customOption && customOption.checked) {
+            // Custom option: Check if flavor dropdown or custom flavor input has a value
+            hasFlavorOrProduct = (flavorSelect && flavorSelect.value) || (customFlavorInput && customFlavorInput.value.trim());
+        }
+        
+        const requiredFields = [
+            selectedShape,
+            selectedTier,
+        ];
+        
+        const allRequiredFilled = requiredFields.every(field => field && field.trim() !== '') && hasFlavorOrProduct;
+        
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = !allRequiredFilled;
+            console.log('Validation:', {
+                requiredFieldsFilled: requiredFields.every(field => field && field.trim() !== ''),
+                hasFlavorOrProduct: hasFlavorOrProduct,
+                productOption: productOption ? productOption.checked : false,
+                customOption: customOption ? customOption.checked : false,
+                buttonDisabled: submitBtn.disabled
+            });
+        }
+    }
+
+    // Customer details removed - handled on cart page
+
+    // Initialize summary when page loads
+    updateSummary();
+    
+    console.log('Custom cake builder initialized successfully!');
+    
+}); // End of DOMContentLoaded
+</script>
+{% endblock %}
+

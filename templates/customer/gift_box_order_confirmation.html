@@ -1,0 +1,187 @@
+{% extends "customer/base.html" %}
+{% load static %}
+
+{% block title %}Order Confirmation - Cakes by Desti{% endblock %}
+
+{% block content %}
+<!--Page Title-->
+<section class="page-title" style="background-image:url({% static 'images/main-slider/slider_bg_3.png' %})">
+    <div class="auto-container">
+        <h1>Order Confirmation</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">home</a></li>
+            <li><a href="{% url 'gift_boxes' %}">Gift Boxes</a></li>
+            <li>Confirmation</li>
+        </ul>
+    </div>
+</section>
+<!--End Page Title-->
+
+<section class="confirmation-section" style="padding: 60px 0; background: #FFF9F5;">
+    <div class="auto-container">
+        <div class="confirmation-card" style="background: white; padding: 50px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 900px; margin: 0 auto;">
+            
+            <!-- Success Icon -->
+            <div style="text-align: center; margin-bottom: 40px;">
+                <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; animation: successPulse 1.5s ease-in-out;">
+                    <i class="fas fa-check" style="font-size: 50px; color: white;"></i>
+                </div>
+                <h2 style="color: #333; margin-bottom: 10px;">Order Placed Successfully!</h2>
+                <p style="color: #666; font-size: 16px;">Your gift box order has been received and is being processed.</p>
+            </div>
+
+            <!-- Order Details Card -->
+            <div style="background: linear-gradient(135deg, #FFE5EC 0%, #FFF0F5 100%); padding: 30px; border-radius: 15px; margin-bottom: 30px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p style="margin-bottom: 10px;"><strong style="color: #666;">Order Number:</strong></p>
+                        <p style="font-size: 24px; font-weight: 700; color: #FF6B9D; margin-bottom: 20px;">{{ order.order_number }}</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p style="margin-bottom: 10px;"><strong style="color: #666;">Order Date:</strong></p>
+                        <p style="font-size: 18px; color: #333; margin-bottom: 20px;">{{ order.created_at|date:"d M Y, h:i A" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gift Box Details -->
+            <div style="border-bottom: 2px solid #f0f0f0; padding-bottom: 30px; margin-bottom: 30px;">
+                <h4 style="color: #333; margin-bottom: 20px;">
+                    <i class="fas fa-gift" style="color: #FF6B9D; margin-right: 10px;"></i>
+                    Gift Box Details
+                </h4>
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        {% if order.gift_box.main_image %}
+                        <img src="{{ order.gift_box.main_image.url }}" alt="{{ order.gift_box.name }}" style="width: 100%; border-radius: 10px;">
+                        {% else %}
+                        <div style="width: 100%; height: 120px; background: #f0f0f0; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-gift fa-2x" style="color: #ddd;"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h5 style="color: #333; margin-bottom: 10px;">{{ order.gift_box.name }}</h5>
+                        <p style="color: #666; margin-bottom: 10px;">{{ order.gift_box.description|truncatewords:20 }}</p>
+                        
+                        <div style="margin-top: 15px;">
+                            <strong style="color: #666;">Includes {{ order.gift_box.items_count }} items:</strong>
+                            <ul style="margin-top: 10px; padding-left: 20px;">
+                                {% for item in items %}
+                                <li style="color: #666; margin-bottom: 5px;">{{ item.quantity }}× {{ item.product.name }} ({{ item.size.name }})</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer & Delivery Information -->
+            <div class="row" style="margin-bottom: 30px;">
+                <div class="col-md-6">
+                    <h5 style="color: #333; margin-bottom: 15px;">
+                        <i class="fas fa-user" style="color: #FF6B9D; margin-right: 10px;"></i>
+                        Customer Details
+                    </h5>
+                    <p style="color: #666; margin-bottom: 5px;"><strong>Name:</strong> {{ order.customer.name }}</p>
+                    <p style="color: #666; margin-bottom: 5px;"><strong>Phone:</strong> {{ order.customer.phone_number }}</p>
+                    {% if order.customer.email %}
+                    <p style="color: #666; margin-bottom: 5px;"><strong>Email:</strong> {{ order.customer.email }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <h5 style="color: #333; margin-bottom: 15px;">
+                        <i class="fas fa-truck" style="color: #FF6B9D; margin-right: 10px;"></i>
+                        Delivery Details
+                    </h5>
+                    <p style="color: #666; margin-bottom: 5px;"><strong>Date:</strong> {{ order.delivery_date|date:"d M Y" }}</p>
+                    {% if order.delivery_time %}
+                    <p style="color: #666; margin-bottom: 5px;"><strong>Time:</strong> {{ order.delivery_time }}</p>
+                    {% endif %}
+                    {% if order.event %}
+                    <p style="color: #666; margin-bottom: 5px;"><strong>Event:</strong> {{ order.event.event_name }}</p>
+                    {% endif %}
+                    {% if order.special_instructions %}
+                    <p style="color: #666; margin-bottom: 5px;"><strong>Instructions:</strong> {{ order.special_instructions }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div style="background: #FFF9F5; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
+                <h5 style="color: #333; margin-bottom: 20px;">
+                    <i class="fas fa-file-invoice" style="color: #FF6B9D; margin-right: 10px;"></i>
+                    Order Summary
+                </h5>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span style="color: #666;">Gift Box ({{ order.quantity }}× ₹{{ order.unit_price }})</span>
+                    <span style="color: #333; font-weight: 600;">₹{{ order.total_price }}</span>
+                </div>
+                <hr style="margin: 15px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #333; font-size: 20px; font-weight: 600;">Total Amount:</span>
+                    <span style="color: #FF6B9D; font-size: 32px; font-weight: 700;">₹{{ order.total_price }}</span>
+                </div>
+            </div>
+
+            <!-- Status Badge -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <span style="display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%); color: white; border-radius: 25px; font-weight: 600; font-size: 16px;">
+                    <i class="fas fa-clock" style="margin-right: 8px;"></i>
+                    Status: {{ order.get_status_display }}
+                </span>
+            </div>
+
+            <!-- Contact Info -->
+            <div style="background: #E8F5E9; padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; margin-bottom: 30px;">
+                <p style="color: #2E7D32; margin: 0;">
+                    <i class="fas fa-info-circle" style="margin-right: 10px;"></i>
+                    <strong>We'll contact you soon on WhatsApp to confirm your order!</strong>
+                    {% if order.customer.whatsapp_number %}
+                    <br><small>WhatsApp: {{ order.customer.whatsapp_number }}</small>
+                    {% else %}
+                    <br><small>WhatsApp: {{ order.customer.phone_number }}</small>
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row" style="margin-top: 30px;">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <a href="{% url 'gift_boxes' %}" class="btn btn-outline-primary" style="width: 100%; padding: 15px; border-radius: 25px; border: 2px solid #FF6B9D; color: #FF6B9D; font-weight: 600; text-align: center; display: block; transition: all 0.3s;">
+                        <i class="fas fa-arrow-left" style="margin-right: 10px;"></i>
+                        Browse More Gift Boxes
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'home' %}" class="btn btn-primary" style="width: 100%; padding: 15px; border-radius: 25px; background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%); color: white; font-weight: 600; text-align: center; display: block; border: none; transition: all 0.3s;">
+                        <i class="fas fa-home" style="margin-right: 10px;"></i>
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes successPulse {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.btn-outline-primary:hover {
+    background: #FF6B9D;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 157, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 107, 157, 0.3);
+}
+</style>
+{% endblock %}
+

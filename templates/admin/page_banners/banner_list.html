@@ -1,0 +1,103 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Page Title Banners - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-inner">
+        <div class="page-header">
+            <h3 class="fw-bold mb-3">🖼️ Page Title Banners</h3>
+            <p class="text-muted">Manage the hero/banner images used across pages. Set titles, subtitles and visibility dates.</p>
+        </div>
+
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i>
+            Use page banners to set the hero image and text that appears on specific pages. You can target pages using the <code>page_key</code> field.
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'admin_page_banner_add' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus"></i> Add New Banner
+                    </a>
+                    <div class="btn-group">
+                        <a href="/" target="_blank" class="btn btn-success">
+                            <i class="fas fa-eye"></i> Preview Homepage
+                        </a>
+                        <a href="?active=true" class="btn btn-info">
+                            <i class="fas fa-check-circle"></i> Active Only
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            {% for banner in banners %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% if banner.image %}
+                                <img src="{{ banner.image.url }}" class="img-fluid rounded" style="max-height:150px; object-fit:cover;">
+                                {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height:150px;">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="mb-0">{{ banner.name }}</h5>
+                                    <span class="badge badge-primary" style="font-size:14px;">Order: {{ banner.display_order }}</span>
+                                </div>
+                                {% if banner.subtitle_text %}
+                                <p class="text-primary mb-2"><em>{{ banner.subtitle_text }}</em></p>
+                                {% endif %}
+                                <p class="text-muted mb-2">{{ banner.title_text|truncatechars:60 }}</p>
+                                <p class="mb-2"><strong>Page key:</strong> {{ banner.page_key }}</p>
+                                <p class="mb-2"><i class="fas fa-calendar"></i> {{ banner.start_date|date:'d M Y' }} - {{ banner.end_date|date:'d M Y' }}</p>
+                                <div class="mb-2">
+                                    {% if banner.is_valid %}
+                                    <span class="badge badge-success"><i class="fas fa-check"></i> Active & Valid</span>
+                                    {% elif banner.is_active %}
+                                    <span class="badge badge-warning"><i class="fas fa-clock"></i> Active (Out of date range)</span>
+                                    {% else %}
+                                    <span class="badge badge-danger"><i class="fas fa-times"></i> Inactive</span>
+                                    {% endif %}
+                                </div>
+                                <div class="btn-group">
+                                    <a href="{% url 'admin_page_banner_edit' banner.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="{% url 'admin_page_banner_delete' banner.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this banner?')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-images fa-4x text-muted mb-3"></i>
+                        <h4>No page banners yet</h4>
+                        <p class="text-muted mb-3">Create hero banners that appear at the top of pages (title, subtitle and background image).</p>
+                        <a href="{% url 'admin_page_banner_add' %}" class="btn btn-primary btn-lg mt-3">
+                            <i class="fas fa-plus"></i> Add Your First Banner
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

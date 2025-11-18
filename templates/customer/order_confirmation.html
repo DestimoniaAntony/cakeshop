@@ -1,0 +1,280 @@
+{% extends "customer/base.html" %}
+{% load static %}
+
+{% block title %}Order Confirmed - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<!--Page Title-->
+<section class="page-title" style="background-image:url({% static 'images/main-slider/slider_bg_1.png' %})">
+    <div class="auto-container">
+        <h1>Order Confirmed</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">home</a></li>
+            <li>Order Confirmation</li>
+        </ul>
+    </div>
+</section>
+<!--End Page Title-->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirmation-section {
+        padding: 4rem 0;
+        min-height: 70vh;
+    }
+    
+    .confirmation-card {
+        max-width: 700px;
+        margin: 0 auto;
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .success-icon {
+        font-size: 5rem;
+        color: #28A745;
+        animation: scaleIn 0.5s ease;
+    }
+    
+    @keyframes scaleIn {
+        from { transform: scale(0); }
+        to { transform: scale(1); }
+    }
+    
+    .confirmation-card h2 {
+        color: #C06C84;
+        font-size: 2rem;
+        margin: 1rem 0;
+    }
+    
+    .order-number {
+        font-size: 1.5rem;
+        color: #FF6B9D;
+        font-weight: 700;
+        margin: 1rem 0;
+    }
+    
+    .order-summary {
+        background: #FFF9F5;
+        padding: 2rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+        text-align: left;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid #E8D5C4;
+    }
+    
+    .summary-row:last-child {
+        border-bottom: none;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #FF6B9D;
+        padding-top: 1rem;
+        margin-top: 1rem;
+        border-top: 2px solid #E8D5C4;
+    }
+    
+    .next-steps {
+        background: linear-gradient(135deg, #FFE5EC 0%, #FFC4DD 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+        text-align: left;
+    }
+    
+    .next-steps h3 {
+        color: #C06C84;
+        margin-bottom: 1rem;
+    }
+    
+    .next-steps ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .next-steps li {
+        padding: 0.5rem 0;
+        color: #666;
+    }
+    
+    .next-steps li:before {
+        content: "✓ ";
+        color: #28A745;
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+    
+    .whatsapp-button {
+        background: linear-gradient(135deg, #25D366, #128C7E);
+        color: white;
+        padding: 1.2rem 2rem;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin: 1.5rem 0;
+        transition: all 0.3s;
+        font-size: 1.1rem;
+    }
+    
+    .whatsapp-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+        color: white;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .btn {
+        flex: 1;
+        padding: 1rem;
+        border-radius: 30px;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: white;
+        color: #FF6B9D;
+        border: 2px solid #FF6B9D;
+    }
+    
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .whatsapp-btn {
+        background: #25D366;
+        color: white;
+        width: 100%;
+        padding: 1rem;
+        border-radius: 30px;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 1rem;
+        transition: all 0.3s;
+    }
+    
+    .whatsapp-btn:hover {
+        background: #1EBD54;
+        transform: translateY(-3px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-section">
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="success-icon">✓</div>
+            <h2>Order Placed Successfully!</h2>
+            <p>Thank you for choosing Cakes by Desti</p>
+            
+            <div class="order-number">
+                Order #{{ order.order_number }}
+            </div>
+            
+            <div class="order-summary">
+                <h3 style="color: #C06C84; margin-bottom: 1rem;">Order Summary</h3>
+                <div class="summary-row">
+                    <span>Product:</span>
+                    <strong>{{ order.product.name }}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Size:</span>
+                    <strong>{{ order.size.name }}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Quantity:</span>
+                    <strong>{{ order.quantity }}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery Date:</span>
+                    <strong>{{ order.delivery_date|date:"d M Y" }}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Total Amount:</span>
+                    <strong>₹{{ order.total_price }}</strong>
+                </div>
+            </div>
+            
+            <div class="next-steps">
+                <h3>What Happens Next?</h3>
+                <ul>
+                    <li>Download your order PDF below</li>
+                    <li>Send order details to us via WhatsApp</li>
+                    <li>We'll confirm your order within 24 hours</li>
+                    <li>Payment details will be shared after confirmation</li>
+                    <li>Your cake will be prepared fresh on the delivery date</li>
+                </ul>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; justify-content: center;">
+                <a href="{% url 'generate_order_pdf' order.order_number %}" target="_blank" class="whatsapp-button" style="background: linear-gradient(135deg, #6C63FF, #4834DF);">
+                    <i class="fas fa-file-pdf"></i> Download Order PDF
+                </a>
+                <a href="#" onclick="sendOrderToWhatsApp(); return false;" class="whatsapp-button" id="whatsappBtn">
+                    <i class="fab fa-whatsapp"></i> Send to WhatsApp
+                </a>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{% url 'home' %}" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+                <a href="{% url 'track_order' %}" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Track Order
+                </a>
+            </div>
+            
+            <p style="margin-top: 2rem; color: #666; font-size: 0.9rem;">
+                Order confirmation sent to {{ order.customer.phone_number }}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-open WhatsApp on page load
+window.addEventListener('load', function() {
+    setTimeout(sendOrderToWhatsApp, 1000);
+});
+
+function sendOrderToWhatsApp() {
+    const message = `{{ whatsapp_message|escapejs }}`;
+    const businessWhatsApp = '919946588352'; // Cakes by Desti
+    const pdfURL = window.location.origin + "{% url 'generate_order_pdf' order.order_number %}";
+    
+    const enhancedMessage = message + `\n\n📄 *Order PDF:*\n${pdfURL}`;
+    
+    const whatsappURL = `https://wa.me/${businessWhatsApp}?text=${encodeURIComponent(enhancedMessage)}`;
+    window.open(whatsappURL, '_blank');
+    
+    // Update button text
+    document.getElementById('whatsappBtn').innerHTML = '<i class="fab fa-whatsapp"></i> Resend to WhatsApp';
+}
+</script>
+{% endblock %}
+

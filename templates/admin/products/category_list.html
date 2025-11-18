@@ -1,0 +1,90 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Categories - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Categories</h3>
+      <ul class="breadcrumbs mb-3">
+        <li class="nav-home"><a href="{% url 'admin_dashboard' %}"><i class="icon-home"></i></a></li>
+        <li class="separator"><i class="icon-arrow-right"></i></li>
+        <li class="nav-item">Categories</li>
+      </ul>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <a href="{% url 'admin_category_add' %}" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add Category
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Products</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for category in categories %}
+                  <tr>
+                    <td>
+                      {% if category.image %}
+                      <img src="{{ category.image.url }}" width="50" height="50" style="object-fit: cover; border-radius: 5px;">
+                      {% else %}
+                      <div style="width: 50px; height: 50px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; border-radius: 5px;">
+                        <i class="fas fa-image text-muted"></i>
+                      </div>
+                      {% endif %}
+                    </td>
+                    <td><strong>{{ category.name }}</strong></td>
+                    <td><span class="badge badge-info">{{ category.product_count }} products</span></td>
+                    <td>
+                      {% if category.is_active %}
+                      <span class="badge badge-success">Active</span>
+                      {% else %}
+                      <span class="badge badge-danger">Inactive</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ category.created_at|date:"d M Y" }}</td>
+                    <td>
+                      <div class="btn-group">
+                        <a href="{% url 'admin_category_edit' category.id %}" class="btn btn-sm btn-primary">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin_category_delete' category.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this category?')">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center py-4">No categories found</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

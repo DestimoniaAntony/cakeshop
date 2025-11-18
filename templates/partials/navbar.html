@@ -1,0 +1,215 @@
+{% load static %}
+
+<!-- Main Header -->
+<header class="main-header">
+    <!-- Menu Wave -->
+    <div class="menu_wave"></div>
+
+    <!-- Main box -->
+    <div class="main-box">
+        <div class="menu-box">
+            <div class="logo">
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'images/logo.png' %}" alt="Cakes by Desti" title="Cakes by Desti">
+                </a>
+            </div>
+
+            <!--Nav Box-->
+            <div class="nav-outer clearfix">
+                <!-- Main Menu -->
+                <nav class="main-menu navbar-expand-md navbar-light">
+                    <div class="collapse navbar-collapse clearfix" id="navbarSupportedContent">
+                        <!-- LEFT MENU -->
+                        <ul class="navigation menu-left clearfix">
+                            <li class="{% if request.resolver_match.url_name == 'home' %}current{% endif %}">
+                                <a href="{% url 'home' %}">Home</a>
+                            </li>
+
+                            <!-- Products Dropdown with Categories -->
+                            <li class="dropdown {% if 'products' in request.resolver_match.url_name %}current{% endif %}">
+                                <a href="{% url 'products' %}">Products</a>
+                                <ul>
+                                    {% for category in categories %}
+                                        {% if category.is_active %}
+                                        <li {% if category.subcategories.all %}class="dropdown"{% endif %}>
+                                            <a href="{% url 'products' %}?category={{ category.id }}">
+                                                {{ category.name }}
+                                                {% if category.subcategories.all %}
+                                                <!-- <i class="fas fa-chevron-right" style="float: right; margin-top: 4px; font-size: 12px;"></i> -->
+                                                {% endif %}
+                                            </a>
+                                            {% if category.subcategories.all %}
+                                            <ul>
+                                                {% for subcategory in category.subcategories.all %}
+                                                    {% if subcategory.is_active %}
+                                                    <li>
+                                                        <a href="{% url 'products' %}?category={{ category.id }}&subcategory={{ subcategory.id }}">
+                                                            {{ subcategory.name }}
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                            {% endif %}
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <li class="view-all">
+                                        <a href="{% url 'products' %}" style="color: #ff6b9d; font-weight: 600;">
+                                            <i class="fas fa-th-large"></i> View All Products
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="{% if request.resolver_match.url_name == 'custom_cakes' %}current{% endif %}">
+                                    <a href="{% url 'custom_cakes' %}">Custom Cakes</a>
+                            </li>
+
+                            <!-- Gift Boxes -->
+                            <li class="{% if 'gift_box' in request.resolver_match.url_name %}current{% endif %}">
+                                <a href="{% url 'gift_boxes' %}">Gift Boxes</a>
+                            </li>
+
+                            <!-- GALLERY -->
+                            
+
+                            <!-- PAGES DROPDOWN -->
+
+                            {% if request.session.customer_phone %}
+                                <li class="{% if 'loyalty' in request.resolver_match.url_name or 'referral' in request.resolver_match.url_name or 'rewards' in request.resolver_match.url_name %}current{% endif %}"> <a href="{% url 'loyalty_dashboard' %}">🎁 Rewards</a> </li>
+                            {% endif %}
+                        </ul>
+
+                        <!-- RIGHT MENU -->
+                        <ul class="navigation menu-right clearfix">
+                                                        <li class="dropdown">
+                                <a href="#">Pages</a>
+                                <ul>
+                                    <li class="{% if request.resolver_match.url_name == 'about' %}current{% endif %}">
+                                        <a href="{% url 'about' %}">About Us</a>
+                                    </li>
+                                    <li class="{% if request.resolver_match.url_name == 'gallery' %}current{% endif %}">
+                                        <a href="{% url 'gallery' %}">Gallery</a>
+                                    </li>
+                                    <li class="{% if request.resolver_match.url_name == 'contact' %}current{% endif %}">
+                                        <a href="{% url 'contact' %}">Contact Us</a>
+                                    </li>
+                                    <li class="{% if request.resolver_match.url_name == 'track_order' %}current{% endif %}">
+                                        <a href="{% url 'track_order' %}">Track Order</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            {% if request.session.customer_phone %}
+                                <li><a href="#">Hi, {{ current_customer_name|default:request.session.customer_phone }}</a></li>
+                                <li><a href="{% url 'customer_logout' %}">Logout</a></li>
+                            {% else %}
+                                    <li class="{% if request.resolver_match.url_name == 'customer_login' %}current{% endif %}">
+                                        <a href="{% url 'customer_login' %}">Login</a>
+                                    </li>
+                                    {% if request.user.is_staff %}
+                                        <li><a href="{% url 'admin_dashboard' %}">Admin</a></li>
+                                    {% else %}
+                                        <li><a href="{% url 'admin_login' %}">Admin Login</a></li>
+                                    {% endif %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                </nav>
+
+                <!-- Outer Box -->
+                <div class="outer-box clearfix">
+                    <!-- Shopping Cart -->
+                    <div class="cart-btn">
+                        <!-- <a href="{% url 'view_cart' %}">
+                            <i class="icon flaticon-commerce"></i>
+                            {% if cart_count > 0 %}
+                                <span class="count">{{ cart_count }}</span>
+                            {% endif %}
+                        </a> -->
+
+                        <div class="shopping-cart">
+                            <ul class="shopping-cart-items">
+                                {% for item in cart_items %}
+                                    <li class="cart-item">
+                                        <img src="{{ item.product.image1.url|default:'https://via.placeholder.com/80x80/FFE5EC/C06C84?text=Cake' }}" alt="{{ item.product.name }}" class="thumb" />
+                                        <span class="item-name">{{ item.product.name }}</span>
+                                        <span class="item-quantity">{{ item.quantity }} x <span class="item-amount">₹{{ item.size_price.price }}</span></span>
+                                        <a href="{% url 'product_detail' item.product.id %}" class="product-detail"></a>
+                                        <button class="remove-item" data-item-id="{{ item.id }}"><span class="fa fa-times"></span></button>
+                                    </li>
+                                {% empty %}
+                                    <li class="cart-item" style="padding: 20px; text-align: center; color: #999;">Your cart is empty</li>
+                                {% endfor %}
+                            </ul>
+
+                            {% if cart_items %}
+                            <div class="cart-footer">
+                                <div class="shopping-cart-total"><strong>Subtotal:</strong> ₹{{ cart_total }}</div>
+                                <a href="{% url 'view_cart' %}" class="theme-btn">View Cart</a>
+                                <a href="{% url 'place_order' %}" class="theme-btn">Checkout</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Search Btn -->
+                    <div class="search-box">
+                        <button class="search-btn"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Header -->
+    <div class="sticky-header">
+        <div class="auto-container clearfix">
+            <div class="logo">
+                <a href="{% url 'home' %}"><img src="{% static 'images/logo-small.png' %}" alt="Sticky Logo"></a>
+            </div>
+            <div class="nav-outer">
+                <nav class="main-menu"><!-- Populated via JS --></nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="logo"><a href="{% url 'home' %}"><img src="{% static 'images/logo-small.png' %}" alt="Cakes by Desti"></a></div>
+        <div class="nav-outer clearfix">
+            <div class="cart-btn">
+                <a href="{% url 'view_cart' %}">
+                    <i class="icon flaticon-commerce"></i>
+                    {% if cart_count > 0 %}
+                    <span class="count">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <nav class="menu-box">
+            <div class="nav-logo">
+                <a href="{% url 'home' %}"><img src="{% static 'images/logo-small.png' %}" alt="Cakes by Desti"></a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Search Popup -->
+    <div class="search-popup">
+        <span class="search-back-drop"></span>
+        <div class="search-inner">
+            <div class="auto-container">
+                <form method="post" action="{% url 'search' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="search" name="search" placeholder="Search for products..." required>
+                        <button type="submit"><i class="fa fa-search"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>

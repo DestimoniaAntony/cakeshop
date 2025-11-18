@@ -1,0 +1,107 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Enquiries - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Customer Enquiries</h3>
+    </div>
+
+    <!-- Alert for pending enquiries -->
+    {% if pending_count > 0 %}
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="alert alert-warning">
+          <strong>⚠️ {{ pending_count }} Pending Enquir{{ pending_count|pluralize:"y,ies" }}</strong> - Please respond to customers
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Filters -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <form method="get" class="d-flex gap-2">
+              <select name="status" class="form-select" style="max-width: 200px;">
+                <option value="">All Enquiries</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="responded" {% if status_filter == 'responded' %}selected{% endif %}>Responded</option>
+              </select>
+              <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ search }}" style="max-width: 300px;">
+              <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+              <a href="{% url 'admin_enquiries' %}" class="btn btn-secondary">Clear</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enquiries Table -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for enquiry in enquiries %}
+                  <tr {% if not enquiry.is_responded %}class="table-warning"{% endif %}>
+                    <td>{{ enquiry.created_at|date:"d M Y H:i" }}</td>
+                    <td><strong>{{ enquiry.name }}</strong></td>
+                    <td>{{ enquiry.phone }}</td>
+                    <td>{{ enquiry.email|default:"-" }}</td>
+                    <td>{{ enquiry.message|truncatewords:15 }}</td>
+                    <td>
+                      {% if enquiry.is_responded %}
+                      <span class="badge badge-success">Responded</span>
+                      {% else %}
+                      <span class="badge badge-warning">Pending</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <a href="{% url 'admin_enquiry_detail' enquiry.id %}" class="btn btn-sm btn-primary" title="View">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="https://wa.me/{{ enquiry.phone }}?text=Hi%20{{ enquiry.name }},%20thank%20you%20for%20your%20enquiry!" target="_blank" class="btn btn-sm btn-success" title="WhatsApp">
+                          <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="{% url 'admin_enquiry_delete' enquiry.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="7" class="text-center py-4">No enquiries found</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,84 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }} - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<!--Page Title-->
+<section class="page-title" style="background-image:url({% static 'images/main-slider/slider_bg_2.png' %})">
+    <div class="auto-container">
+        <h1>{{ page_title }}</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">home</a></li>
+            <li>{{ error_code }} Error</li>
+        </ul>
+    </div>
+</section>
+<!--End Page Title-->
+{% endblock %}
+
+{% block content %}
+<!-- Error Section -->
+<section class="error-section" style="padding: 100px 0;">
+    <div class="auto-container">
+        <div class="content-box text-center">
+            <div class="error-title">
+                <div class="mb-4" style="font-size: 120px; color: #ff6b9d; font-weight: 800; line-height: 1;">
+                    4<span style="display: inline-block; animation: bounce 2s infinite;">0</span>4
+                </div>
+                <h2 class="mb-4" style="font-size: 36px; color: #333;">{{ error_message }}</h2>
+            </div>
+            <div class="text" style="color: #666; font-size: 18px; margin-bottom: 30px;">
+                <p>{{ suggestion }}</p>
+                {% if current_path %}
+                <small class="text-muted">Path: {{ current_path }}</small>
+                {% endif %}
+            </div>
+            <div class="btn-box">
+                <a href="{% url 'home' %}" class="theme-btn btn-style-two large bg-pink">
+                    <span></span>Back to Home<span></span>
+                </a>
+                <a href="{% url 'products' %}" class="theme-btn btn-style-two large bg-sky" style="margin-left: 15px;">
+                    <span></span>Browse Products<span></span>
+                </a>
+            </div>
+            
+            <div class="helpful-links mt-5" style="background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.05);">
+                <h4 style="color: #333; margin-bottom: 20px;">You might find these links helpful:</h4>
+                <div class="row justify-content-center">
+                    <div class="col-md-3">
+                        <a href="{% url 'products' %}" class="d-block p-3 text-center" style="color: #666; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fas fa-birthday-cake fa-2x mb-2" style="color: #ff6b9d;"></i><br>
+                            Our Products
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'custom_cakes' %}" class="d-block p-3 text-center" style="color: #666; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fas fa-magic fa-2x mb-2" style="color: #ff6b9d;"></i><br>
+                            Custom Cakes
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'contact' %}" class="d-block p-3 text-center" style="color: #666; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fas fa-envelope fa-2x mb-2" style="color: #ff6b9d;"></i><br>
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+.helpful-links a:hover {
+    transform: translateY(-5px);
+    color: #ff6b9d !important;
+}
+</style>
+<!-- End Error Section -->
+{% endblock %}

@@ -1,0 +1,553 @@
+{% extends "customer/base.html" %}
+{% load static %}
+
+{% block title %}Home - Cakes by Desti | Homemade Cakes{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Remove any top spacing for home page - navbar is absolute positioned */
+    body {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+    
+    .page-wrapper {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+    
+    /* Button Styles */
+    .btn-primary {
+        background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 30px;
+        font-weight: 600;
+        display: inline-block;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255, 107, 157, 0.4);
+    }
+    
+    /* Section Styles */
+    .section {
+        padding: 4rem 0;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .section-header h2 {
+        font-size: 2.5rem;
+        color: #C06C84;
+        margin-bottom: 0.5rem;
+    }
+    
+    .section-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+    
+    /* Category Cards */
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+    
+    .category-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .category-image {
+        height: 200px;
+        background: linear-gradient(135deg, #FFE5EC 0%, #FFC4DD 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .category-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .category-info {
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .category-info h3 {
+        color: #C06C84;
+        margin-bottom: 0.5rem;
+    }
+    
+    .category-info p {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    /* Product Cards */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        position: relative;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    
+    .product-image {
+        height: 250px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    
+    .product-card:hover .product-image img {
+        transform: scale(1.1);
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #FF6B9D;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .product-info {
+        padding: 1.5rem;
+    }
+    
+    .product-info h3 {
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 1.2rem;
+    }
+    
+    .product-info p {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .product-price {
+        font-size: 1.3rem;
+        color: #FF6B9D;
+        font-weight: 700;
+    }
+    
+    .btn-view {
+        background: #F5F5F5;
+        color: #C06C84;
+        padding: 0.5rem 1.2rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-view:hover {
+        background: #C06C84;
+        color: white;
+    }
+    
+    /* Gallery Grid */
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .gallery-item {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        height: 300px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    
+    .gallery-item:hover {
+        transform: scale(1.03);
+    }
+    
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .gallery-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        color: white;
+        padding: 1rem;
+        transform: translateY(100%);
+        transition: transform 0.3s;
+    }
+    
+    .gallery-item:hover .gallery-overlay {
+        transform: translateY(0);
+    }
+    
+    /* Reviews */
+    .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .review-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        position: relative;
+    }
+    
+    .review-stars {
+        color: #FFD700;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .review-text {
+        color: #666;
+        font-style: italic;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    
+    .review-author {
+        font-weight: 600;
+        color: #C06C84;
+    }
+    
+    /* Call to Action */
+    .cta-section {
+        background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+        color: white;
+        padding: 4rem 0;
+        text-align: center;
+        border-radius: 20px;
+        margin: 2rem 0;
+    }
+    
+    .cta-section h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-section p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
+    .btn-light {
+        background: white;
+        color: #FF6B9D;
+        padding: 1rem 2.5rem;
+        border-radius: 30px;
+        font-weight: 600;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+    
+    .btn-light:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255,255,255,0.3);
+    }
+    
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 2rem;
+        }
+        
+        .hero-content p {
+            font-size: 1rem;
+        }
+        
+        .product-grid, .gallery-grid, .reviews-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Dynamic Carousel/Slider -->
+{% include 'partials/carousel.html' %}
+<!-- End Dynamic Carousel -->
+
+<!-- Categories Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Browse by Category</h2>
+            <p>Find the perfect cake for any occasion</p>
+        </div>
+        
+        <div class="category-grid">
+            {% for category in categories %}
+            <a href="{% url 'products' %}?category={{ category.id }}" class="category-card">
+                <div class="category-image">
+                    {% if category.image %}
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                    {% else %}
+                        🎂
+                    {% endif %}
+                </div>
+                <div class="category-info">
+                    <h3>{{ category.name }}</h3>
+                    <p>{{ category.product_count }} product{{ category.product_count|pluralize }}</p>
+                </div>
+            </a>
+            {% empty %}
+            <p>No categories available yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="section" style="background: white;">
+    <div class="container">
+        <div class="section-header">
+            <h2>Featured Products</h2>
+            <p>Our most popular creations</p>
+        </div>
+        
+        <div class="product-grid">
+            {% for product in featured_products %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.main_image %}
+                        <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/280x250/FFE5EC/C06C84?text=🎂" alt="{{ product.name }}">
+                    {% endif %}
+                    <span class="product-badge">New</span>
+                </div>
+                <div class="product-info">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description|truncatewords:15 }}</p>
+                    <div class="product-footer">
+                        {% if product.min_price %}
+                            <span class="product-price">From ₹{{ product.min_price }}</span>
+                        {% else %}
+                            <span class="product-price">Price on request</span>
+                        {% endif %}
+                        <a href="{% url 'product_detail' product.id %}" class="btn-view">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>No products available yet.</p>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{% url 'products' %}" class="btn-primary">View All Products</a>
+        </div>
+    </div>
+</section>
+
+<!-- Our Specialties Section -->
+{% if categories %}
+<section class="section" style="background: #FFF9F5;">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Specialties</h2>
+            <p>Explore our range of delicious treats</p>
+        </div>
+        
+        <div class="category-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+            {% for category in categories %}
+            <div class="category-card" style="text-align: center; padding: 1rem;">
+                <div class="category-image" style="height: 150px; margin-bottom: 1rem;">
+                    {% if category.image %}
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                    {% else %}
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;">🎂</div>
+                    {% endif %}
+                </div>
+                <div class="category-info">
+                    <h3 style="margin-bottom: 0.5rem; color: #C06C84;">{{ category.name }}</h3>
+                    <p style="color: #666; font-size: 0.9rem;">{{ category.product_count }} product{{ category.product_count|pluralize }}</p>
+                    <a href="{% url 'products' %}?category={{ category.id }}" class="btn-view" style="margin-top: 0.5rem; display: inline-block;">Explore</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Gallery Preview -->
+{% if featured_gallery %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Creations</h2>
+            <p>See what we've baked for happy customers</p>
+        </div>
+        
+        <div class="gallery-grid">
+            {% for image in featured_gallery %}
+            <div class="gallery-item">
+                <img src="{{ image.image.url }}" alt="{{ image.caption }}">
+                <div class="gallery-overlay">
+                    <p>{{ image.caption }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{% url 'gallery' %}" class="btn-primary">View Full Gallery</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Reviews -->
+{% if reviews %}
+<section class="section" style="background: white;">
+    <div class="container">
+        <div class="section-header">
+            <h2>What Our Customers Say</h2>
+            <p>Real reviews from real people</p>
+        </div>
+        
+        <div class="reviews-grid">
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            ⭐
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p class="review-text">"{{ review.comment }}"</p>
+                <p class="review-author">- {{ review.customer_name }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Features Section -->
+<section class="section" style="background: linear-gradient(135deg, #FFE5EC 0%, #FFC4DD 100%); padding: 4rem 0;">
+    <div class="container">
+        <div class="section-header" style="color: #333;">
+            <h2 style="color: #C06C84;">Why Choose Us</h2>
+            <p>What makes us special</p>
+        </div>
+        
+        <div class="product-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+            <div class="product-card" style="text-align: center; padding: 2rem; background: white;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🏛️</div>
+                <h3 style="color: #C06C84; margin-bottom: 0.5rem;">Tradition</h3>
+                <p style="color: #666;">Time-honored recipes passed down through generations, crafted with care and love.</p>
+            </div>
+            
+            <div class="product-card" style="text-align: center; padding: 2rem; background: white;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">⭐</div>
+                <h3 style="color: #C06C84; margin-bottom: 0.5rem;">Quality</h3>
+                <p style="color: #666;">Premium ingredients sourced fresh daily, ensuring the finest taste in every bite.</p>
+            </div>
+            
+            <div class="product-card" style="text-align: center; padding: 2rem; background: white;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🎨</div>
+                <h3 style="color: #C06C84; margin-bottom: 0.5rem;">Creativity</h3>
+                <p style="color: #666;">Unique designs and personalized creations to make your celebration unforgettable.</p>
+            </div>
+            
+            <div class="product-card" style="text-align: center; padding: 2rem; background: white;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">❤️</div>
+                <h3 style="color: #C06C84; margin-bottom: 0.5rem;">Passion</h3>
+                <p style="color: #666;">Baking with heart and dedication, turning every cake into a masterpiece.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="section">
+    <div class="container">
+        <div class="cta-section">
+            <h2>Ready to Order Your Dream Cake?</h2>
+            <p>We create custom cakes for all your special occasions</p>
+            <a href="{% url 'custom_cakes' %}" class="btn-light">Customize Your Cake</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Carousel is handled by Bootstrap JS and carousel.html partial -->
+{% endblock %}
+

@@ -1,0 +1,98 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Enquiry Detail - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Enquiry Details</h3>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Customer Enquiry</h4>
+          </div>
+          <div class="card-body">
+            <div class="mb-4">
+              <h5>Customer Information</h5>
+              <table class="table table-borderless">
+                <tr>
+                  <th width="150">Name:</th>
+                  <td>{{ enquiry.name }}</td>
+                </tr>
+                <tr>
+                  <th>Phone:</th>
+                  <td>{{ enquiry.phone }}</td>
+                </tr>
+                <tr>
+                  <th>Email:</th>
+                  <td>{{ enquiry.email|default:"-" }}</td>
+                </tr>
+                <tr>
+                  <th>Date:</th>
+                  <td>{{ enquiry.created_at|date:"d M Y H:i" }}</td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="mb-4">
+              <h5>Message</h5>
+              <div class="alert alert-light" style="white-space: pre-line;">{{ enquiry.message }}</div>
+            </div>
+
+            {% if enquiry.is_responded %}
+            <div class="mb-4">
+              <h5>Your Response</h5>
+              <div class="alert alert-success" style="white-space: pre-line;">{{ enquiry.response }}</div>
+            </div>
+            {% else %}
+            <div class="mb-4">
+              <h5>Add Response</h5>
+              <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <textarea name="response" class="form-control" rows="5" placeholder="Type your response here..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-check"></i> Mark as Responded
+                </button>
+              </form>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Quick Actions</h4>
+          </div>
+          <div class="card-body">
+            <a href="{{ whatsapp_link }}" class="btn btn-success w-100 mb-2" target="_blank">
+              <i class="fab fa-whatsapp"></i> Contact via WhatsApp
+            </a>
+            {% if enquiry.email %}
+            <a href="mailto:{{ enquiry.email }}" class="btn btn-info w-100 mb-2">
+              <i class="fas fa-envelope"></i> Send Email
+            </a>
+            {% endif %}
+            <a href="tel:{{ enquiry.phone }}" class="btn btn-primary w-100 mb-2">
+              <i class="fas fa-phone"></i> Call Customer
+            </a>
+            <a href="{% url 'admin_enquiry_delete' enquiry.id %}" class="btn btn-danger w-100" onclick="return confirm('Delete this enquiry?')">
+              <i class="fas fa-trash"></i> Delete
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

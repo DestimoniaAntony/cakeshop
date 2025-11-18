@@ -1,0 +1,253 @@
+{% extends "customer/base.html" %}
+{% load static %}
+
+{% block title %}Contact Us - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+{% include 'partials/page_title.html' with banner=page_title_banners.contact title_fallback='Contact Us' %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-section {
+        padding: 3rem 0;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2.5rem;
+        color: #C06C84;
+        margin-bottom: 0.5rem;
+    }
+    
+    .contact-form-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .contact-info-card {
+        background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        height: 100%;
+    }
+    
+    .contact-info-item {
+        display: flex;
+        align-items: start;
+        margin-bottom: 2rem;
+    }
+    
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .contact-info-text h4 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 600;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid #E8D5C4;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #FF6B9D;
+        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+    }
+    
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255, 107, 157, 0.4);
+    }
+    
+    .map-container {
+        margin-top: 4rem;
+        border-radius: 20px;
+        overflow: hidden;
+        height: 400px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contact-section">
+    <div class="container">
+        <div class="page-header">
+            <h1>Get In Touch</h1>
+            <p>We'd love to hear from you! Send us your enquiry</p>
+        </div>
+
+        <div class="row">
+            <!-- Contact Form -->
+            <div class="col-lg-7">
+                <div class="contact-form-card">
+                    <h3 style="color: #C06C84; margin-bottom: 1.5rem;">Send Us a Message</h3>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name">Your Name *</label>
+                                    <input type="text" id="name" name="name" class="form-control" required placeholder="Enter your name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone">Phone Number *</label>
+                                    <input type="tel" id="phone" name="phone" class="form-control" required placeholder="+91 XXXXXXXXXX">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email (Optional)</label>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Your Message *</label>
+                            <textarea id="message" name="message" class="form-control" required placeholder="Tell us about your cake requirements..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-5">
+                <div class="contact-info-card">
+                    <h3 style="margin-bottom: 2rem;">Contact Information</h3>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h4>Phone</h4>
+                            <p>+91 9946588352<br>
+                            Call us: Mon-Sat, 9 AM - 8 PM</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h4>WhatsApp</h4>
+                            <p>Chat with us instantly!<br>
+                            <a href="https://wa.me/919946588352" target="_blank" style="color: white; text-decoration: underline;">Click to chat</a></p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h4>Email</h4>
+                            <p>www.cakesbydesti@gmail.com<br>
+                            We'll reply within 24 hours</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h4>Thodupuzha, Kerala</h4>                        
+                            <p>Near Ashirvad Cinemas, Thodupuzha</p>
+                            <p>Divine Mercy Shrine Road, Thodupuzha</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem;">
+                        <h4>Follow Us</h4>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <a href="https://www.facebook.com/profile.php?id=61550020351599" target="_blank" style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://www.instagram.com/cakesbydesti_simi?igsh=bzk4OW1qODc1aDJo" target="_blank" style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://wa.me/919946588352" target="_blank" style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map (Optional) -->
+        <div class="map-container">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.4907655427644!2d77.59423731482219!3d12.937130990884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU2JzEzLjciTiA3N8KwMzUnNDguOSJF!5e0!3m2!1sen!2sin!4v1234567890"
+                width="100%" 
+                height="100%" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy">
+            </iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

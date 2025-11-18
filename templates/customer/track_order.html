@@ -1,0 +1,298 @@
+{% extends "customer/base.html" %}
+{% load static %}
+
+{% block title %}Track Your Order - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<!--Page Title-->
+    {% include 'partials/page_title.html' with banner=page_title_banners.track_order title_fallback='Track Order' %}
+<!--End Page Title-->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .track-section {
+        padding: 4rem 0;
+        min-height: 60vh;
+    }
+    
+    .track-card {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .track-card h2 {
+        color: #C06C84;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .track-card p {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    
+    .track-form {
+        margin-top: 2rem;
+    }
+    
+    .form-group {
+        text-align: left;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 600;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #E8D5C4;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        text-align: center;
+    }
+    
+    .btn-track {
+        width: 100%;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 1rem;
+    }
+    
+    .btn-track:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255, 107, 157, 0.4);
+    }
+    
+    .orders-list {
+        margin-top: 3rem;
+        text-align: left;
+    }
+    
+    .order-item {
+        background: #FFF9F5;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 1rem;
+        border-left: 4px solid #FF6B9D;
+    }
+    
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .order-number {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #C06C84;
+    }
+    
+    .order-status {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .status-pending { background: #FFF3CD; color: #856404; }
+    .status-confirmed { background: #D1ECF1; color: #0C5460; }
+    .status-preparing { background: #CCE5FF; color: #004085; }
+    .status-ready { background: #D4EDDA; color: #155724; }
+    .status-completed { background: #D4EDDA; color: #155724; }
+    .status-cancelled { background: #F8D7DA; color: #721C24; }
+    
+    .order-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .order-detail-item strong {
+        color: #666;
+        display: block;
+        font-size: 0.9rem;
+    }
+    
+    .order-detail-item span {
+        color: #333;
+        font-size: 1.1rem;
+    }
+    
+    .order-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .btn-view-order {
+        flex: 1;
+        padding: 0.7rem;
+        background: #FF6B9D;
+        color: white;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-view-order:hover {
+        background: #C06C84;
+    }
+    
+    .no-orders {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+    }
+    
+    .track-icon {
+        font-size: 4rem;
+        color: #FFB6C1;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="track-section">
+    <div class="container">
+        <div class="track-card">
+            <div class="track-icon">📦</div>
+            <h2>Track Your Order</h2>
+            <p>Enter your phone number to view all your orders</p>
+            
+            <form method="post" class="track-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="phone_number">Phone Number</label>
+                    <input type="tel" id="phone_number" name="phone_number" class="form-control" 
+                           placeholder="+91 XXXXXXXXXX" required 
+                           value="{{ phone_number }}">
+                </div>
+                <button type="submit" class="btn-track">
+                    <i class="fas fa-search"></i> Track Orders
+                </button>
+            </form>
+
+{% if has_searched %}
+    {% if all_orders %}
+    <div class="orders-list">
+        <h3 style="text-align: center; margin-bottom: 2rem; color: #C06C84;">
+            Found {{ all_orders|length }} order{{ all_orders|pluralize }} for {{ customer.name }}
+        </h3>
+
+        {% for order in all_orders %}
+        <div class="order-item">
+            <div class="order-header">
+                <div class="order-number">#{{ order.order_number }}</div>
+                <div class="order-status status-{{ order.status }}">
+                    {{ order.get_status_display }}
+                </div>
+            </div>
+            
+            <div class="order-details">
+                {% if order.product %}
+                    <div class="order-detail-item">
+                        <strong>Product</strong>
+                        <span>{{ order.product.name }}</span>
+                    </div>
+                    <div class="order-detail-item">
+                        <strong>Size</strong>
+                        <span>{{ order.size.name }}</span>
+                    </div>
+                    <div class="order-detail-item">
+                        <strong>Delivery Date</strong>
+                        <span>{{ order.delivery_date|date:"d M Y" }}</span>
+                    </div>
+                    <div class="order-detail-item">
+                        <strong>Amount</strong>
+                        <span>₹{{ order.total_price }}</span>
+                    </div>
+                {% else %}
+                    <!-- Custom Cake Order details -->
+                    <div class="order-detail-item">
+                        <strong>Shape & Tier</strong>
+                        <span>{{ order.shape.name }} / {{ order.tier.name }}</span>
+                    </div>
+                    <div class="order-detail-item">
+                        <strong>Weight</strong>
+                        <span>{{ order.total_weight }} kg</span>
+                    </div>
+                    <div class="order-detail-item">
+                        <strong>Flavor</strong>
+                        <span>
+                            {% if order.flavor %}
+                                {{ order.flavor.name }}
+                            {% elif order.flavor_description %}
+                                {{ order.flavor_description }}
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="order-detail-item">
+                        <strong>Estimated Price</strong>
+                        <span>₹{{ order.estimated_price }}</span>
+                    </div>
+                    {% if order.final_price %}
+                    <div class="order-detail-item">
+                        <strong>Final Price</strong>
+                        <span>₹{{ order.final_price }}</span>
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            
+            <div class="order-actions">
+                {% if order.product %}
+                    <a href="{% url 'order_detail_customer' order.order_number %}" class="btn-view-order">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                {% else %}
+                    <a href="{% url 'custom_order_detail_customer' order.order_number %}" class="btn-view-order" style="background:#6C8FC0;">
+                        <i class="fas fa-eye"></i> View Custom Order
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-orders">
+        <p style="font-size: 1.1rem; color: #999; margin-top: 2rem;">
+            <i class="fas fa-info-circle"></i> No orders found for this phone number.
+        </p>
+        <a href="{% url 'place_order' %}" class="btn-track" style="margin-top: 2rem; display: inline-block; width: auto; padding: 0.8rem 2rem;">
+            <i class="fas fa-plus"></i> Place Your First Order
+        </a>
+    </div>
+    {% endif %}
+{% endif %}
+
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+

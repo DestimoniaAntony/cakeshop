@@ -1,0 +1,244 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if gallery_image %}Edit{% else %}Add{% endif %} Gallery Image - Admin{% endblock %}
+
+{% block extra_css %}
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+<link rel="stylesheet" href="{% static 'admin/css/image-crop-widget.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">{% if gallery_image %}Edit{% else %}Add{% endif %} Gallery Image</h3>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              
+              <div class="form-group field-image">
+                <label for="image" style="font-weight: 600; color: #333; font-size: 15px; margin-bottom: 8px; display: block;">
+                  <i class="fas fa-image" style="color: #007bff; margin-right: 5px;"></i>
+                  Gallery Image {% if not gallery_image %}*{% endif %}
+                </label>
+                
+                <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+                            padding: 20px; border-radius: 12px; border: 2px dashed #007bff; 
+                            margin-bottom: 15px;">
+                  <p class="help-text" style="color: #555; font-size: 14px; margin-bottom: 15px; line-height: 1.6;">
+                    <i class="fas fa-info-circle" style="color: #007bff; margin-right: 5px;"></i>
+                    <strong>Image Requirements:</strong><br>
+                    📐 Target size: <strong>800 × 800 pixels</strong> (Square 1:1 ratio)<br>
+                    ✨ After selecting, you can <strong>crop & adjust</strong> your image perfectly<br>
+                    🎨 Recommended: Upload high-quality images (min. 1200×1200px)
+                  </p>
+                  
+                  <div style="position: relative;">
+                    <input type="file" 
+                           class="form-control" 
+                           id="image" 
+                           name="image" 
+                           accept="image/*" 
+                           {% if not gallery_image %}required{% endif %}
+                           style="padding: 12px; 
+                                  border: 2px solid #007bff; 
+                                  border-radius: 8px; 
+                                  font-size: 14px;
+                                  background: white;
+                                  cursor: pointer;
+                                  transition: all 0.3s ease;">
+                  </div>
+                </div>
+                
+                {% if gallery_image and gallery_image.image %}
+                <div style="margin-top: 15px; padding: 15px; background: #fff; border-radius: 8px; 
+                            border: 2px solid #28a745; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                  <p style="margin: 0 0 10px 0; color: #28a745; font-weight: 600; font-size: 14px;">
+                    <i class="fas fa-check-circle"></i> Current Image:
+                  </p>
+                  <div style="display: inline-block; position: relative; border-radius: 8px; overflow: hidden;
+                              box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 3px solid #28a745;">
+                    <img src="{{ gallery_image.image.url }}" 
+                         style="max-width: 300px; display: block; border-radius: 4px;"
+                         alt="Current gallery image">
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; 
+                                background: rgba(40, 167, 69, 0.9); color: white; 
+                                padding: 8px; text-align: center; font-size: 12px; font-weight: 600;">
+                      <i class="fas fa-check"></i> Active Gallery Image
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+                
+                <!-- Image Crop Interface -->
+                <div class="image-crop-container" style="margin-top: 15px;">
+                  <input type="hidden" id="id_image_crop_data" name="image_crop_data" value="">
+                  <input type="hidden" id="id_image_aspect_ratio" value="1">
+                  <input type="hidden" id="id_image_target_width" value="800">
+                  <input type="hidden" id="id_image_target_height" value="800">
+                  
+                  <div class="crop-preview-section" style="display:none; margin-top: 20px; 
+                                                             background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+                                                             padding: 25px; border-radius: 12px; 
+                                                             border: 2px solid #007bff;
+                                                             box-shadow: 0 4px 20px rgba(0, 123, 255, 0.1);
+                                                             animation: slideDown 0.4s ease-out;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                      <h3 style="color: #007bff; margin-bottom: 8px; font-size: 22px; font-weight: 700;
+                                 display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <i class="fas fa-crop-alt" style="font-size: 24px;"></i>
+                        Crop Your Image
+                      </h3>
+                      <div style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                  color: white; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600;">
+                        <i class="fas fa-expand-arrows-alt"></i> Target: <strong>800×800 pixels</strong> | Ratio: <strong>1:1 Square</strong>
+                      </div>
+                    </div>
+                    
+                    <div class="crop-actions" style="margin-bottom: 20px; text-align: center; display: flex; 
+                                                     gap: 10px; justify-content: center; flex-wrap: wrap;">
+                      <button type="button" class="btn btn-success btn-crop-apply" 
+                              style="padding: 12px 30px; font-size: 15px; font-weight: 600; 
+                                     border-radius: 8px; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+                                     border: none; transition: all 0.3s ease; min-width: 150px;">
+                        <i class="fas fa-check"></i> Apply Crop
+                      </button>
+                      <button type="button" class="btn btn-secondary btn-crop-reset" 
+                              style="padding: 12px 30px; font-size: 15px; font-weight: 600; 
+                                     border-radius: 8px; box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+                                     border: none; transition: all 0.3s ease; min-width: 150px;">
+                        <i class="fas fa-redo"></i> Reset
+                      </button>
+                      <button type="button" class="btn btn-danger btn-crop-cancel"
+                              style="padding: 12px 30px; font-size: 15px; font-weight: 600; 
+                                     border-radius: 8px; box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+                                     border: none; transition: all 0.3s ease; min-width: 150px;">
+                        <i class="fas fa-times"></i> Cancel
+                      </button>
+                    </div>
+                    
+                    <div class="crop-image-wrapper" style="max-width: 100%; max-height: 600px; overflow: hidden; 
+                                                           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                                           border: 3px solid #007bff; 
+                                                           border-radius: 12px; position: relative;
+                                                           box-shadow: 0 8px 24px rgba(0, 123, 255, 0.25);
+                                                           padding: 5px;">
+                      <img id="crop-image-image" style="max-width: 100%; display: block; border-radius: 8px;">
+                    </div>
+                    
+                    <div class="crop-info" style="margin-top: 20px; padding: 20px; 
+                                                   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+                                                   border-radius: 10px; 
+                                                   border-left: 5px solid #007bff;
+                                                   box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);">
+                      <p style="margin: 0; color: #1565c0; font-size: 14px; line-height: 1.8;">
+                        <strong style="font-size: 16px; display: block; margin-bottom: 10px;">
+                          <i class="fas fa-lightbulb" style="color: #ffd700;"></i> Quick Tips:
+                        </strong>
+                        <span style="display: block; margin-bottom: 5px;">
+                          <i class="fas fa-hand-pointer" style="color: #007bff; width: 20px;"></i> 
+                          <strong>Drag corners</strong> to resize the crop area
+                        </span>
+                        <span style="display: block; margin-bottom: 5px;">
+                          <i class="fas fa-arrows-alt" style="color: #007bff; width: 20px;"></i> 
+                          <strong>Drag center</strong> to move the selection
+                        </span>
+                        <span style="display: block; margin-bottom: 5px;">
+                          <i class="fas fa-search-plus" style="color: #007bff; width: 20px;"></i> 
+                          <strong>Scroll mouse</strong> to zoom in/out
+                        </span>
+                        <span style="display: block;">
+                          <i class="fas fa-check-circle" style="color: #28a745; width: 20px;"></i> 
+                          Click <strong>"Apply Crop"</strong> when satisfied
+                        </span>
+                      </p>
+                    </div>
+                    
+                    <div class="crop-preview-result" style="margin-top: 25px; display: none; 
+                                                            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+                                                            padding: 25px; border-radius: 12px;
+                                                            border: 3px solid #28a745;
+                                                            box-shadow: 0 8px 24px rgba(40, 167, 69, 0.2);
+                                                            text-align: center;
+                                                            animation: fadeIn 0.5s ease-in;">
+                      <h4 style="color: #155724; margin-bottom: 20px; font-size: 20px; font-weight: 700;">
+                        <i class="fas fa-check-circle" style="color: #28a745; font-size: 24px;"></i>
+                        Preview - Final Result
+                      </h4>
+                      <div style="display: inline-block; position: relative; border-radius: 12px; overflow: hidden;
+                                  box-shadow: 0 8px 32px rgba(40, 167, 69, 0.3); border: 4px solid #28a745;
+                                  background: white; padding: 10px;">
+                        <img id="crop-preview-image" 
+                             style="max-width: 300px; max-height: 300px; display: block; border-radius: 8px;">
+                        <div style="position: absolute; top: 10px; right: 10px; 
+                                    background: rgba(40, 167, 69, 0.95); color: white; 
+                                    padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                          <i class="fas fa-check"></i> 800×800
+                        </div>
+                      </div>
+                      <div style="margin-top: 20px; padding: 15px; 
+                                  background: rgba(40, 167, 69, 0.1); 
+                                  border-radius: 8px; display: inline-block;">
+                        <p style="color: #28a745; margin: 0; font-weight: 600; font-size: 15px;">
+                          <i class="fas fa-check-double"></i> 
+                          Crop applied successfully! This is how your image will appear in the gallery.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="caption">Caption</label>
+                <input type="text" class="form-control" id="caption" name="caption" value="{{ gallery_image.caption }}" placeholder="Describe this creation">
+              </div>
+
+              <div class="form-group">
+                <label for="event_type">Event Type</label>
+                <select class="form-select" id="event_type" name="event_type">
+                  <option value="">-- Not specific to event --</option>
+                  {% for event in events %}
+                  <option value="{{ event.id }}" {% if gallery_image and gallery_image.event_type.id == event.id %}selected{% endif %}>
+                    {{ event.event_name }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" {% if gallery_image and gallery_image.is_featured %}checked{% endif %}>
+                <label class="form-check-label" for="is_featured">
+                  Featured (Show on homepage)
+                </label>
+              </div>
+
+              <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i> Save Image
+                </button>
+                <a href="{% url 'admin_gallery' %}" class="btn btn-secondary">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Cropper.js JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script src="{% static 'admin/js/image-crop-widget.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Events Management - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Events Management</h3>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <a href="{% url 'admin_event_add' %}" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add Event
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Event Name</th>
+                    <th>Icon</th>
+                    <th>Suggestions</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for event in events %}
+                  <tr>
+                    <td><strong>{{ event.event_name }}</strong></td>
+                    <td>
+                      {% if event.icon %}
+                      <i class="{{ event.icon }}"></i>
+                      {% else %}
+                      <i class="fas fa-calendar-alt"></i>
+                      {% endif %}
+                    </td>
+                    <td><span class="badge badge-info">{{ event.suggestion_count }} suggestions</span></td>
+                    <td>
+                      {% if event.is_active %}
+                      <span class="badge badge-success">Active</span>
+                      {% else %}
+                      <span class="badge badge-danger">Inactive</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <a href="{% url 'admin_event_edit' event.id %}" class="btn btn-sm btn-primary">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin_event_delete' event.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-center py-4">
+                      <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                      <p>No events found. Add events like Birthday, Wedding, etc.</p>
+                      <a href="{% url 'admin_event_add' %}" class="btn btn-primary">Add Event</a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

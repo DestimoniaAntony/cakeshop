@@ -1,0 +1,60 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Login - Cakes by Desti{% endblock %}
+
+{# legacy static page-title removed; new page title is rendered via include below #}
+
+{% block page_title %}
+{% include 'partials/page_title.html' with banner=page_title_banners.login title_fallback='Customer Login' %}
+{% endblock %}
+
+{% block content %}
+<section style="padding: 60px 0; background: #FFF9F5;">
+    <div class="container">
+        <div style="max-width: 520px; margin: 0 auto; background: white; border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+            <h3 style="margin: 0 0 10px 0; color: #333;">Welcome back!</h3>
+            <p style="margin: 0 0 20px 0; color: #777;">Sign in with your phone to access your rewards and orders.</p>
+
+            <form method="post" action="{% url 'customer_login' %}">
+                {% csrf_token %}
+                {# Allow caller to pass next either as GET or POST; keep hidden field if provided #}
+                {% if request.GET.next %}
+                    <input type="hidden" name="next" value="{{ request.GET.next }}" />
+                {% endif %}
+                {% if request.POST.next %}
+                    <input type="hidden" name="next" value="{{ request.POST.next }}" />
+                {% endif %}
+
+                {% if show_otp_form %}
+                    <input type="hidden" name="phone" value="{{ phone }}" />
+                    <input type="hidden" name="email" value="{{ email }}" />
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Enter OTP</label>
+                        <input type="text" name="otp" required pattern="[0-9]*" minlength="6" maxlength="6" inputmode="numeric" placeholder="Enter 6-digit OTP" style="width:100%; padding:12px; border:2px solid #eee; border-radius:10px; font-size:1rem;" />
+                        <p style="margin-top:8px; color:#777; font-size:0.9rem;">OTP has been sent to your email address.</p>
+                    </div>
+                    <input type="hidden" name="stage" value="verify_otp" />
+                    <button type="submit" class="btn" style="width:100%; background: linear-gradient(135deg, #FF6B9D, #C06C84); color:white; padding:14px; border:none; border-radius:12px; font-weight:700;">Verify OTP</button>
+                {% else %}
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Phone Number</label>
+                        <input type="tel" name="phone" required placeholder="e.g., 9876543210" value="{{ phone }}" style="width:100%; padding:12px; border:2px solid #eee; border-radius:10px; font-size:1rem;" />
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Email Address</label>
+                        <input type="email" name="email" required placeholder="e.g., you@example.com" value="{{ email }}" style="width:100%; padding:12px; border:2px solid #eee; border-radius:10px; font-size:1rem;" />
+                        <p style="margin-top:8px; color:#777; font-size:0.9rem;">Required for OTP verification.</p>
+                    </div>
+                    <input type="hidden" name="stage" value="request_otp" />
+                    <button type="submit" class="btn" style="width:100%; background: linear-gradient(135deg, #FF6B9D, #C06C84); color:white; padding:14px; border:none; border-radius:12px; font-weight:700;">Send OTP</button>
+                {% endif %}
+            </form>
+
+            <div style="text-align:center; margin-top:15px;">
+                <a href="{% url 'home' %}" style="color:#FF6B9D; text-decoration:none; font-weight:600;">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

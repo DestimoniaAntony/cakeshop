@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login - Cakes by Desti</title>
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body style="background:#FFF9F5;">
+    <div class="container" style="max-width:480px; margin:60px auto;">
+        <div style="background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.08); padding:28px;">
+            <div style="text-align:center; margin-bottom:15px;">
+                <img src="{% static 'images/logo-small.png' %}" alt="Cakes by Desti" style="height:48px;" />
+                <h3 style="margin-top:10px;">Admin Login</h3>
+            </div>
+
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'admin_login' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Sign in</button>
+            </form>
+
+            <div style="text-align:center; margin-top:12px;">
+                <a href="/admin/password_reset/">Forgot password?</a>
+            </div>
+        </div>
+        <div style="text-align:center; margin-top:12px;">
+            <a href="{% url 'home' %}">← Back to website</a>
+        </div>
+    </div>
+</body>
+</html>

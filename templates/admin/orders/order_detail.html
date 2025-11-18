@@ -1,0 +1,168 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Order {{ order.order_number }} - Cakes by Desti Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Order Details</h3>
+      <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+          <a href="{% url 'admin_dashboard' %}"><i class="icon-home"></i></a>
+        </li>
+        <li class="separator"><i class="icon-arrow-right"></i></li>
+        <li class="nav-item"><a href="{% url 'admin_orders' %}">Orders</a></li>
+        <li class="separator"><i class="icon-arrow-right"></i></li>
+        <li class="nav-item">{{ order.order_number }}</li>
+      </ul>
+    </div>
+
+    <div class="row">
+      <!-- Order Info -->
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <div class="d-flex align-items-center">
+              <h4 class="card-title">Order #{{ order.order_number }}</h4>
+              <a href="{% url 'admin_order_generate_pdf' order.id %}" class="btn btn-success btn-sm ms-auto" target="_blank">
+                <i class="fas fa-file-pdf"></i> Generate PDF
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Product Details -->
+            <div class="mb-4">
+              <h5 class="mb-3">Product Details</h5>
+              <div class="row">
+                <div class="col-md-4">
+                  {% if order.product.main_image %}
+                    <img src="{{ order.product.main_image.url }}" class="img-fluid rounded" alt="{{ order.product.name }}">
+                  {% endif %}
+                </div>
+                <div class="col-md-8">
+                  <table class="table table-borderless">
+                    <tr>
+                      <th width="150">Product:</th>
+                      <td>{{ order.product.name }}</td>
+                    </tr>
+                    <tr>
+                      <th>Size:</th>
+                      <td>{{ order.size.name }}</td>
+                    </tr>
+                    <tr>
+                      <th>Quantity:</th>
+                      <td>{{ order.quantity }}</td>
+                    </tr>
+                    <tr>
+                      <th>Unit Price:</th>
+                      <td>₹{{ order.unit_price }}</td>
+                    </tr>
+                    <tr>
+                      <th><strong>Total Price:</strong></th>
+                      <td><strong class="text-primary">₹{{ order.total_price }}</strong></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom Requirements -->
+            {% if order.custom_message or order.special_instructions or order.event %}
+            <div class="mb-4">
+              <h5 class="mb-3">Special Requirements</h5>
+              {% if order.event %}
+              <p><strong>Event:</strong> {{ order.event.event_name }}</p>
+              {% endif %}
+              {% if order.custom_message %}
+              <p><strong>Message on Cake:</strong> {{ order.custom_message }}</p>
+              {% endif %}
+              {% if order.special_instructions %}
+              <p><strong>Special Instructions:</strong> {{ order.special_instructions }}</p>
+              {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Delivery Info -->
+            <div class="mb-4">
+              <h5 class="mb-3">Delivery Information</h5>
+              <table class="table table-borderless">
+                <tr>
+                  <th width="150">Delivery Date:</th>
+                  <td>{{ order.delivery_date|date:"d M Y" }}</td>
+                </tr>
+                {% if order.delivery_time %}
+                <tr>
+                  <th>Delivery Time:</th>
+                  <td>{{ order.delivery_time }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <th>Order Date:</th>
+                  <td>{{ order.created_at|date:"d M Y H:i" }}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer & Status -->
+      <div class="col-md-4">
+        <!-- Customer Info -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <h4 class="card-title">Customer Details</h4>
+          </div>
+          <div class="card-body">
+            <p><strong>Name:</strong><br>{{ order.customer.name }}</p>
+            <p><strong>Phone:</strong><br>
+              <a href="https://wa.me/{{ order.customer.phone_number }}?text=Hi%20{{ order.customer.name }},%20regarding%20order%20{{ order.order_number }}" target="_blank" class="btn btn-success btn-sm">
+                <i class="fab fa-whatsapp"></i> {{ order.customer.phone_number }}
+              </a>
+            </p>
+            {% if order.customer.email %}
+            <p><strong>Email:</strong><br>{{ order.customer.email }}</p>
+            {% endif %}
+            {% if order.customer.address %}
+            <p><strong>Address:</strong><br>{{ order.customer.address }}</p>
+            {% endif %}
+            <a href="{% url 'admin_customer_detail' order.customer.id %}" class="btn btn-primary btn-sm w-100">
+              View Customer Profile
+            </a>
+          </div>
+        </div>
+
+        <!-- Order Status -->
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Update Status</h4>
+          </div>
+          <div class="card-body">
+            <form method="post">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label class="form-label">Current Status</label>
+                <select name="status" class="form-select">
+                  <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                  <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                  <option value="preparing" {% if order.status == 'preparing' %}selected{% endif %}>Preparing</option>
+                  <option value="ready" {% if order.status == 'ready' %}selected{% endif %}>Ready for Delivery</option>
+                  <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>Completed</option>
+                  <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-save"></i> Update Status
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

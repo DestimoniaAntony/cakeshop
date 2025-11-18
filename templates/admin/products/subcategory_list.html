@@ -1,0 +1,80 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Subcategories - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Subcategories</h3>
+      <ul class="breadcrumbs mb-3">
+        <li class="nav-home"><a href="{% url 'admin_dashboard' %}"><i class="icon-home"></i></a></li>
+        <li class="separator"><i class="icon-arrow-right"></i></li>
+        <li class="nav-item">Subcategories</li>
+      </ul>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <a href="{% url 'admin_subcategory_add' %}" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add Subcategory
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Name</th>
+                    <th>Products</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for subcategory in subcategories %}
+                  <tr>
+                    <td><span class="badge badge-primary">{{ subcategory.category.name }}</span></td>
+                    <td><strong>{{ subcategory.name }}</strong></td>
+                    <td><span class="badge badge-info">{{ subcategory.product_count }} products</span></td>
+                    <td>
+                      {% if subcategory.is_active %}
+                      <span class="badge badge-success">Active</span>
+                      {% else %}
+                      <span class="badge badge-danger">Inactive</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <a href="{% url 'admin_subcategory_edit' subcategory.id %}" class="btn btn-sm btn-primary">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin_subcategory_delete' subcategory.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-center py-4">No subcategories found</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

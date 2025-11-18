@@ -1,0 +1,656 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{% block title %}Cakes by Desti - Admin Dashboard{% endblock %}</title>
+    <meta
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+      name="viewport"
+    />
+    <link
+      rel="icon"
+      href="{% static 'assets/img/kaiadmin/favicon.ico' %}"
+      type="image/x-icon"
+    />
+
+    <!-- Fonts and icons -->
+    <script src="{% static 'assets/js/plugin/webfont/webfont.min.js' %}"></script>
+    <script>
+      WebFont.load({
+        google: { families: ["Public Sans:300,400,500,600,700"] },
+        custom: {
+          families: [
+            "Font Awesome 5 Solid",
+            "Font Awesome 5 Regular",
+            "Font Awesome 5 Brands",
+            "simple-line-icons",
+          ],
+          urls: ["{% static 'assets/css/fonts.min.css' %}"],
+        },
+        active: function () {
+          sessionStorage.fonts = true;
+        },
+      });
+    </script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/plugins.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/kaiadmin.min.css' %}" />
+
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+    <link rel="stylesheet" href="{% static 'assets/css/demo.css' %}" />
+    
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <div class="wrapper">
+      {% if messages %}
+      <div class="container-fluid" style="padding: 12px 16px;">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert" style="margin-bottom:8px;">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <!-- Sidebar -->
+      <div class="sidebar" data-background-color="dark">
+        <div class="sidebar-logo">
+          <!-- Logo Header -->
+          <div class="logo-header" data-background-color="dark">
+            <a href="{% url 'admin_dashboard' %}" class="logo">
+              <h3 style="color: white; margin: 0; padding: 10px;">🎂 ADMIN</h3>
+            </a>
+            <div class="nav-toggle">
+              <button class="btn btn-toggle toggle-sidebar">
+                <i class="gg-menu-right"></i>
+              </button>
+              <button class="btn btn-toggle sidenav-toggler">
+                <i class="gg-menu-left"></i>
+              </button>
+            </div>
+            <button class="topbar-toggler more">
+              <i class="gg-more-vertical-alt"></i>
+            </button>
+          </div>
+          <!-- End Logo Header -->
+        </div>
+        <div class="sidebar-wrapper scrollbar scrollbar-inner">
+          <div class="sidebar-content">
+            <ul class="nav nav-secondary">
+              <!-- Dashboard -->
+              <li class="nav-item active">
+                <a href="{% url 'admin_dashboard' %}">
+                  <i class="fas fa-home"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+
+              <!-- Orders Section -->
+              <li class="nav-section">
+                <span class="sidebar-mini-icon">
+                  <i class="fa fa-ellipsis-h"></i>
+                </span>
+                <h4 class="text-section">Orders & Customers</h4>
+              </li>
+              <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#ordersMenu">
+                  <i class="fas fa-shopping-cart"></i>
+                  <p>Orders</p>
+                  <span class="caret"></span>
+                </a>
+                <div class="collapse" id="ordersMenu">
+                  <ul class="nav nav-collapse">
+                    <li>
+                      <a href="{% url 'admin_orders' %}">
+                        <span class="sub-item">All Orders</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_orders_pending' %}">
+                        <span class="sub-item">Pending Orders</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_orders_confirmed' %}">
+                        <span class="sub-item">Confirmed Orders</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'admin_customers' %}">
+                  <i class="fas fa-users"></i>
+                  <p>Customers</p>
+                </a>
+              </li>
+
+              <!-- Products Section -->
+              <li class="nav-section">
+                <span class="sidebar-mini-icon">
+                  <i class="fa fa-ellipsis-h"></i>
+                </span>
+                <h4 class="text-section">Products</h4>
+              </li>
+              <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#productsMenu">
+                  <i class="fas fa-birthday-cake"></i>
+                  <p>Products</p>
+                  <span class="caret"></span>
+                </a>
+                <div class="collapse" id="productsMenu">
+                  <ul class="nav nav-collapse">
+                    <li>
+                      <a href="{% url 'admin_products' %}">
+                        <span class="sub-item">All Products</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_product_add' %}">
+                        <span class="sub-item">Add Product</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_categories' %}">
+                        <span class="sub-item">Categories</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_subcategories' %}">
+                        <span class="sub-item">Subcategories</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#attributesMenu">
+                  <i class="fas fa-tags"></i>
+                  <p>Attributes</p>
+                  <span class="caret"></span>
+                </a>
+                <div class="collapse" id="attributesMenu">
+                  <ul class="nav nav-collapse">
+                    <li>
+                      <a href="{% url 'admin_flavors' %}">
+                        <span class="sub-item">Flavors</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_sizes' %}">
+                        <span class="sub-item">Sizes & Prices</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
+              <!-- Custom Cake Builder Section -->
+              <li class="nav-section">
+                <span class="sidebar-mini-icon">
+                  <i class="fa fa-ellipsis-h"></i>
+                </span>
+                <h4 class="text-section">Custom Cake Builder</h4>
+              </li>
+              <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#customCakeMenu">
+                  <i class="fas fa-magic"></i>
+                  <p>Custom Cakes</p>
+                  <span class="caret"></span>
+                </a>
+                <div class="collapse" id="customCakeMenu">
+                  <ul class="nav nav-collapse">
+                    <li>
+                      <a href="{% url 'admin_custom_orders' %}">
+                        <span class="sub-item">Custom Orders</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_cake_shapes' %}">
+                        <span class="sub-item">Cake Shapes</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_cake_tiers' %}">
+                        <span class="sub-item">Cake Tiers</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_decorations' %}">
+                        <span class="sub-item">Decorations</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
+              <!-- Gift Boxes Section -->
+              <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#giftBoxMenu">
+                  <i class="fas fa-gift"></i>
+                  <p>Gift Boxes</p>
+                  <span class="caret"></span>
+                </a>
+                <div class="collapse" id="giftBoxMenu">
+                  <ul class="nav nav-collapse">
+                    <li>
+                      <a href="{% url 'admin_gift_boxes' %}">
+                        <span class="sub-item">All Gift Boxes</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_gift_box_add' %}">
+                        <span class="sub-item">Add Gift Box</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_gift_box_orders' %}">
+                        <span class="sub-item">Gift Box Orders</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
+              <!-- Inventory Section -->
+              <li class="nav-section">
+                <span class="sidebar-mini-icon">
+                  <i class="fa fa-ellipsis-h"></i>
+                </span>
+                <h4 class="text-section">Inventory & Finance</h4>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'admin_ingredients' %}">
+                  <i class="fas fa-boxes"></i>
+                  <p>Inventory</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#financeMenu">
+                  <i class="fas fa-file-invoice-dollar"></i>
+                  <p>Finance</p>
+                  <span class="caret"></span>
+                </a>
+                <div class="collapse" id="financeMenu">
+                  <ul class="nav nav-collapse">
+                    <li>
+                      <a href="{% url 'admin_purchase_bills' %}">
+                        <span class="sub-item">Purchase Bills</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_expense_report' %}">
+                        <span class="sub-item">Expense Report</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'admin_sales_report' %}">
+                        <span class="sub-item">Sales Report</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
+              <!-- Events & Marketing -->
+              <li class="nav-section">
+                <span class="sidebar-mini-icon">
+                  <i class="fa fa-ellipsis-h"></i>
+                </span>
+                <h4 class="text-section">Marketing</h4>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'admin_events' %}">
+                  <i class="fas fa-calendar-alt"></i>
+                  <p>Events</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'admin_carousel' %}">
+                  <i class="fas fa-sliders-h"></i>
+                  <p>Homepage Carousel</p>
+                  <span class="badge badge-success">New</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'admin_page_banners' %}">
+                  <i class="fas fa-image"></i>
+                  <p>Page Title Banners</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'admin_offers' %}">
+                  <i class="fas fa-gift"></i>
+                  <p>Offers & Promotions</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'admin_gallery' %}">
+                  <i class="fas fa-images"></i>
+                  <p>Gallery</p>
+                </a>
+              </li>
+
+              <!-- Customer Interaction -->
+              <li class="nav-section">
+                <span class="sidebar-mini-icon">
+                  <i class="fa fa-ellipsis-h"></i>
+                </span>
+                <h4 class="text-section">Customer Support</h4>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'admin_enquiries' %}">
+                  <i class="fas fa-question-circle"></i>
+                  <p>Enquiries</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'admin_reviews' %}">
+                  <i class="fas fa-star"></i>
+                  <p>Reviews</p>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- End Sidebar -->
+             <div class="main-panel">
+        <div class="main-header">
+          <div class="main-header-logo">
+            <!-- Logo Header -->
+            <div class="logo-header" data-background-color="dark">
+              <a href="{% url 'admin_dashboard' %}" class="logo">
+                <h3 style="color: white; margin: 0; padding: 10px;">🎂 Cakes by Desti</h3>
+              </a>
+              <div class="nav-toggle">
+                <button class="btn btn-toggle toggle-sidebar">
+                  <i class="gg-menu-right"></i>
+                </button>
+                <button class="btn btn-toggle sidenav-toggler">
+                  <i class="gg-menu-left"></i>
+                </button>
+              </div>
+              <button class="topbar-toggler more">
+                <i class="gg-more-vertical-alt"></i>
+              </button>
+            </div>
+            <!-- End Logo Header -->
+          </div>
+          <!-- Navbar Header -->
+          <nav
+            class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
+          >
+            <div class="container-fluid">
+              <nav
+                class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <button type="submit" class="btn btn-search pe-1">
+                      <i class="fa fa-search search-icon"></i>
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search ..."
+                    class="form-control"
+                  />
+                </div>
+              </nav>
+
+              <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                <li
+                  class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none"
+                >
+                  <a
+                    class="nav-link dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    role="button"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                  >
+                    <i class="fa fa-search"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-search animated fadeIn">
+                    <form class="navbar-left navbar-form nav-search">
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          placeholder="Search ..."
+                          class="form-control"
+                        />
+                      </div>
+                    </form>
+                  </ul>
+                </li>
+                
+                <li class="nav-item topbar-icon dropdown hidden-caret">
+                  <a
+                    class="nav-link"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    aria-expanded="false"
+                  >
+                    <i class="fas fa-layer-group"></i>
+                  </a>
+                  <div class="dropdown-menu quick-actions animated fadeIn">
+                    <div class="quick-actions-header">
+                      <span class="title mb-1">Quick Actions</span>
+                      <span class="subtitle op-7">Shortcuts</span>
+                    </div>
+                    <div class="quick-actions-scroll scrollbar-outer">
+                      <div class="quick-actions-items">
+                        <div class="row m-0">
+                          <a class="col-6 col-md-4 p-0" href="{% url 'admin_categories' %}">
+                            <div class="quick-actions-item">
+                              <div class="avatar-item bg-danger rounded-circle">
+                                <i class="fas fa-list"></i>
+                              </div>
+                              <span class="text">Categories</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="{% url 'admin_subcategories' %}">
+                            <div class="quick-actions-item">
+                              <div
+                                class="avatar-item bg-warning rounded-circle"
+                              >
+                                <i class="fas fa-list"></i>
+                              </div>
+                              <span class="text">Subcategories</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="{% url 'admin_flavors' %}">
+                            <div class="quick-actions-item">
+                              <div class="avatar-item bg-info rounded-circle">
+                                <i class="fas fa-list"></i>
+                              </div>
+                              <span class="text">Flavors</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="{% url 'admin_sizes' %}">
+                            <div class="quick-actions-item">
+                              <div
+                                class="avatar-item bg-success rounded-circle"
+                              >
+                                <i class="fas fa-list"></i>
+                              </div>
+                              <span class="text">Sizes</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="#">
+                            <div class="quick-actions-item">
+                              <div
+                                class="avatar-item bg-primary rounded-circle"
+                              >
+                                <i class="fas fa-file-invoice-dollar"></i>
+                              </div>
+                              <span class="text">Invoice</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="#">
+                            <div class="quick-actions-item">
+                              <div
+                                class="avatar-item bg-secondary rounded-circle"
+                              >
+                                <i class="fas fa-credit-card"></i>
+                              </div>
+                              <span class="text">Payments</span>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="nav-item topbar-user dropdown hidden-caret">
+                  <a
+                    class="dropdown-toggle profile-pic"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    aria-expanded="false"
+                  >
+                   
+                    <span class="profile-username">
+                      <span class="op-7">Hi,</span>
+                      <span class="fw-bold">{{ request.user.username }}</span>
+                    </span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-user animated fadeIn">
+                    <div class="dropdown-user-scroll scrollbar-outer">
+                      <li>
+                        <div class="user-box">
+                          
+                          <div class="u-text">
+                            <h4>{{ request.user.username }}</h4>
+                            <p class="text-muted">{{ request.user.email }}</p>
+                            
+                            
+                          </div>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">My Balance</a>
+                        <a class="dropdown-item" href="#">Inbox</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Account Setting</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'admin_logout' %}">Logout</a>
+                      </li>
+                    </div>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </nav>
+          <!-- End Navbar -->
+        </div>
+
+        {% block content %}
+        {% endblock %}
+
+
+        <footer class="footer">
+          <div class="container-fluid d-flex justify-content-between">
+            <nav class="pull-left">
+              <ul class="nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="http://www.themekita.com">
+                    ThemeKita
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#"> Help </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#"> Licenses </a>
+                </li>
+              </ul>
+            </nav>
+            <div class="copyright">
+              2024, made with <i class="fa fa-heart heart text-danger"></i> by
+              <a href="http://www.themekita.com">ThemeKita</a>
+            </div>
+            <div>
+              Distributed by
+              <a target="_blank" href="https://themewagon.com/">ThemeWagon</a>.
+            </div>
+          </div>
+        </footer>
+      </div>
+
+    </div>
+    <!--   Core JS Files   -->
+    <script src="{% static 'assets/js/core/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/core/popper.min.js' %}"></script>
+    <script src="{% static 'assets/js/core/bootstrap.min.js' %}"></script>
+
+    <!-- jQuery Scrollbar -->
+    <script src="{% static 'assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js' %}"></script>
+
+    <!-- Chart JS -->
+    <script src="{% static 'assets/js/plugin/chart.js/chart.min.js' %}"></script>
+
+    <!-- jQuery Sparkline -->
+    <script src="{% static 'assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js' %}"></script>
+
+    <!-- Chart Circle -->
+    <script src="{% static 'assets/js/plugin/chart-circle/circles.min.js' %}"></script>
+
+    <!-- Datatables -->
+    <script src="{% static 'assets/js/plugin/datatables/datatables.min.js' %}"></script>
+
+    <!-- Bootstrap Notify -->
+    <script src="{% static 'assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js' %}"></script>
+
+    <!-- jQuery Vector Maps -->
+    <script src="{% static 'assets/js/plugin/jsvectormap/jsvectormap.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugin/jsvectormap/world.js' %}"></script>
+
+    <!-- Sweet Alert -->
+    <script src="{% static 'assets/js/plugin/sweetalert/sweetalert.min.js' %}"></script>
+
+    <!-- Kaiadmin JS -->
+    <script src="{% static 'assets/js/kaiadmin.min.js' %}"></script>
+
+    <!-- Kaiadmin DEMO methods, don't include it in your project! -->
+    <script src="{% static 'assets/js/setting-demo.js' %}"></script>
+    <script src="{% static 'assets/js/demo.js' %}"></script>
+    <script>
+      $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#177dff",
+        fillColor: "rgba(23, 125, 255, 0.14)",
+      });
+
+      $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#f3545d",
+        fillColor: "rgba(243, 84, 93, .14)",
+      });
+
+      $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#ffa534",
+        fillColor: "rgba(255, 165, 52, .14)",
+      });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

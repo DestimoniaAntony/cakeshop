@@ -1,0 +1,513 @@
+{% extends "customer/base.html" %}
+{% load static %}
+
+{% block title %}Place Your Order - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<!--Page Title-->
+<section class="page-title" style="background-image:url({% static 'images/main-slider/slider_bg_3.png' %})">
+    <div class="auto-container">
+        <h1>Place Your Order</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">home</a></li>
+            <li><a href="{% url 'view_cart' %}">Cart</a></li>
+            <li>Checkout</li>
+        </ul>
+    </div>
+</section>
+<!--End Page Title-->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .order-section {
+        padding: 3rem 0;
+        background: white;
+    }
+    
+    .order-form-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .form-header h2 {
+        color: #C06C84;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-header p {
+        color: #666;
+    }
+    
+    .form-section {
+        margin-bottom: 2.5rem;
+    }
+    
+    .form-section h4 {
+        color: #FF6B9D;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #FFE5EC;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 600;
+    }
+    
+    .form-group label.required::after {
+        content: " *";
+        color: #FF6B9D;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid #E8D5C4;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #FF6B9D;
+        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+    }
+    
+    select.form-control {
+        cursor: pointer;
+    }
+    
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .product-preview {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        background: #FFF9F5;
+        border-radius: 10px;
+        align-items: center;
+    }
+    
+    .product-preview img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    
+    .product-preview-info h5 {
+        color: #C06C84;
+        margin-bottom: 0.3rem;
+    }
+    
+    .price-summary {
+        background: linear-gradient(135deg, #FFE5EC 0%, #FFC4DD 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-top: 2rem;
+    }
+    
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        font-size: 1.1rem;
+    }
+    
+    .price-row.total {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #FF6B9D;
+        padding-top: 1rem;
+        border-top: 2px solid #FFB6C1;
+    }
+    
+    .suggestions-box {
+        background: #FFF9F5;
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 4px solid #FF6B9D;
+        margin-top: 1rem;
+    }
+    
+    .suggestions-box h5 {
+        color: #C06C84;
+        margin-bottom: 0.5rem;
+    }
+    
+    .suggestion-item {
+        padding: 0.5rem;
+        margin-bottom: 0.3rem;
+        background: white;
+        border-radius: 5px;
+    }
+    
+    .btn-submit-order {
+        width: 100%;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-submit-order:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255, 107, 157, 0.4);
+    }
+    
+    .btn-submit-order:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .alert-info-box {
+        background: #D1ECF1;
+        color: #0C5460;
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 4px solid #17A2B8;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="order-section">
+    <div class="container">
+        <div class="order-form-card">
+            <div class="form-header">
+                <h2>🎂 Place Your Order</h2>
+                <p>Fill in the details below to order your custom cake</p>
+            </div>
+
+            <div class="alert-info-box">
+                <strong>📢 Note:</strong> Orders are pre-booking only. We'll confirm your order via WhatsApp/Phone within 24 hours.
+            </div>
+
+            <form method="post" id="orderForm">
+                {% csrf_token %}
+                
+                <!-- Customer Information -->
+                <div class="form-section">
+                    <h4>👤 Your Information</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="customer_name" class="required">Full Name</label>
+                                <input type="text" id="customer_name" name="customer_name" class="form-control" required placeholder="Enter your name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="customer_phone" class="required">Phone Number</label>
+                                <input type="tel" id="customer_phone" name="customer_phone" class="form-control" required placeholder="+91 XXXXXXXXXX">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="customer_email">Email (Optional)</label>
+                                <input type="email" id="customer_email" name="customer_email" class="form-control" placeholder="your@email.com">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="customer_address">Delivery Address</label>
+                                <input type="text" id="customer_address" name="customer_address" class="form-control" placeholder="Your address">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cake Selection -->
+                <div class="form-section">
+                    <h4>🎂 Choose Your Cake</h4>
+                    <div class="form-group">
+                        <label for="product_id" class="required">Select Product</label>
+                        <select id="product_id" name="product_id" class="form-control" required>
+                            <option value="">-- Choose a cake --</option>
+                            {% for product in products %}
+                            <option value="{{ product.id }}" {% if selected_product and selected_product.id == product.id %}selected{% endif %}>
+                                {{ product.name }} ({{ product.category.name }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="productPreview" class="product-preview" style="display: none;">
+                        <img id="previewImage" src="" alt="">
+                        <div class="product-preview-info">
+                            <h5 id="previewName"></h5>
+                            <p id="previewDescription"></p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="size_id" class="required">Size</label>
+                                <select id="size_id" name="size_id" class="form-control" required disabled>
+                                    <option value="">-- Select size first --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="flavor_id">Flavor (if applicable)</label>
+                                <select id="flavor_id" name="flavor_id" class="form-control" disabled>
+                                    <option value="">-- Select flavor --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity" class="required">Quantity</label>
+                        <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1" required>
+                    </div>
+                </div>
+
+                <!-- Event & Customization -->
+                <div class="form-section">
+                    <h4>🎉 Event & Customization</h4>
+                    <div class="form-group">
+                        <label for="event_id">Event Type (Optional)</label>
+                        <select id="event_id" name="event_id" class="form-control">
+                            <option value="">-- Select event --</option>
+                            {% for event in events %}
+                            <option value="{{ event.id }}">{{ event.event_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="suggestionsBox" class="suggestions-box" style="display: none;">
+                        <h5>💡 Suggestions for your event:</h5>
+                        <div id="suggestionsList"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="custom_message">Message on Cake (Optional)</label>
+                        <input type="text" id="custom_message" name="custom_message" class="form-control" placeholder="e.g., Happy Birthday Sarah!">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="special_instructions">Special Instructions (Optional)</label>
+                        <textarea id="special_instructions" name="special_instructions" class="form-control" placeholder="Any specific requirements or allergies..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Delivery Details -->
+                <div class="form-section">
+                    <h4>🚚 Delivery Details</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="delivery_date" class="required">Delivery Date</label>
+                                <input type="date" id="delivery_date" name="delivery_date" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="delivery_time">Preferred Time (Optional)</label>
+                                <input type="time" id="delivery_time" name="delivery_time" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Summary -->
+                <div class="price-summary">
+                    <div class="price-row">
+                        <span>Unit Price:</span>
+                        <span id="unitPrice">₹0</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Quantity:</span>
+                        <span id="quantityDisplay">1</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total Amount:</span>
+                        <span id="totalPrice">₹0</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit-order" id="submitBtn" disabled>
+                    <i class="fas fa-shopping-cart"></i> Place Order
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Set minimum delivery date to tomorrow
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+document.getElementById('delivery_date').min = tomorrow.toISOString().split('T')[0];
+
+// Product selection
+document.getElementById('product_id').addEventListener('change', function() {
+    const productId = this.value;
+    if (!productId) {
+        document.getElementById('productPreview').style.display = 'none';
+        document.getElementById('size_id').disabled = true;
+        document.getElementById('flavor_id').disabled = true;
+        document.getElementById('submitBtn').disabled = true;
+        return;
+    }
+    
+    // Fetch product details
+    fetch(`/api/product-details/?product_id=${productId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show preview
+                document.getElementById('previewImage').src = data.product.image || '';
+                document.getElementById('previewName').textContent = data.product.name;
+                document.getElementById('previewDescription').textContent = data.product.description;
+                document.getElementById('productPreview').style.display = 'flex';
+                
+                // Populate sizes
+                const sizeSelect = document.getElementById('size_id');
+                sizeSelect.innerHTML = '<option value="">-- Select size --</option>';
+                data.sizes.forEach(size => {
+                    sizeSelect.innerHTML += `<option value="${size.id}">${size.name} (${size.weight_in_kg} kg)</option>`;
+                });
+                sizeSelect.disabled = false;
+                
+                // Populate flavors with type badges
+                const flavorSelect = document.getElementById('flavor_id');
+                flavorSelect.innerHTML = '<option value="">-- Select flavor --</option>';
+                data.flavors.forEach(flavor => {
+                    const badge = flavor.flavor_type === 'premium' ? ' ⭐ Premium' : '';
+                    flavorSelect.innerHTML += `<option value="${flavor.id}">${flavor.name}${badge}</option>`;
+                });
+                flavorSelect.disabled = data.flavors.length === 0;
+            }
+        });
+});
+
+// Size selection - need both size and flavor to calculate price
+document.getElementById('size_id').addEventListener('change', function() {
+    updatePrice();
+});
+
+// Flavor selection - need both size and flavor to calculate price
+document.getElementById('flavor_id').addEventListener('change', function() {
+    updatePrice();
+});
+
+// Quantity change
+document.getElementById('quantity').addEventListener('input', function() {
+    document.getElementById('quantityDisplay').textContent = this.value;
+    updatePrice();
+});
+
+// Update price based on product, size, flavor selection
+function updatePrice() {
+    const productId = document.getElementById('product_id').value;
+    const sizeId = document.getElementById('size_id').value;
+    const flavorId = document.getElementById('flavor_id').value;
+    const quantity = parseInt(document.getElementById('quantity').value) || 1;
+    
+    if (!productId || !sizeId || !flavorId) {
+        document.getElementById('unitPrice').textContent = '₹0';
+        document.getElementById('totalPrice').textContent = '₹0';
+        document.getElementById('submitBtn').disabled = true;
+        return;
+    }
+    
+    // Fetch price via AJAX
+    fetch(`/api/calculate-price/?product_id=${productId}&size_id=${sizeId}&flavor_id=${flavorId}&quantity=${quantity}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('unitPrice').textContent = `₹${data.unit_price.toFixed(2)}`;
+                document.getElementById('totalPrice').textContent = `₹${data.total_price.toFixed(2)}`;
+                document.getElementById('submitBtn').disabled = false;
+            } else {
+                alert(data.error || 'Price not available');
+                document.getElementById('unitPrice').textContent = '₹0';
+                document.getElementById('totalPrice').textContent = '₹0';
+                document.getElementById('submitBtn').disabled = true;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching price:', error);
+        });
+}
+
+// Calculate total (kept for compatibility)
+function calculateTotal() {
+    updatePrice();
+}
+
+// Event selection - fetch suggestions
+document.getElementById('event_id').addEventListener('change', function() {
+    const eventId = this.value;
+    if (!eventId) {
+        document.getElementById('suggestionsBox').style.display = 'none';
+        return;
+    }
+    
+    fetch(`/api/event-suggestions/?event_id=${eventId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.suggestions.length > 0) {
+                const suggestionsList = document.getElementById('suggestionsList');
+                suggestionsList.innerHTML = '';
+                data.suggestions.forEach(suggestion => {
+                    suggestionsList.innerHTML += `
+                        <div class="suggestion-item">
+                            <strong>${suggestion.suggested_item}</strong>
+                            ${suggestion.note ? `<br><small>${suggestion.note}</small>` : ''}
+                        </div>
+                    `;
+                });
+                document.getElementById('suggestionsBox').style.display = 'block';
+            }
+        });
+});
+
+// Form validation
+document.getElementById('orderForm').addEventListener('submit', function(e) {
+    const phone = document.getElementById('customer_phone').value;
+    if (!/^\+?[\d\s-]+$/.test(phone)) {
+        e.preventDefault();
+        alert('Please enter a valid phone number');
+        return false;
+    }
+});
+</script>
+{% endblock %}
+

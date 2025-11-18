@@ -1,0 +1,332 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}My Loyalty Rewards - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<section class="page-title" style="background-image: url({% static 'images/background/page-title.jpg' %});">
+    <div class="auto-container">
+        <h1>My Loyalty Rewards</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li>Loyalty Rewards</li>
+        </ul>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="loyalty-dashboard" style="padding: 60px 0; background: #FFF9F5;">
+    <div class="container">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner" style="background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%); 
+                                              border-radius: 20px; padding: 30px; color: white; margin-bottom: 30px;
+                                              box-shadow: 0 10px 30px rgba(255,107,157,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <h2 style="margin: 0 0 10px 0; font-size: 2rem;">Welcome back, {{ customer.name }}!</h2>
+                    <p style="margin: 0; opacity: 0.9; font-size: 1.1rem;">
+                        You're a <strong>{{ loyalty_card.get_tier_display }}</strong> member 
+                        | Card: <strong>{{ loyalty_card.card_number }}</strong>
+                    </p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 3rem; font-weight: bold;">{{ loyalty_card.points_balance }}</div>
+                    <div style="opacity: 0.9;">Available Points</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row" style="margin-bottom: 30px;">
+            <div class="col-md-3 col-sm-6" style="margin-bottom: 20px;">
+                <div class="stat-card" style="background: white; padding: 25px; border-radius: 15px; text-align: center;
+                                                box-shadow: 0 5px 20px rgba(0,0,0,0.08); transition: transform 0.3s;">
+                    <div style="font-size: 2.5rem; color: #FF6B9D; margin-bottom: 10px;">⭐</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: #333;">{{ loyalty_card.current_stamps}}/{{ loyalty_card.stamps_to_reward }}</div>
+                    <div style="color: #666; font-size: 0.95rem;">Current Stamps</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" style="margin-bottom: 20px;">
+                <div class="stat-card" style="background: white; padding: 25px; border-radius: 15px; text-align: center;
+                                                box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+                    <div style="font-size: 2.5rem; color: #4CAF50; margin-bottom: 10px;">📦</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: #333;">{{ loyalty_card.total_orders }}</div>
+                    <div style="color: #666; font-size: 0.95rem;">Total Orders</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" style="margin-bottom: 20px;">
+                <div class="stat-card" style="background: white; padding: 25px; border-radius: 15px; text-align: center;
+                                                box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+                    <div style="font-size: 2.5rem; color: #FFC107; margin-bottom: 10px;">🎁</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: #333;">{{ active_rewards.count }}</div>
+                    <div style="color: #666; font-size: 0.95rem;">Active Rewards</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" style="margin-bottom: 20px;">
+                <div class="stat-card" style="background: white; padding: 25px; border-radius: 15px; text-align: center;
+                                                box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+                    <div style="font-size: 2.5rem; color: #9C27B0; margin-bottom: 10px;">₹</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: #333;">{{ loyalty_card.total_spent|floatformat:0 }}</div>
+                    <div style="color: #666; font-size: 0.95rem;">Total Spent</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column - Stamp Card & Progress -->
+            <div class="col-md-8">
+                <!-- Stamp Card -->
+                <div class="stamp-card" style="background: white; padding: 30px; border-radius: 20px; margin-bottom: 30px;
+                                                box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 20px 0; color: #333;">
+                        <span style="color: #FF6B9D;">⭐</span> Stamp Card Progress
+                    </h3>
+                    
+                    <div class="stamps-container" style="display: flex; justify-content: space-around; margin-bottom: 20px;">
+                        {% for i in "12345" %}
+                        <div class="stamp" style="width: 80px; height: 80px; border-radius: 50%;
+                                                   {% if forloop.counter <= loyalty_card.current_stamps %}
+                                                   background: linear-gradient(135deg, #FF6B9D, #C06C84);
+                                                   {% else %}
+                                                   background: #f0f0f0;
+                                                   {% endif %}
+                                                   display: flex; align-items: center; justify-content: center;
+                                                   font-size: 2rem; color: white;
+                                                   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                                                   transition: transform 0.3s;">
+                            {% if forloop.counter <= loyalty_card.current_stamps %}⭐{% else %}☆{% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="progress" style="height: 25px; border-radius: 15px; background: #f0f0f0;">
+                        <div class="progress-bar" style="background: linear-gradient(90deg, #FF6B9D, #C06C84); 
+                                                         width: {{ loyalty_card.progress_percentage }}%;
+                                                         border-radius: 15px;
+                                                         display: flex; align-items: center; justify-content: center;
+                                                         color: white; font-weight: bold; font-size: 0.9rem;">
+                            {{ loyalty_card.progress_percentage }}%
+                        </div>
+                    </div>
+                    
+                    <p style="text-align: center; margin: 15px 0 0 0; color: #666;">
+                        {% if loyalty_card.current_stamps < loyalty_card.stamps_to_reward %}
+                        <strong>{{ loyalty_card.stamps_to_reward|add:"-"|add:loyalty_card.current_stamps }}</strong> more stamps 
+                        to earn your <strong>{{ loyalty_card.tier_benefits.discount }}% discount</strong> reward!
+                        {% else %}
+                        Congratulations! You've earned a reward!
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Tier Progress -->
+                {% if next_tier %}
+                <div class="tier-progress" style="background: white; padding: 30px; border-radius: 20px; margin-bottom: 30px;
+                                                   box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 20px 0; color: #333;">
+                        <span style="color: #FFD700;">🏆</span> Tier Progress
+                    </h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span style="font-weight: bold; color: #333;">Current: {{ loyalty_card.get_tier_display }}</span>
+                            <span style="font-weight: bold; color: #FF6B9D;">Next: {{ next_tier }}</span>
+                        </div>
+                        <div class="progress" style="height: 20px; border-radius: 10px; background: #f0f0f0;">
+                            <div class="progress-bar" style="background: linear-gradient(90deg, #FFD700, #FFA000); 
+                                                             width: {{ tier_progress }}%;
+                                                             border-radius: 10px;"></div>
+                        </div>
+                        <p style="text-align: center; margin: 10px 0 0 0; color: #666;">
+                            <strong>{{ orders_needed }}</strong> more orders to reach <strong>{{ next_tier }}</strong> tier
+                        </p>
+                    </div>
+                    
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 10px;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #333;">{{ next_tier }} Benefits:</h4>
+                        <ul style="margin: 0; padding-left: 20px; color: #666;">
+                            {% if next_tier == 'Silver' %}
+                            <li>10% stamp rewards (instead of 5%)</li>
+                            <li>1.5x points multiplier</li>
+                            <li>100 birthday bonus points</li>
+                            <li>Free delivery on orders ₹800+</li>
+                            {% elif next_tier == 'Gold' %}
+                            <li>15% stamp rewards (instead of 10%)</li>
+                            <li>2.0x points multiplier</li>
+                            <li>150 birthday bonus points</li>
+                            <li>Free delivery on orders ₹500+</li>
+                            {% elif next_tier == 'Platinum' %}
+                            <li>20% stamp rewards (instead of 15%)</li>
+                            <li>2.5x points multiplier</li>
+                            <li>200 birthday bonus points</li>
+                            <li>FREE delivery on all orders!</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Active Rewards -->
+                {% if active_rewards %}
+                <div class="active-rewards" style="background: white; padding: 30px; border-radius: 20px; margin-bottom: 30px;
+                                                     box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 20px 0; color: #333;">
+                        <span style="color: #4CAF50;">🎁</span> Active Rewards
+                    </h3>
+                    
+                    {% for reward in active_rewards %}
+                    <div style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                                padding: 20px; border-radius: 15px; margin-bottom: 15px; color: white;
+                                box-shadow: 0 5px 15px rgba(76,175,80,0.3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="margin: 0 0 5px 0; font-size: 1.5rem;">{{ reward.discount_percentage }}% OFF</h4>
+                                <p style="margin: 0; opacity: 0.9;">{{ reward.get_reward_type_display }}</p>
+                                <small style="opacity: 0.8;">Expires: {{ reward.expiry_date|date:"M d, Y" }}</small>
+                            </div>
+                            <div>
+                                <a href="{% url 'products' %}" class="btn" style="background: white; color: #4CAF50; 
+                                                                               padding: 10px 25px; border-radius: 25px;
+                                                                               font-weight: bold; text-decoration: none;">
+                                    Use Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <a href="{% url 'my_rewards' %}" style="color: #FF6B9D; text-decoration: none; font-weight: bold;">
+                        View All Rewards →
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right Column - Points & Achievements -->
+            <div class="col-md-4">
+                <!-- Points Balance -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                           padding: 30px; border-radius: 20px; color: white; margin-bottom: 30px;
+                           box-shadow: 0 10px 30px rgba(102,126,234,0.4);">
+                    <h3 style="margin: 0 0 15px 0; font-size: 1.3rem;">💎 Points Balance</h3>
+                    <div style="font-size: 3rem; font-weight: bold; margin-bottom: 5px;">{{ loyalty_card.points_balance }}</div>
+                    <div style="opacity: 0.9; margin-bottom: 20px;">Lifetime: {{ loyalty_card.lifetime_points }} pts</div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; font-size: 0.9rem;">
+                        <strong>{{ loyalty_card.tier_benefits.points_multiplier }}x</strong> points on every order
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div style="background: white; padding: 25px; border-radius: 20px; margin-bottom: 30px;
+                           box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 0 0 15px 0; color: #333;">Quick Actions</h4>
+                    <a href="{% url 'referral_program' %}" class="btn btn-block" style="background: linear-gradient(135deg, #FF6B9D, #C06C84);
+                                                                                          color: white; padding: 15px; border-radius: 10px;
+                                                                                          text-decoration: none; display: block; text-align: center;
+                                                                                          margin-bottom: 10px; font-weight: bold;">
+                        🤝 Refer a Friend
+                    </a>
+                    <a href="{% url 'products' %}" class="btn btn-block" style="background: #4CAF50; color: white; padding: 15px;
+                                                                                border-radius: 10px; text-decoration: none;
+                                                                                display: block; text-align: center; font-weight: bold;">
+                        🛍️ Shop & Earn Points
+                    </a>
+
+                    <hr style="margin:15px 0; border-top:1px solid #eee;"/>
+                    <h5 style="margin: 0 0 10px 0; color:#333;">Redeem Points</h5>
+                    <form method="post" action="{% url 'set_points_redemption' %}" style="display:flex; gap:10px; align-items:center;">
+                        {% csrf_token %}
+                        <input type="number" name="points" min="0" max="{{ loyalty_card.points_balance }}" placeholder="Enter points"
+                               style="flex:1; padding:10px; border:2px solid #eee; border-radius:8px;"/>
+                        <button type="submit" class="btn" style="background:#667eea; color:white; padding:10px 14px; border-radius:8px; font-weight:600;">Redeem</button>
+                    </form>
+                    <small style="color:#666;">Max available: {{ loyalty_card.points_balance }} pts</small>
+
+                    {% if active_rewards %}
+                    <hr style="margin:15px 0; border-top:1px solid #eee;"/>
+                    <h5 style="margin: 0 0 10px 0; color:#333;">Apply Reward</h5>
+                    <form method="post" action="{% url 'set_reward_selection' %}">
+                        {% csrf_token %}
+                        <div style="max-height:140px; overflow-y:auto;">
+                        {% for rw in active_rewards %}
+                        <label style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px dashed #f0f0f0;">
+                            <input type="radio" name="reward_id" value="{{ rw.id }}"/>
+                            <span><b>{{ rw.discount_percentage }}% OFF</b> • {{ rw.get_reward_type_display }} (exp {{ rw.expiry_date|date:"M d" }})</span>
+                        </label>
+                        {% endfor %}
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:8px;">
+                            <button type="submit" class="btn" style="background:#4CAF50; color:white; padding:10px 14px; border-radius:8px; font-weight:600;">Apply</button>
+                            <button formaction="{% url 'clear_loyalty_selection' %}" formmethod="post" class="btn" style="background:#9E9E9E; color:white; padding:10px 14px; border-radius:8px; font-weight:600;">Clear</button>
+                            {% csrf_token %}
+                        </div>
+                    </form>
+                    {% endif %}
+
+                    <div style="margin-top:12px;">
+                        <a href="{% url 'loyalty_history' %}" style="color:#FF6B9D; font-weight:700; text-decoration:none;">View Loyalty History →</a>
+                    </div>
+                </div>
+
+                <!-- Recent Achievements -->
+                {% if achievements %}
+                <div style="background: white; padding: 25px; border-radius: 20px; margin-bottom: 30px;
+                           box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 0 0 15px 0; color: #333;">🏅 Recent Achievements</h4>
+                    {% for achievement in achievements %}
+                    <div style="padding: 12px; background: #f9f9f9; border-radius: 10px; margin-bottom: 10px;
+                               border-left: 4px solid #FFD700;">
+                        <div style="font-weight: bold; color: #333;">{{ achievement.achievement.name }}</div>
+                        <div style="font-size: 0.85rem; color: #666;">{{ achievement.achievement.description }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Recent Transactions -->
+                {% if recent_transactions %}
+                <div style="background: white; padding: 25px; border-radius: 20px;
+                           box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 0 0 15px 0; color: #333;">📊 Recent Activity</h4>
+                    {% for trans in recent_transactions|slice:":5" %}
+                    <div style="padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #666; font-size: 0.9rem;">{{ trans.reason|truncatechars:25 }}</span>
+                            <span style="font-weight: bold; {% if trans.transaction_type == 'earned' %}color: #4CAF50;{% else %}color: #FF5252;{% endif %}">
+                                {% if trans.transaction_type == 'earned' %}+{% else %}-{% endif %}{{ trans.points }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    }
+    
+    .stamp:hover {
+        transform: scale(1.1);
+    }
+    
+    @media (max-width: 768px) {
+        .stamps-container {
+            flex-wrap: wrap;
+        }
+        .stamp {
+            width: 60px !important;
+            height: 60px !important;
+            font-size: 1.5rem !important;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+{% endblock %}
+

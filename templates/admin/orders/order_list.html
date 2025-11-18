@@ -1,0 +1,130 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Orders Management - Cakes by Desti Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">{{ page_title|default:"All Orders" }}</h3>
+      <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+          <a href="{% url 'admin_dashboard' %}"><i class="icon-home"></i></a>
+        </li>
+        <li class="separator"><i class="icon-arrow-right"></i></li>
+        <li class="nav-item">Orders</li>
+      </ul>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <form method="get" class="row align-items-end">
+              <div class="col-md-3">
+                <label>Status Filter</label>
+                <select name="status" class="form-select">
+                  <option value="">All Status</option>
+                  <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                  <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                  <option value="preparing" {% if status_filter == 'preparing' %}selected{% endif %}>Preparing</option>
+                  <option value="ready" {% if status_filter == 'ready' %}selected{% endif %}>Ready</option>
+                  <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                  <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label>Search</label>
+                <input type="text" name="search" class="form-control" placeholder="Order #, Customer name, Phone..." value="{{ search }}">
+              </div>
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+                <a href="{% url 'admin_orders' %}" class="btn btn-secondary">Clear</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Orders List</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Product</th>
+                    <th>Size</th>
+                    <th>Delivery Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in orders %}
+                  <tr>
+                    <td><strong>{{ order.order_number }}</strong></td>
+                    <td>{{ order.customer.name }}</td>
+                    <td>{{ order.customer.phone_number }}</td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.size.name }}</td>
+                    <td>{{ order.delivery_date|date:"d M Y" }}</td>
+                    <td><strong>₹{{ order.total_price }}</strong></td>
+                    <td>
+                      {% if order.status == 'pending' %}
+                        <span class="badge badge-warning">Pending</span>
+                      {% elif order.status == 'confirmed' %}
+                        <span class="badge badge-info">Confirmed</span>
+                      {% elif order.status == 'preparing' %}
+                        <span class="badge badge-primary">Preparing</span>
+                      {% elif order.status == 'ready' %}
+                        <span class="badge badge-success">Ready</span>
+                      {% elif order.status == 'completed' %}
+                        <span class="badge badge-success">Completed</span>
+                      {% else %}
+                        <span class="badge badge-danger">{{ order.get_status_display }}</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <a href="{% url 'admin_order_detail' order.id %}" class="btn btn-sm btn-primary" title="View Details">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'admin_order_generate_pdf' order.id %}" class="btn btn-sm btn-success" title="Generate PDF" target="_blank">
+                          <i class="fas fa-file-pdf"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="9" class="text-center py-4">
+                      <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                      <p>No orders found</p>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,74 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if tier %}Edit{% else %}Add{% endif %} Cake Tier - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">{% if tier %}Edit{% else %}Add{% endif %} Cake Tier</h3>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              
+              <div class="form-group">
+                <label for="name">Tier Name *</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ tier.name }}" required placeholder="e.g., 1-Tier, 2-Tier, 3-Tier">
+              </div>
+
+              <div class="form-group">
+                <label for="tiers_count">Number of Tiers *</label>
+                <input type="number" class="form-control" id="tiers_count" name="tiers_count" value="{{ tier.tiers_count }}" required placeholder="e.g., 1, 2, 3" min="1">
+              </div>
+
+              <div class="form-group">
+                <label for="price_multiplier">Price Multiplier *</label>
+                <input type="number" step="0.1" class="form-control" id="price_multiplier" name="price_multiplier" value="{{ tier.price_multiplier|default:1.0 }}" required placeholder="e.g., 1.0, 1.8, 2.5">
+                <small class="form-text text-muted">1.0 = base price, 1.8 = 80% more, 2.5 = 150% more</small>
+              </div>
+
+              <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Optional description">{{ tier.description }}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="display_order">Display Order</label>
+                <input type="number" class="form-control" id="display_order" name="display_order" value="{{ tier.display_order|default:0 }}" placeholder="0">
+                <small class="form-text text-muted">Lower numbers appear first</small>
+              </div>
+
+              <div class="form-group">
+                <label for="image">Image (Optional)</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                {% if tier.image %}
+                <small class="form-text text-muted">Current: {{ tier.image.name }}</small>
+                {% endif %}
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if not tier or tier.is_active %}checked{% endif %}>
+                <label class="form-check-label" for="is_active">Active</label>
+              </div>
+
+              <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i> Save
+                </button>
+                <a href="{% url 'admin_cake_tiers' %}" class="btn btn-secondary">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

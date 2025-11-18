@@ -1,0 +1,180 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Expense Report - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Expense Report</h3>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <form method="get" class="row align-items-end">
+              <div class="col-md-3">
+                <label>From Date</label>
+                <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+              </div>
+              <div class="col-md-3">
+                <label>To Date</label>
+                <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+              </div>
+              <div class="col-md-4">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                <a href="?export=csv{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="btn btn-success">
+                  <i class="fas fa-file-csv"></i> Export CSV
+                </a>
+                <a href="{% url 'admin_expense_report' %}" class="btn btn-secondary">Clear</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card card-stats card-round">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-icon">
+                <div class="icon-big text-center icon-danger bubble-shadow-small">
+                  <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+              </div>
+              <div class="col col-stats ms-3 ms-sm-0">
+                <div class="numbers">
+                  <p class="card-category">Total Bills</p>
+                  <h4 class="card-title">{{ total_bills }}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card card-stats card-round">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-icon">
+                <div class="icon-big text-center icon-warning bubble-shadow-small">
+                  <i class="fas fa-money-bill-wave"></i>
+                </div>
+              </div>
+              <div class="col col-stats ms-3 ms-sm-0">
+                <div class="numbers">
+                  <p class="card-category">Total Expenses</p>
+                  <h4 class="card-title">₹{{ total_expenses|floatformat:2 }}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Breakdown -->
+    {% if monthly_data %}
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Monthly Breakdown</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Bills</th>
+                    <th>Total Expenses</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for data in monthly_data %}
+                  <tr>
+                    <td><strong>{{ data.month|date:"F Y" }}</strong></td>
+                    <td><span class="badge badge-info">{{ data.bill_count }}</span></td>
+                    <td><strong class="text-danger">₹{{ data.total_expenses|floatformat:2 }}</strong></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Purchase Bills List -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="card-title">Purchase Bills</h4>
+              <a href="{% url 'admin_purchase_bill_add' %}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Add Bill
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Supplier</th>
+                    <th>Amount</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for bill in bills %}
+                  <tr>
+                    <td>{{ bill.date|date:"d M Y" }}</td>
+                    <td><strong>{{ bill.supplier_name }}</strong></td>
+                    <td><strong class="text-danger">₹{{ bill.total_amount }}</strong></td>
+                    <td>{{ bill.notes|truncatewords:10 }}</td>
+                    <td>
+                      <div class="btn-group">
+                        {% if bill.bill_upload %}
+                        <a href="{{ bill.bill_upload.url }}" class="btn btn-sm btn-info" target="_blank" title="View Bill">
+                          <i class="fas fa-file"></i>
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'admin_purchase_bill_edit' bill.id %}" class="btn btn-sm btn-primary">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin_purchase_bill_delete' bill.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-center py-4">No purchase bills found</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

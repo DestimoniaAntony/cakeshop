@@ -1,0 +1,158 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Your Cart - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<section class="page-title" style="background-image:url({% static 'images/main-slider/slider_bg_1.png' %})">
+    <div class="auto-container">
+        <h1>Your Cart</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">home</a></li>
+            <li>Cart</li>
+        </ul>
+    </div>
+    </section>
+{% endblock %}
+
+{% block content %}
+<section class="cart-section">
+    <div class="auto-container">
+        {% if cart %}
+        <div class="table-responsive">
+            <table class="table" style="background: #fff; border-radius: 8px; overflow: hidden;">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Details</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for line in cart %}
+                    <tr>
+                        <td>
+                            {% if line.type == 'custom_cake' %}
+                            <strong>🎂 Custom Cake</strong>
+                            {% else %}
+                            {{ line.product_name }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if line.type == 'custom_cake' %}
+                            <small>
+                                Shape: {{ line.shape_name }}<br>
+                                Tier: {{ line.tier_name }}<br>
+                                Weight: {{ line.total_weight }} kg<br>
+                                Flavor: {{ line.flavor_display }}<br>
+                                {% if line.decorations %}
+                                Decorations: 
+                                {% for dec in line.decorations %}
+                                {{ dec.quantity }}× {{ dec.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </small>
+                            {% else %}
+                            {{ line.size_name }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if line.type == 'custom_cake' %}
+                            1
+                            {% else %}
+                            <form method="post" action="{% url 'update_cart_item' %}" style="display:flex; gap:6px; align-items:center;">
+                                {% csrf_token %}
+                                <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+                                <input type="number" name="quantity" value="{{ line.quantity }}" min="1" style="width:80px; text-align:center;"/>
+                                <button class="theme-btn btn-style-two" type="submit"><span></span>Update<span></span></button>
+                            </form>
+                            {% endif %}
+                        </td>
+                        <td>{{ line.display_price }}</td>
+                        <td>
+                            <form method="post" action="{% url 'remove_cart_item' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+                                <button class="theme-btn" type="submit">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="display:flex; justify-content: flex-end; margin-top: 15px;">
+            <div style="background:#fff; padding:20px; border-radius:8px; min-width:320px;">
+                <div style="display:flex; justify-content: space-between; font-weight: 600; margin-bottom: 10px;">
+                    <span>Products Total</span>
+                    <span>₹{{ cart_total|floatformat:0 }}</span>
+                </div>
+                {% if has_custom_cakes %}
+                <div style="display:flex; justify-content: space-between; font-weight: 600; color: #ff6b9d; padding-top: 10px; border-top: 1px solid #ddd;">
+                    <span>Custom Cakes</span>
+                    <span>Quote Required</span>
+                </div>
+                <small style="display: block; margin-top: 8px; color: #999; text-align: right;">
+                    <i class="fas fa-info-circle"></i> We'll provide pricing for custom cakes after review
+                </small>
+                {% endif %}
+            </div>
+        </div>
+
+        <form method="post" action="{% url 'checkout_submit' %}" style="margin-top:20px;">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4" style="margin-bottom:10px;">
+                    <label>Name *</label>
+                    <input type="text" name="customer_name" required class="form-control"/>
+                </div>
+                <div class="col-md-4" style="margin-bottom:10px;">
+                    <label>WhatsApp Number *</label>
+                    <input type="tel" name="customer_phone" required class="form-control"/>
+                </div>
+                <div class="col-md-4" style="margin-bottom:10px;">
+                    <label>Email</label>
+                    <input type="email" name="customer_email" class="form-control"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="margin-bottom:10px;">
+                    <label>Delivery Address</label>
+                    <textarea name="delivery_address" rows="2" class="form-control"></textarea>
+                </div>
+                <div class="col-md-4" style="margin-bottom:10px;">
+                    <label>Delivery Date *</label>
+                    <input type="date" name="delivery_date" required class="form-control"/>
+                </div>
+                <div class="col-md-4" style="margin-bottom:10px;">
+                    <label>Delivery Time</label>
+                    <input type="time" name="delivery_time" class="form-control"/>
+                </div>
+                <div class="col-md-12" style="margin-bottom:10px;">
+                    <label>Message on Cake</label>
+                    <input type="text" name="custom_message" class="form-control" placeholder="e.g., Happy Birthday!"/>
+                </div>
+                <div class="col-md-12" style="margin-bottom:10px;">
+                    <label>Special Instructions</label>
+                    <textarea name="special_instructions" rows="2" class="form-control" placeholder="Any special requirements..."></textarea>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <a href="{% url 'products' %}" class="theme-btn btn-style-two large bg-sky"><span></span>Continue Shopping<span></span></a>
+                <button class="theme-btn btn-style-two large bg-pink" type="submit"><span></span>Place Order<span></span></button>
+            </div>
+        </form>
+        {% else %}
+        <div class="text-center" style="padding: 60px 0;">
+            <h3>Your cart is empty</h3>
+            <p><a href="{% url 'products' %}">Browse products</a> and add items to your cart.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+

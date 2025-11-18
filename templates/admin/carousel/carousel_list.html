@@ -1,0 +1,125 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Homepage Carousel/Slider - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">🎠 Homepage Carousel/Slider</h3>
+      <p class="text-muted">Manage the rotating banners on your homepage. These slides will display automatically with smooth transitions.</p>
+    </div>
+
+    <!-- Info Alert -->
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      <i class="fas fa-info-circle"></i> <strong>Quick Tips:</strong>
+      <ul class="mb-0 mt-2">
+        <li>Upload images in <strong>1920×1080 pixels (Full HD)</strong> for best quality</li>
+        <li>Use <strong>Display Order</strong> to control slide sequence (1, 2, 3...)</li>
+        <li>Add compelling <strong>titles</strong> and <strong>call-to-action buttons</strong></li>
+        <li>Set validity dates to auto-activate/deactivate seasonal slides</li>
+      </ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="d-flex justify-content-between">
+          <a href="{% url 'admin_carousel_add' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i> Add New Slide
+          </a>
+          <div class="btn-group">
+            <a href="/" target="_blank" class="btn btn-success">
+              <i class="fas fa-eye"></i> Preview Homepage
+            </a>
+            <a href="?active=true" class="btn btn-info">
+              <i class="fas fa-check-circle"></i> Active Only
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      {% for slide in slides %}
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4">
+                {% if slide.image %}
+                <img src="{{ slide.image.url }}" class="img-fluid rounded" style="max-height: 150px; object-fit: cover;">
+                {% endif %}
+              </div>
+              <div class="col-md-8">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="mb-0">{{ slide.title }}</h5>
+                  <span class="badge badge-primary" style="font-size: 14px;">Order: {{ slide.display_order }}</span>
+                </div>
+                {% if slide.subtitle %}
+                <p class="text-primary mb-2"><em>{{ slide.subtitle }}</em></p>
+                {% endif %}
+                <p class="text-muted mb-2">{{ slide.description|truncatewords:15 }}</p>
+                <p class="mb-2">
+                  <i class="fas fa-calendar"></i> 
+                  {{ slide.start_date|date:"d M Y" }} - {{ slide.end_date|date:"d M Y" }}
+                </p>
+                <p class="mb-2">
+                  <i class="fas fa-mouse-pointer"></i> 
+                  <strong>Button:</strong> "{{ slide.button_text }}" → {{ slide.button_link }}
+                </p>
+                <div class="mb-2">
+                  {% if slide.is_valid %}
+                  <span class="badge badge-success"><i class="fas fa-check"></i> Active & Valid</span>
+                  {% elif slide.is_active %}
+                  <span class="badge badge-warning"><i class="fas fa-clock"></i> Active (Not in date range)</span>
+                  {% else %}
+                  <span class="badge badge-danger"><i class="fas fa-times"></i> Inactive</span>
+                  {% endif %}
+                </div>
+                <div class="btn-group">
+                  <a href="{% url 'admin_carousel_edit' slide.id %}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-edit"></i> Edit
+                  </a>
+                  <a href="{% url 'admin_carousel_delete' slide.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this slide?')">
+                    <i class="fas fa-trash"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body text-center py-5">
+            <i class="fas fa-images fa-4x text-muted mb-3"></i>
+            <h4>No carousel slides yet</h4>
+            <p class="text-muted mb-3">Create beautiful rotating banners for your homepage</p>
+            <div class="alert alert-light text-start mx-auto" style="max-width: 600px;">
+              <h6><i class="fas fa-lightbulb"></i> Getting Started:</h6>
+              <ol>
+                <li>Click "Add New Slide" below</li>
+                <li>Upload a banner image (1920×1080 pixels)</li>
+                <li>Add your title, subtitle, and description</li>
+                <li>Set button text (e.g., "Order Now") and link</li>
+                <li>Set display order and dates</li>
+                <li>Save and preview on homepage!</li>
+              </ol>
+              <p class="mb-0"><strong>Tip:</strong> Use the images in <code>media/banners/</code> to get started quickly!</p>
+            </div>
+            <a href="{% url 'admin_carousel_add' %}" class="btn btn-primary btn-lg mt-3">
+              <i class="fas fa-plus"></i> Add Your First Slide
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

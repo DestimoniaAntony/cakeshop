@@ -1,0 +1,353 @@
+{% extends "customer/base.html" %}
+{% load static %}
+
+{% block title %}Order Confirmation - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<!--Page Title-->
+<section class="page-title" style="background-image:url({% static 'images/main-slider/slider_bg_2.png' %})">
+    <div class="auto-container">
+        <h1>Custom Cake Order Received</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">home</a></li>
+            <li><a href="{% url 'custom_cakes' %}">Custom Cakes</a></li>
+            <li>Order Confirmation</li>
+        </ul>
+    </div>
+</section>
+<!--End Page Title-->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirmation-section {
+        padding: 4rem 0;
+        background: white;
+        min-height: 70vh;
+    }
+    
+    .confirmation-card {
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .success-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        animation: scaleIn 0.5s ease-out;
+    }
+    
+    .success-icon i {
+        font-size: 3rem;
+        color: white;
+    }
+    
+    @keyframes scaleIn {
+        from { transform: scale(0); }
+        to { transform: scale(1); }
+    }
+    
+    .confirmation-card h1 {
+        color: #4CAF50;
+        margin-bottom: 1rem;
+        font-size: 2.5rem;
+    }
+    
+    .order-number {
+        background: #FFF9F5;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+        border-left: 5px solid #FF6B9D;
+    }
+    
+    .order-number h3 {
+        color: #FF6B9D;
+        margin: 0;
+        font-size: 1.8rem;
+    }
+    
+    .order-details {
+        text-align: left;
+        background: #FFF9F5;
+        padding: 2rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #E8D5C4;
+    }
+    
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-label {
+        color: #666;
+        font-weight: 600;
+    }
+    
+    .detail-value {
+        color: #333;
+        font-weight: 500;
+    }
+    
+    .price-highlight {
+        background: linear-gradient(135deg, #FF6B9D, #C06C84);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+    }
+    
+    .price-highlight h2 {
+        margin: 0;
+        font-size: 2.5rem;
+    }
+    
+    .disclaimer-box {
+        background: #FFF3CD;
+        border-left: 5px solid #FFC107;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 2rem 0;
+        text-align: left;
+    }
+    
+    .disclaimer-box strong {
+        color: #856404;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        padding: 1rem 2rem;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #FF6B9D, #C06C84);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255, 107, 157, 0.3);
+    }
+    
+    .btn-secondary {
+        background: #f8f9fa;
+        color: #333;
+        border: 2px solid #E8D5C4;
+    }
+    
+    .btn-secondary:hover {
+        background: #E8D5C4;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="confirmation-section">
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <h1>Order Placed Successfully!</h1>
+            <p style="font-size: 1.1rem; color: #666;">Thank you for ordering your custom cake with us!</p>
+            
+            {% if auto_sent %}
+            <div style="background: linear-gradient(135deg, #25D366, #128C7E); color: white; padding: 1rem; border-radius: 10px; margin: 1rem 0; font-size: 1rem;">
+                <i class="fab fa-whatsapp"></i> <strong>Order automatically sent to WhatsApp!</strong><br>
+                <small>We'll review your requirements and provide a detailed quote soon.</small>
+            </div>
+            {% endif %}
+            
+            <div class="order-number">
+                <h3>Order #{{ order.order_number }}</h3>
+            </div>
+            
+            <div class="order-details">
+                <h4 style="color: #C06C84; margin-bottom: 1rem;">Order Details</h4>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Shape:</span>
+                    <span class="detail-value">{{ order.shape.name }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Tier:</span>
+                    <span class="detail-value">{{ order.tier.name }} ({{ order.tier.tiers_count }} tier{{ order.tier.tiers_count|pluralize }})</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Weight:</span>
+                    <span class="detail-value">{{ order.total_weight }} kg</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Flavor:</span>
+                    <span class="detail-value">
+                        {% if order.flavor %}
+                            {{ order.flavor.name }}
+                        {% elif order.flavor_description %}
+                            {{ order.flavor_description }} (custom)
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </span>
+                </div>
+                
+                {% if order.decorations.all %}
+                <div class="detail-row">
+                    <span class="detail-label">Decorations:</span>
+                    <span class="detail-value">
+                        {% for decoration in order.decorations.all %}
+                            {{ decoration.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                
+                {% if order.custom_message %}
+                <div class="detail-row">
+                    <span class="detail-label">Message on Cake:</span>
+                    <span class="detail-value">{{ order.custom_message }}</span>
+                </div>
+                {% endif %}
+                
+                <div class="detail-row">
+                    <span class="detail-label">Delivery Date:</span>
+                    <span class="detail-value">{{ order.delivery_date|date:"d M, Y" }}
+                        {% if order.delivery_time %} at {{ order.delivery_time|time:"h:i A" }}{% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="price-highlight">
+                <div style="font-size: 1.2rem; opacity: 0.9;">Estimated Price Range</div>
+                <h2>{{ order.price_range_display }}</h2>
+                <!-- <p style="font-size: 0.95rem; margin: 0.5rem 0 0 0; opacity: 0.85;">
+                    (Base estimate: ₹{{ order.estimated_price|floatformat:0 }})
+                </p> -->
+            </div>
+            
+            <div class="disclaimer-box">
+                <p><strong>Important:</strong> This is an estimated price based on your selections. The final price may vary depending on design complexity and customization requirements. Our team will contact you within 24 hours to confirm the final price and discuss your design in detail.</p>
+            </div>
+            
+            <div style="background: #E8F5E9; padding: 1.5rem; border-radius: 10px; margin: 2rem 0; text-align: left;">
+                <h4 style="color: #4CAF50; margin-bottom: 1rem;"><i class="fas fa-info-circle"></i> What Happens Next?</h4>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="padding: 0.5rem 0;"><i class="fas fa-file-pdf" style="color: #6C63FF; margin-right: 0.5rem;"></i> Download your order PDF below</li>
+                    <li style="padding: 0.5rem 0;"><i class="fab fa-whatsapp" style="color: #25D366; margin-right: 0.5rem;"></i> Send details to us via WhatsApp</li>
+                    <li style="padding: 0.5rem 0;"><i class="fas fa-phone" style="color: #4CAF50; margin-right: 0.5rem;"></i> We'll call you within 24 hours to discuss your design</li>
+                    <li style="padding: 0.5rem 0;"><i class="fas fa-rupee-sign" style="color: #4CAF50; margin-right: 0.5rem;"></i> We'll confirm the final price with you</li>
+                    <li style="padding: 0.5rem 0;"><i class="fas fa-check-circle" style="color: #4CAF50; margin-right: 0.5rem;"></i> Once you approve, we'll start creating your cake</li>
+                    <li style="padding: 0.5rem 0;"><i class="fas fa-truck" style="color: #4CAF50; margin-right: 0.5rem;"></i> We'll deliver on {{ order.delivery_date|date:"d M, Y" }}</li>
+                </ul>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; justify-content: center;">
+                <a href="{% url 'generate_custom_cake_pdf' order.order_number %}" target="_blank" style="background: linear-gradient(135deg, #6C63FF, #4834DF); color: white; padding: 1.2rem 2rem; border-radius: 30px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s; font-size: 1.1rem;">
+                    <i class="fas fa-file-pdf"></i> Download PDF
+                </a>
+                <a href="#" onclick="sendOrderToWhatsApp(); return false;" style="background: linear-gradient(135deg, #25D366, #128C7E); color: white; padding: 1.2rem 2rem; border-radius: 30px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s; font-size: 1.1rem;" id="whatsappBtn">
+                    <i class="fab fa-whatsapp"></i> Send to WhatsApp
+                </a>
+            </div>
+            
+            <div style="background: #FFF9F5; padding: 1.5rem; border-radius: 10px; margin: 2rem 0;">
+                <p style="margin: 0; color: #666;">
+                    <strong>Save your order number:</strong> #{{ order.order_number }}<br>
+                    <strong>Contact us:</strong> [Your Phone] | [Your Email]
+                </p>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{% url 'home' %}" class="btn-action btn-primary">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+                <a href="{% url 'custom_cakes' %}" class="btn-action btn-secondary">
+                    <i class="fas fa-cake"></i> Order Another Cake
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Immediate WhatsApp opening - no waiting for page load
+(function() {
+    const message = `{{ whatsapp_message|escapejs }}`;
+    const businessWhatsApp = '919946588352'; // Cakes by Desti
+    const pdfURL = window.location.origin + "{% url 'generate_custom_cake_pdf' order.order_number %}";
+    
+    const enhancedMessage = message + `\n\n📄 *Order PDF Download:*\n${pdfURL}`;
+    
+    const whatsappURL = `https://wa.me/${businessWhatsApp}?text=${encodeURIComponent(enhancedMessage)}`;
+    
+    // Open WhatsApp immediately
+    window.open(whatsappURL, '_blank');
+    
+    // Also open on page load as backup
+    window.addEventListener('load', function() {
+        window.open(whatsappURL, '_blank');
+    });
+})();
+
+function sendOrderToWhatsApp() {
+    const message = `{{ whatsapp_message|escapejs }}`;
+    const businessWhatsApp = '919946588352'; // Cakes by Desti
+    const pdfURL = window.location.origin + "{% url 'generate_custom_cake_pdf' order.order_number %}";
+    
+    const enhancedMessage = message + `\n\n📄 *Order PDF Download:*\n${pdfURL}`;
+    
+    const whatsappURL = `https://wa.me/${businessWhatsApp}?text=${encodeURIComponent(enhancedMessage)}`;
+    
+    // Open WhatsApp in a new tab/window
+    window.open(whatsappURL, '_blank');
+    
+    // Update button text if it exists
+    const whatsappBtn = document.getElementById('whatsappBtn');
+    if (whatsappBtn) {
+        whatsappBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Resend to WhatsApp';
+    }
+    
+    // Show a notification that WhatsApp was opened
+    {% if auto_sent %}
+    console.log('WhatsApp automatically opened with order details');
+    {% endif %}
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,221 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Order {{ order.order_number }} - Custom Orders{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">
+        <a href="{% url 'admin_custom_orders' %}" class="text-muted"><i class="fas fa-arrow-left"></i></a>
+        Custom Order: {{ order.order_number }}
+      </h3>
+      <div class="btn-toolbar ms-auto">
+        <a href="{% url 'admin_custom_order_edit' order.id %}" class="btn btn-primary btn-sm me-2">
+          <i class="fas fa-edit"></i> Edit Order
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Order Information -->
+      <div class="col-md-8">
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Order Details</h5>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                <p><strong>Status:</strong>
+                  {% if order.status == 'pending' %}
+                  <span class="badge badge-warning">Pending Review</span>
+                  {% elif order.status == 'quoted' %}
+                  <span class="badge badge-info">Estimate Sent</span>
+                  {% elif order.status == 'customer_approved' %}
+                  <span class="badge badge-primary">Customer Approved</span>
+                  {% elif order.status == 'confirmed' %}
+                  <span class="badge badge-success">Confirmed</span>
+                  {% elif order.status == 'preparing' %}
+                  <span class="badge badge-info">Preparing</span>
+                  {% elif order.status == 'ready' %}
+                  <span class="badge badge-primary">Ready</span>
+                  {% elif order.status == 'completed' %}
+                  <span class="badge badge-success">Completed</span>
+                  {% elif order.status == 'cancelled' %}
+                  <span class="badge badge-danger">Cancelled</span>
+                  {% endif %}
+                </p>
+                <p><strong>Created:</strong> {{ order.created_at|date:"d M, Y h:i A" }}</p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Delivery Date:</strong> {{ order.delivery_date|date:"d M, Y" }}</p>
+                {% if order.delivery_time %}
+                <p><strong>Delivery Time:</strong> {{ order.delivery_time }}</p>
+                {% endif %}
+                {% if order.event %}
+                <p><strong>Event:</strong> {{ order.event.event_name }}</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <hr>
+
+            <h6 class="mb-3">Cake Specifications</h6>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <p><strong>Shape:</strong> {{ order.shape.name }} <span class="badge badge-info">₹{{ order.shape.base_price_per_kg }}/kg</span></p>
+                <p><strong>Tier:</strong> {{ order.tier.name }} ({{ order.tier.tiers_count }} tier{{ order.tier.tiers_count|pluralize }}) <span class="badge badge-info">×{{ order.tier.price_multiplier }}</span></p>
+                <p><strong>Total Weight:</strong> {{ order.total_weight }} kg</p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Flavor:</strong>
+                  {% if order.flavor %}
+                    {{ order.flavor.name }}
+                  {% elif order.flavor_description %}
+                    {{ order.flavor_description }}
+                  {% else %}
+                    Not specified
+                  {% endif %}
+                </p>
+                {% if order.custom_message %}
+                <p><strong>Message on Cake:</strong> "{{ order.custom_message }}"</p>
+                {% endif %}
+              </div>
+            </div>
+
+            {% if order_decorations %}
+            <hr>
+            <h6 class="mb-3">Decorations</h6>
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Decoration</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                  <th>Price per Unit</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in order_decorations %}
+                <tr>
+                  <td>{{ item.decoration.name }}</td>
+                  <td><span class="badge badge-light">{{ item.decoration.category }}</span></td>
+                  <td>{{ item.quantity }}</td>
+                  <td>₹{{ item.decoration.price }}</td>
+                  <td><strong>₹{{ item.total_price }}</strong></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+
+            {% if order.special_instructions %}
+            <hr>
+            <h6 class="mb-2">Special Instructions</h6>
+            <p class="text-muted">{{ order.special_instructions|linebreaks }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Reference Images -->
+        {% if reference_images %}
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Reference Images</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              {% for img in reference_images %}
+              <div class="col-md-3 mb-3">
+                <a href="{{ img.image.url }}" target="_blank">
+                  <img src="{{ img.image.url }}" class="img-fluid rounded" alt="Reference">
+                </a>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Pricing Breakdown -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Pricing Breakdown</h5>
+          </div>
+          <div class="card-body">
+            <table class="table table-sm">
+              <tbody>
+                {% for key, value in order.price_breakdown.items %}
+                <tr>
+                  <td><strong>{{ key|title }}:</strong></td>
+                  <td class="text-end">₹{{ value }}</td>
+                </tr>
+                {% endfor %}
+                <tr class="table-light">
+                  <td><strong>Estimated Price Range:</strong></td>
+                  <td class="text-end"><strong>{{ order.price_range_display }}</strong></td>
+                </tr>
+                {% if order.final_price %}
+                <tr class="table-success">
+                  <td><strong>Final Agreed Price:</strong></td>
+                  <td class="text-end"><strong>₹{{ order.final_price }}</strong></td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Information -->
+      <div class="col-md-4">
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Customer Information</h5>
+          </div>
+          <div class="card-body">
+            <p><strong>Name:</strong> {{ order.customer.name }}</p>
+            <p><strong>Phone:</strong> <a href="tel:{{ order.customer.phone_number }}">{{ order.customer.phone_number }}</a></p>
+            {% if order.customer.email %}
+            <p><strong>Email:</strong> <a href="mailto:{{ order.customer.email }}">{{ order.customer.email }}</a></p>
+            {% endif %}
+            {% if order.delivery_address %}
+            <hr>
+            <p><strong>Delivery Address:</strong></p>
+            <p class="text-muted">{{ order.delivery_address|linebreaks }}</p>
+            {% endif %}
+            <hr>
+            <a href="{% url 'admin_customer_detail' order.customer.id %}" class="btn btn-sm btn-outline-primary w-100">
+              <i class="fas fa-user"></i> View Customer Profile
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Quick Actions</h5>
+          </div>
+          <div class="card-body">
+            <a href="{% url 'admin_custom_order_edit' order.id %}" class="btn btn-primary btn-sm w-100 mb-2">
+              <i class="fas fa-edit"></i> Edit Order
+            </a>
+            <button class="btn btn-success btn-sm w-100 mb-2" onclick="window.print()">
+              <i class="fas fa-print"></i> Print Order
+            </button>
+            <a href="https://wa.me/91{{ order.customer.phone_number }}?text=Hello%20{{ order.customer.name }},%20regarding%20your%20custom%20cake%20order%20{{ order.order_number }}" 
+               target="_blank" class="btn btn-success btn-sm w-100 mb-2">
+              <i class="fab fa-whatsapp"></i> Message Customer
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

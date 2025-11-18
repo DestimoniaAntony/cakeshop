@@ -1,0 +1,108 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Purchase Bills - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Purchase Bills</h3>
+    </div>
+
+    <!-- Filters & Actions -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <form method="get" class="d-flex gap-2 flex-grow-1">
+                <input type="date" name="date_from" class="form-control" placeholder="From" value="{{ date_from }}" style="max-width: 180px;">
+                <input type="date" name="date_to" class="form-control" placeholder="To" value="{{ date_to }}" style="max-width: 180px;">
+                <input type="text" name="search" class="form-control" placeholder="Search supplier..." value="{{ search }}" style="max-width: 250px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                <a href="{% url 'admin_purchase_bills' %}" class="btn btn-secondary">Clear</a>
+              </form>
+              <a href="{% url 'admin_purchase_bill_add' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Add Bill
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="alert alert-info">
+          <strong>Total Expenses:</strong> ₹{{ total_amount|floatformat:2 }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Bills Table -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Supplier</th>
+                    <th>Amount</th>
+                    <th>Bill</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for bill in bills %}
+                  <tr>
+                    <td><strong>{{ bill.date|date:"d M Y" }}</strong></td>
+                    <td>{{ bill.supplier_name }}</td>
+                    <td><strong class="text-danger">₹{{ bill.total_amount }}</strong></td>
+                    <td>
+                      {% if bill.bill_upload %}
+                      <a href="{{ bill.bill_upload.url }}" target="_blank" class="btn btn-sm btn-info">
+                        <i class="fas fa-file-pdf"></i> View
+                      </a>
+                      {% else %}
+                      <span class="text-muted">No file</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ bill.notes|truncatewords:15 }}</td>
+                    <td>
+                      <div class="btn-group">
+                        <a href="{% url 'admin_purchase_bill_edit' bill.id %}" class="btn btn-sm btn-primary">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin_purchase_bill_delete' bill.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this bill?')">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center py-4">
+                      <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                      <p>No purchase bills found</p>
+                      <a href="{% url 'admin_purchase_bill_add' %}" class="btn btn-primary">Add First Bill</a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

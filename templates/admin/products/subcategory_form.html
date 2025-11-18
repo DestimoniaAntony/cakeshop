@@ -1,0 +1,69 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subcategory %}Edit{% else %}Add{% endif %} Subcategory - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">{% if subcategory %}Edit{% else %}Add{% endif %} Subcategory</h3>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              
+              <div class="form-group">
+                <label for="category">Parent Category *</label>
+                <select class="form-select" id="category" name="category" required>
+                  <option value="">-- Select Category --</option>
+                  {% for cat in categories %}
+                  <option value="{{ cat.id }}" {% if subcategory and subcategory.category.id == cat.id %}selected{% endif %}>
+                    {{ cat.name }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="name">Subcategory Name *</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ subcategory.name }}" required>
+              </div>
+
+              <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3">{{ subcategory.description }}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="image">Image</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                {% if subcategory and subcategory.image %}
+                <img src="{{ subcategory.image.url }}" style="max-width: 200px; margin-top: 10px;" class="img-thumbnail">
+                {% endif %}
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if not subcategory or subcategory.is_active %}checked{% endif %}>
+                <label class="form-check-label" for="is_active">Active</label>
+              </div>
+
+              <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i> Save
+                </button>
+                <a href="{% url 'admin_subcategories' %}" class="btn btn-secondary">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

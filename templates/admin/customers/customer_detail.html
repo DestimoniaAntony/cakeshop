@@ -1,0 +1,81 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Customer {{ customer.name }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Customer Details</h3>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Contact Information</h4>
+          </div>
+          <div class="card-body">
+            <p><strong>Name:</strong><br>{{ customer.name }}</p>
+            <p><strong>Phone:</strong><br>{{ customer.phone_number }}</p>
+            {% if customer.email %}
+            <p><strong>Email:</strong><br>{{ customer.email }}</p>
+            {% endif %}
+            {% if customer.address %}
+            <p><strong>Address:</strong><br>{{ customer.address }}</p>
+            {% endif %}
+            <p><strong>Customer Since:</strong><br>{{ customer.created_at|date:"d M Y" }}</p>
+            <a href="https://wa.me/{{ customer.phone_number }}" class="btn btn-success btn-sm w-100" target="_blank">
+              <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Order History</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Product</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in orders %}
+                  <tr>
+                    <td><strong>{{ order.order_number }}</strong></td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.created_at|date:"d M Y" }}</td>
+                    <td>₹{{ order.total_price }}</td>
+                    <td><span class="badge badge-{% if order.status == 'completed' %}success{% elif order.status == 'pending' %}warning{% else %}info{% endif %}">{{ order.get_status_display }}</span></td>
+                    <td>
+                      <a href="{% url 'admin_order_detail' order.id %}" class="btn btn-sm btn-primary">View</a>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center py-4">No orders yet</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

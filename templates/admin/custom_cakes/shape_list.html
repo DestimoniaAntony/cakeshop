@@ -1,0 +1,83 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Cake Shapes - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">Cake Shapes</h3>
+      <p class="text-muted">Manage available cake shapes and their base pricing</p>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <a href="{% url 'admin_cake_shape_add' %}" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add Cake Shape
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Name</th>
+                    <th>Base Price per kg</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for shape in shapes %}
+                  <tr>
+                    <td><span class="badge badge-secondary">{{ shape.display_order }}</span></td>
+                    <td><strong>{{ shape.name }}</strong></td>
+                    <td>₹{{ shape.base_price_per_kg }}/kg</td>
+                    <td>{{ shape.description|truncatewords:10|default:"-" }}</td>
+                    <td>
+                      {% if shape.is_active %}
+                      <span class="badge badge-success">Active</span>
+                      {% else %}
+                      <span class="badge badge-danger">Inactive</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ shape.created_at|date:"d M, Y" }}</td>
+                    <td>
+                      <div class="btn-group">
+                        <a href="{% url 'admin_cake_shape_edit' shape.id %}" class="btn btn-sm btn-primary">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin_cake_shape_delete' shape.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this shape?')">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="7" class="text-center py-4">
+                      <p>No cake shapes found.</p>
+                      <p class="text-muted">Click "Add Cake Shape" button above to add your first shape.</p>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

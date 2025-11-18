@@ -1,0 +1,442 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<!--Page Title-->
+<section class="page-title" style="background-image: url('{% static 'images/main-slider/slider_bg_2.png' %}');">
+    <div class="auto-container">
+        <h1>{{ product.name }}</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">home</a></li>
+            <li><a href="{% url 'products' %}">Products</a></li>
+            <li>{{ product.name }}</li>
+        </ul>
+    </div>
+</section>
+<!--End Page Title-->
+{% endblock %}
+
+{% block content %}
+<!--Sidebar Page Container-->
+<div class="sidebar-page-container">
+    <div class="auto-container">
+        <div class="row clearfix">
+
+            <!--Content Side-->
+            <div class="content-side col-lg-12 col-md-12 col-sm-12">
+                <div class="shop-single">
+                    <!-- Product Detail -->
+                    <div class="product-details">
+                        <!--Basic Details-->
+                        <div class="basic-details">
+                            <div class="row clearfix">
+                                <div class="image-column col-md-5 col-sm-12">
+                                    <figure class="image">
+                                        <a href="{{ product.main_image.url }}" class="lightbox-image" title="{{ product.name }}">
+                                            <img src="{{ product.main_image.url }}" alt="{{ product.name }}" id="mainProductImage">
+                                            <span class="icon fa fa-search"></span>
+                                        </a>
+                                    </figure>
+                                    {% if additional_images %}
+                                    <div class="row" style="margin-top: 15px;">
+                                        {% for img in additional_images %}
+                                        <div class="col-3">
+                                            <img src="{{ img.image.url }}" alt="{{ img.caption }}" style="cursor: pointer; border-radius: 5px; width: 100%; border: 2px solid #ddd;" onclick="changeMainImage('{{ img.image.url }}')">
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="info-column col-md-7 col-sm-12">
+                                    <div class="details-header">
+                                        <h4>{{ product.name }}</h4>
+                                        {% if reviews %}
+                                        <div class="rating">
+                                            {% for i in "12345" %}
+                                            <span class="fa fa-star"></span>
+                                            {% endfor %}
+                                        </div>
+                                        <a class="reviews" href="#prod-reviews">({{ reviews|length }} Customer Review{{ reviews|length|pluralize }})</a>
+                                        {% endif %}
+                                        <div class="item-price" id="displayPrice">
+                                            {% if product.min_price %}
+                                            ₹{{ product.min_price }}
+                                            {% else %}
+                                            Select options
+                                            {% endif %}
+                                        </div>
+                                        <div class="text">{{ product.description|truncatewords:30 }}</div>
+                                    </div>
+
+                                    <form method="post" action="{% url 'add_to_cart' %}" id="orderForm">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        
+                                        <div class="other-options clearfix" style="display: block;">
+                                            <!-- Size Selection -->
+                                            <div class="form-group" style="margin-bottom: 20px;">
+                                                <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #333;">Select Size *</label>
+                                                <div class="row">
+                                                    {% for size in sizes %}
+                                                    <div class="col-4" style="margin-bottom: 10px;">
+                                                        <label style="border: 2px solid #ddd; padding: 12px 8px; display: block; text-align: center; cursor: pointer; border-radius: 8px; transition: all 0.3s;" class="size-option">
+                                                            <input type="radio" name="size_id" value="{{ size.id }}" required style="display: none;">
+                                                            <div style="font-weight: 600; color: #333;">{{ size.name }}</div>
+                                                            {% if size.weight_in_kg and size.weight_in_kg|floatformat != '0' %}
+                                                            <div style="font-size: 0.85rem; color: #999;">{{ size.weight_in_kg }} kg</div>
+                                                            {% endif %}
+                                                        </label>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            
+                                            
+                                            <div class="item-quantity" style="margin-bottom: 20px;">
+                                                <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #333;">Quantity</label>
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <button type="button" onclick="decreaseQty()" style="width: 40px; height: 40px; border: 2px solid #ff6b9d; background: white; color: #ff6b9d; border-radius: 5px; font-size: 1.2rem; cursor: pointer; font-weight: bold;">−</button>
+                                                    <input class="qty" type="number" value="1" name="quantity" id="quantity" min="1" required style="width: 80px; text-align: center; font-size: 1.2rem; font-weight: 600; padding: 8px; border: 2px solid #ddd; border-radius: 5px;">
+                                                    <button type="button" onclick="increaseQty()" style="width: 40px; height: 40px; border: 2px solid #ff6b9d; background: white; color: #ff6b9d; border-radius: 5px; font-size: 1.2rem; cursor: pointer; font-weight: bold;">+</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Price Summary Box -->
+                                            <div style="background: #f9f9f9; padding: 18px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ff6b9d;">
+                                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1rem;">
+                                                    <span>Unit Price:</span>
+                                                    <strong id="unitPrice" style="color: #333; font-size: 1.2rem;">₹0</strong>
+                                                </div>
+                                                <div id="priceNote" style="display: none; font-size: 0.85rem; color: #999; margin-bottom: 10px; text-align: right;">
+                                                    Starting price - select flavor for exact price
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1rem;">
+                                                    <span>Quantity:</span>
+                                                    <strong id="quantityDisplay" style="color: #333;">1</strong>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 2px solid #ddd; font-size: 1.3rem;">
+                                                    <span style="font-weight: 700; color: #333;">Total:</span>
+                                                    <strong id="totalPrice" style="color: #ff6b9d;">₹0</strong>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Customer & Delivery details moved to Cart page -->
+                                            
+                                            <div class="button-group" style="display: flex; gap: 15px; margin-bottom: 15px;">
+                                                <button type="submit" class="theme-btn add-to-cart" id="orderBtn" disabled style="flex: 1; padding: 12px 25px; border-radius: 30px; background: #ff6b9d; border: 2px solid #ff6b9d; color: white; font-weight: 600; transition: all 0.3s ease;">
+                                                    <span class="btn-title">Add to Cart - <span id="btnPrice">₹0</span></span>
+                                                </button>
+                                                <button type="button" class="theme-btn add-to-cart" onclick="buyNow()" style="flex: 1; padding: 12px 25px; border-radius: 30px; background: #ff6b9d; border: 2px solid #ff6b9d; color: white; font-weight: 600; transition: all 0.3s ease;">
+                                                    <span class="btn-title"><i class="fab fa-whatsapp"></i> Buy Now</span>
+                                                </button>
+                                            </div>
+                                            <div style="text-align: center; margin-top: 8px; font-size: 0.85rem; color: #666;">
+                                                <i class="fas fa-info-circle"></i> Order will be saved and sent to WhatsApp
+                                            </div>
+                                            
+                                            <div style="text-align: center; margin-top: 12px;">
+                                                <small style="color: #999;"><i class="fa fa-info-circle"></i> Buy Now will submit immediately; Add to Cart lets you combine items.</small>
+                                            </div>
+                                            
+                                            <ul class="product-meta" style="margin-top: 20px;">
+                                                <li class="posted_in">Category: <a href="{% url 'products' %}?category={{ product.category.id }}">{{ product.category.name }}</a></li>
+                                                {% if product.subcategory %}
+                                                <li class="tagged_as">Subcategory: <a href="#">{{ product.subcategory.name }}</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Basic Details-->
+                        
+                        <!--Product Info Tabs-->
+                        <div class="product-info-tabs">
+                            <!--Product Tabs-->
+                            <div class="prod-tabs tabs-box">
+                            
+                                <!--Tab Btns-->
+                                <ul class="tab-btns tab-buttons clearfix">
+                                    <li data-tab="#prod-details" class="tab-btn active-btn">Description</li>
+                                    <li data-tab="#prod-reviews" class="tab-btn">Reviews ({{ reviews|length }})</li>
+                                </ul>
+                                
+                                <!--Tabs Container-->
+                                <div class="tabs-content">
+                                    
+                                    <!--Tab / Description-->
+                                    <div class="tab active-tab" id="prod-details">
+                                        <h2 class="title">Product Description</h2>
+                                        <div class="content">
+                                            <p>{{ product.description }}</p>
+                                            
+                                            <h4 style="margin-top: 30px; color: #ff6b9d;">Available Options:</h4>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col-md-12">
+                                                    <h5>Available Sizes:</h5>
+                                                    <ul>
+                                                        {% for size in sizes %}
+                                                        <li>
+                                                            {{ size.name }}
+                                                            {% if size.weight_in_kg and size.weight_in_kg|floatformat != '0' %}
+                                                                ({{ size.weight_in_kg }} kg)
+                                                            {% endif %}
+                                                        </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!--Tab / Reviews-->
+                                    <div class="tab" id="prod-reviews">
+                                        <h2 class="title">{{ reviews|length }} review{{ reviews|length|pluralize }} for {{ product.name }}</h2>
+                                        
+                                        {% if reviews %}
+                                        <!--Reviews Container-->
+                                        <div class="comments-area">
+                                            {% for review in reviews %}
+                                            <!--Comment Box-->
+                                            <div class="comment-box">
+                                                <div class="comment">
+                                                    <div class="author-thumb"><img src="https://via.placeholder.com/60x60" alt=""></div>
+                                                    <div class="comment-inner">
+                                                        <div class="comment-info clearfix">
+                                                            <strong class="name">{{ review.customer_name }}</strong> 
+                                                            <span class="date">– {{ review.created_at|date:"d M" }}</span>
+                                                        </div> 
+                                                        <div class="rating">
+                                                            {% for i in "12345" %}
+                                                                {% if i|add:"0" <= review.rating %}
+                                                                <span class="fa fa-star"></span>
+                                                                {% else %}
+                                                                <span class="fa fa-star light"></span>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                        <div class="text">{{ review.comment }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <p style="text-align: center; padding: 40px 0; color: #999;">No reviews yet. Be the first to review this product!</p>
+                                        {% endif %}
+                                    </div>  
+                                </div>
+                            </div>
+                        </div>
+                        <!--End Product Info Tabs-->
+                        
+                        <!-- Related Products -->
+                        {% if related_products %}
+                        <div class="related-products">
+                            <div class="sec-title">
+                                <h2>Related products</h2>
+                            </div>
+
+                            <div class="row clearfix">
+                                {% for related in related_products %}
+                                <!-- Shop Item --> 
+                                <div class="shop-item col-lg-3 col-md-6 col-sm-12">
+                                    <div class="inner-box">
+                                        <div class="image-box">
+                                            <figure class="image">
+                                                <a href="{% url 'product_detail' related.id %}">
+                                                    <img src="{{ related.main_image.url }}" alt="{{ related.name }}">
+                                                </a>
+                                            </figure>
+                                            <div class="btn-box"><a href="{% url 'product_detail' related.id %}">View Details</a></div>
+                                        </div>
+                                        <div class="lower-content">
+                                            <h4 class="name"><a href="{% url 'product_detail' related.id %}">{{ related.name }}</a></h4>
+                                            <div class="price">
+                                                {% if related.min_price %}
+                                                From ₹{{ related.min_price }}
+                                                {% else %}
+                                                Price on Request
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        <!-- End Related Products -->
+                    </div><!-- Product Detail -->
+                </div><!-- End Shop Single -->
+            </div>
+        </div>
+    </div>
+</div>
+<!--End Sidebar Page Container-->
+
+<style>
+.size-option:hover {
+    border-color: #ff6b9d !important;
+    box-shadow: 0 3px 10px rgba(255, 107, 157, 0.2);
+    transform: translateY(-2px);
+}
+
+.size-option.selected {
+    border-color: #ff6b9d !important;
+    background: rgba(255, 107, 157, 0.05);
+}
+
+.size-option.selected div {
+    color: #ff6b9d !important;
+}
+
+/* Button Styles */
+.button-group .theme-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-btn.add-to-cart {
+    background: #ff6b9d !important;
+    border-color: #ff6b9d !important;
+    transition: all 0.3s ease;
+}
+
+.theme-btn.add-to-cart:hover:not(:disabled) {
+    background: white !important;
+    color: #ff6b9d !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 157, 0.2);
+}
+
+.theme-btn.add-to-cart:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.button-group .theme-btn:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.button-group .theme-btn:hover:after {
+    left: 100%;
+}
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Customer details handled on Cart page
+
+// Quantity controls
+function decreaseQty() {
+    const qtyInput = document.getElementById('quantity');
+    if (qtyInput.value > 1) {
+        qtyInput.value = parseInt(qtyInput.value) - 1;
+        document.getElementById('quantityDisplay').textContent = qtyInput.value;
+        updatePrice();
+    }
+}
+
+function increaseQty() {
+    const qtyInput = document.getElementById('quantity');
+    qtyInput.value = parseInt(qtyInput.value) + 1;
+    document.getElementById('quantityDisplay').textContent = qtyInput.value;
+    updatePrice();
+}
+
+// Handle size selection
+document.querySelectorAll('.size-option').forEach(option => {
+    option.addEventListener('click', function() {
+        document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+        this.querySelector('input').checked = true;
+        updatePrice();
+    });
+});
+
+
+// Handle quantity change
+document.getElementById('quantity').addEventListener('input', function() {
+    document.getElementById('quantityDisplay').textContent = this.value;
+    updatePrice();
+});
+
+// Update price based on selections
+function updatePrice() {
+    const productId = {{ product.id|safe }};
+    const sizeId = document.querySelector('input[name="size_id"]:checked')?.value;
+    const quantity = parseInt(document.getElementById('quantity').value) || 1;
+    
+    console.log('updatePrice called:', {productId, sizeId, quantity});
+    
+    if (!sizeId) {
+        console.log('Size not selected');
+        document.getElementById('unitPrice').textContent = '₹0';
+        document.getElementById('totalPrice').textContent = '₹0';
+        document.getElementById('btnPrice').textContent = '₹0';
+        document.getElementById('orderBtn').disabled = true;
+        return;
+    }
+    
+    // Fetch price via AJAX from ProductPrice table
+    const url = `/api/calculate-price/?product_id=${productId}&size_id=${sizeId}&quantity=${quantity}`;
+    console.log('Fetching price from:', url);
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Price response:', data);
+            if (data.success) {
+                const unitPrice = Math.round(data.unit_price);
+                const totalPrice = Math.round(data.total_price);
+                
+                document.getElementById('unitPrice').textContent = `₹${unitPrice}`;
+                document.getElementById('totalPrice').textContent = `₹${totalPrice}`;
+                document.getElementById('btnPrice').textContent = `₹${totalPrice}`;
+                document.getElementById('displayPrice').textContent = `₹${unitPrice}`;
+                
+                // Hide price note since we don't have flavors
+                document.getElementById('priceNote').style.display = 'none';
+                
+                // Enable order button when size is selected
+                document.getElementById('orderBtn').disabled = false;
+                
+                console.log('✅ Price updated:', {unitPrice, totalPrice});
+            } else {
+                console.error('❌ Price fetch failed:', data.error);
+                alert(data.error || 'Price not available for this combination. Please contact us.');
+                document.getElementById('unitPrice').textContent = '₹0';
+                document.getElementById('totalPrice').textContent = '₹0';
+                document.getElementById('btnPrice').textContent = '₹0';
+                document.getElementById('orderBtn').disabled = true;
+            }
+        })
+        .catch(error => {
+            console.error('❌ AJAX Error:', error);
+        });
+}
+
+// Change main image
+function changeMainImage(imageUrl) {
+    document.getElementById('mainProductImage').src = imageUrl;
+}
+
+function buyNow(){
+    document.getElementById('orderForm').submit();
+}
+</script>
+{% endblock %}

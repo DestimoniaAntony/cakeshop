@@ -1,0 +1,118 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ action }} Page Title Banner - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-inner">
+        <div class="page-header">
+            <h3 class="fw-bold mb-3">🖼️ {{ action }} Page Title Banner</h3>
+            <p class="text-muted">Provide a banner image, title and subtitle for a page. Use <code>page_key</code> to target a specific page template.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Banner Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <label for="id_name">Name</label>
+                                {{ form.name }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_page_key">Page Key</label>
+                                {{ form.page_key }}
+                                <small class="form-text text-muted">Use this key in templates to select a banner for a page.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_title_text">Title Text</label>
+                                {{ form.title_text }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_subtitle_text">Subtitle Text</label>
+                                {{ form.subtitle_text }}
+                            </div>
+
+                            <div class="form-group field-image">
+                                <label for="id_image">Banner Image</label>
+                                {{ form.image }}
+                                <small class="form-text text-muted">Recommended: 1920×600 (or wider). Will be cropped responsively.</small>
+                                {% if banner and banner.image %}
+                                <div class="mt-2">
+                                    <img src="{{ banner.image.url }}" class="img-fluid img-thumbnail" style="max-height:250px; object-fit:cover;">
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_display_order">Display Order</label>
+                                        {{ form.display_order }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_start_date">Start Date</label>
+                                        {{ form.start_date }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_end_date">End Date</label>
+                                        {{ form.end_date }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="id_is_active">Active</label>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save"></i> Save Banner
+                                </button>
+                                <a href="{% url 'admin_page_banners' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title"><i class="fas fa-question-circle"></i> Help & Tips</h4></div>
+                    <div class="card-body">
+                        <h6><i class="fas fa-image"></i> Image Guidelines</h6>
+                        <ul class="text-muted" style="font-size:14px;">
+                            <li><strong>Size:</strong> 1920×600 or wider</li>
+                            <li><strong>Format:</strong> JPG or PNG</li>
+                            <li><strong>File size:</strong> Keep under 2MB</li>
+                        </ul>
+                        <hr>
+                        <h6><i class="fas fa-folder"></i> Page Key Usage</h6>
+                        <p class="text-muted">Use the <code>page_key</code> to assign banners to pages. The context processor picks the first active banner per page.</p>
+                        <a href="/" target="_blank" class="btn btn-success btn-sm btn-block"><i class="fas fa-eye"></i> Preview Site</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

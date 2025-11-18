@@ -1,0 +1,332 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Custom Order Details - {{ order.order_number }}{% endblock %}
+
+{% block page_title %}
+<!--Page Title-->
+{% include 'partials/page_title.html' with banner=page_title_banners.custom_order title_fallback='Custom Order Details' %}
+    <div class="auto-container">
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">home</a></li>
+            <li><a href="{% url 'track_order' %}">Track Order</a></li>
+            <li>Order #{{ order.order_number }}</li>
+        </ul>
+    </div>
+<!--End Page Title-->
+{% endblock %}
+
+{% block content %}
+
+<!--Sidebar Page Container-->
+<div class="sidebar-page-container">
+    <div class="auto-container">
+        <div class="row clearfix">
+            <!--Content Side-->
+            <div class="content-side col-lg-12 col-md-12 col-sm-12">
+                <div class="shop-single">
+                    <!-- Order Detail -->
+                    <div class="product-details">
+                        <div class="basic-details">
+                            <div class="row clearfix">
+                                <div class="col-md-8">
+                                    <!-- Order Information -->
+                                    <div class="order-info-box" style="background: #f9f9f9; padding: 25px; border-radius: 10px; margin-bottom: 25px;">
+                                        <h3 style="color: #ff6b9d; margin-bottom: 20px;"><i class="fa fa-receipt"></i> Order Information</h3>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                                                <p><strong>Order Date:</strong> {{ order.created_at|date:"d M Y, h:i A" }}</p>
+                                                <p><strong>Status:</strong> 
+                                                    <span class="badge badge-{% if order.status == 'pending' %}warning{% elif order.status == 'quoted' %}info{% elif order.status == 'customer_approved' %}primary{% elif order.status == 'confirmed' %}primary{% elif order.status == 'preparing' %}primary{% elif order.status == 'ready' %}success{% elif order.status == 'completed' %}success{% else %}danger{% endif %}">
+                                                        {{ order.get_status_display }}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>Delivery Date:</strong> {{ order.delivery_date|date:"d M Y" }}</p>
+                                                <p><strong>Delivery Time:</strong> 
+                                                    {% if order.delivery_time %}
+                                                        {{ order.delivery_time|time:"h:i A" }}
+                                                    {% else %}
+                                                        Not specified
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Customer Details -->
+                                    <div class="customer-info-box" style="background: #fff9f5; padding: 25px; border-radius: 10px; margin-bottom: 25px;">
+                                        <h3 style="color: #ff6b9d; margin-bottom: 20px;"><i class="fa fa-user"></i> Customer Details</h3>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><strong>Name:</strong> {{ order.customer.name }}</p>
+                                                <p><strong>Phone:</strong> {{ order.customer.phone_number }}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>Email:</strong> {{ order.customer.email|default:"Not provided" }}</p>
+                                                <p><strong>Address:</strong> {{ order.delivery_address|default:order.customer.address|default:"Not provided" }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cake Details -->
+                                    <div class="product-info-box" style="background: #f0f8ff; padding: 25px; border-radius: 10px; margin-bottom: 25px;">
+                                        <h3 style="color: #ff6b9d; margin-bottom: 20px;"><i class="fa fa-birthday-cake"></i> Cake Details</h3>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h4>{{ order.shape.name }} / {{ order.tier.name }}</h4>
+                                                <p><strong>Weight:</strong> {{ order.total_weight }} kg</p>
+                                                <p><strong>Flavor:</strong> 
+                                                    {% if order.flavor %}
+                                                        {{ order.flavor.name }}
+                                                    {% elif order.flavor_description %}
+                                                        {{ order.flavor_description }}
+                                                    {% else %}
+                                                        Not specified
+                                                    {% endif %}
+                                                </p>
+                                                <p><strong>Decorations:</strong> 
+                                                    {% if order.order_decorations.all %}
+                                                        {% for od in order.order_decorations.all %}
+                                                            {{ od.quantity }}× {{ od.decoration.name }}{% if not forloop.last %}, {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        None
+                                                    {% endif %}
+                                                </p>
+                                                <p><strong>Estimated Price:</strong> ₹{{ order.estimated_price|floatformat:2 }}</p>
+                                                {% if order.final_price %}
+                                                    <p><strong>Final Price:</strong> ₹{{ order.final_price|floatformat:2 }}</p>
+                                                {% endif %}
+                                                {% if order.custom_message %}
+                                                    <p><strong>Message on Cake:</strong> "{{ order.custom_message }}"</p>
+                                                {% endif %}
+                                                {% if order.special_instructions %}
+                                                    <p><strong>Special Instructions:</strong> {{ order.special_instructions }}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Price Breakdown -->
+                                    {% if price_breakdown %}
+                                    <div class="product-info-box" style="background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                                        <h3 style="color: #ff6b9d; margin-bottom: 15px;"><i class="fa fa-calculator"></i> Price Breakdown</h3>
+                                        <table class="table">
+                                            <tbody>
+                                                <tr><td><strong>Shape</strong></td><td>₹{{ price_breakdown.shape }}</td></tr>
+                                                <tr><td><strong>Flavor</strong></td><td>₹{{ price_breakdown.flavor }}</td></tr>
+                                                <tr><td><strong>Subtotal</strong></td><td>₹{{ price_breakdown.subtotal }}</td></tr>
+                                                <tr><td><strong>With Tier Multiplier</strong></td><td>₹{{ price_breakdown.with_tier }}</td></tr>
+                                                <tr><td><strong>Decorations</strong></td><td>₹{{ price_breakdown.decorations }}</td></tr>
+                                                <tr><th>Total</th><th>₹{{ price_breakdown.total }}</th></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Reference Images -->
+                                    {% if reference_images %}
+                                    <div class="product-info-box" style="background: #fff9f5; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                                        <h3 style="color: #ff6b9d; margin-bottom: 15px;"><i class="fa fa-image"></i> Reference Images</h3>
+                                        <div class="row">
+                                            {% for ref in reference_images %}
+                                                <div class="col-md-3">
+                                                    <a href="{{ ref.image.url }}" target="_blank"><img src="{{ ref.image.url }}" alt="Reference" style="width:100%; border-radius:8px; margin-bottom:10px;"></a>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% elif order.reference_image %}
+                                    <div class="product-info-box" style="background: #fff9f5; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                                        <h3 style="color: #ff6b9d; margin-bottom: 15px;"><i class="fa fa-image"></i> Reference Image</h3>
+                                        <img src="{{ order.reference_image.url }}" alt="Reference" style="max-width:300px; border-radius:8px;">
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Order Actions -->
+                                    <div class="order-actions" style="text-align: center; margin-top: 30px;">
+                                        <a href="{% url 'generate_custom_cake_pdf' order.order_number %}" class="theme-btn" style="margin-right: 15px;">
+                                            <i class="fa fa-download"></i> Download PDF
+                                        </a>
+                                        <a href="https://wa.me/919946588352?text=Custom%20Order%20Details%20for%20{{ order.order_number }}" class="theme-btn" style="background: #25D366;" target="_blank">
+                                            <i class="fab fa-whatsapp"></i> Send to WhatsApp
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <!-- Order Status Timeline -->
+                                    <div class="status-timeline" style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                        <h4 style="color: #ff6b9d; margin-bottom: 20px;">Order Status</h4>
+                                        <div class="timeline">
+                                            <div class="timeline-item {% if order.status == 'pending' %}active{% elif order.status in 'quoted,customer_approved,confirmed,preparing,ready,completed' %}completed{% endif %}">
+                                                <div class="timeline-marker"></div>
+                                                <div class="timeline-content">
+                                                    <h6>Order Placed</h6>
+                                                    <small>{{ order.created_at|date:"d M Y, h:i A" }}</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="timeline-item {% if order.status == 'quoted' %}active{% elif order.status in 'customer_approved,confirmed,preparing,ready,completed' %}completed{% endif %}">
+                                                <div class="timeline-marker"></div>
+                                                <div class="timeline-content">
+                                                    <h6>Estimate Sent</h6>
+                                                    <small>Estimate will be sent to customer</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="timeline-item {% if order.status == 'customer_approved' %}active{% elif order.status in 'confirmed,preparing,ready,completed' %}completed{% endif %}">
+                                                <div class="timeline-marker"></div>
+                                                <div class="timeline-content">
+                                                    <h6>Customer Approved</h6>
+                                                    <small>Customer approved the design/estimate</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="timeline-item {% if order.status == 'confirmed' %}active{% elif order.status in 'preparing,ready,completed' %}completed{% endif %}">
+                                                <div class="timeline-marker"></div>
+                                                <div class="timeline-content">
+                                                    <h6>Order Confirmed</h6>
+                                                    <small>Order confirmed by kitchen</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="timeline-item {% if order.status == 'preparing' %}active{% elif order.status in 'ready,completed' %}completed{% endif %}">
+                                                <div class="timeline-marker"></div>
+                                                <div class="timeline-content">
+                                                    <h6>Preparing</h6>
+                                                    <small>Your cake is being prepared</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="timeline-item {% if order.status == 'ready' %}active{% elif order.status == 'completed' %}completed{% endif %}">
+                                                <div class="timeline-marker"></div>
+                                                <div class="timeline-content">
+                                                    <h6>Ready for Pickup/Delivery</h6>
+                                                    <small>Your order is ready!</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="timeline-item {% if order.status == 'completed' %}active{% endif %}">
+                                                <div class="timeline-marker"></div>
+                                                <div class="timeline-content">
+                                                    <h6>Completed</h6>
+                                                    <small>Order delivered successfully</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contact Information -->
+                                    <div class="contact-info" style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                                        <h5 style="color: #ff6b9d; margin-bottom: 15px;">Need Help?</h5>
+                                        <p><i class="fa fa-phone"></i> +91 99465 88352</p>
+                                        <p><i class="fa fa-envelope"></i> info@cakesbydesti.com</p>
+                                        <p><i class="fa fa-clock"></i> Mon-Sun: 9AM-9PM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End Sidebar Page Container-->
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #ddd;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -22px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ddd;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px #ddd;
+}
+
+.timeline-item.completed .timeline-marker {
+    background: #28a745;
+    box-shadow: 0 0 0 2px #28a745;
+}
+
+.timeline-item.active .timeline-marker {
+    background: #ff6b9d;
+    box-shadow: 0 0 0 2px #ff6b9d;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 107, 157, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 107, 157, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 107, 157, 0); }
+}
+
+.timeline-content h6 {
+    margin: 0 0 5px 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.timeline-content small {
+    color: #666;
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-warning { background: #ffc107; color: #000; }
+.badge-info { background: #17a2b8; color: #fff; }
+.badge-primary { background: #007bff; color: #fff; }
+.badge-success { background: #28a745; color: #fff; }
+.badge-danger { background: #dc3545; color: #fff; }
+
+.theme-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background: #ff6b9d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.theme-btn:hover {
+    background: #e55a8a;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

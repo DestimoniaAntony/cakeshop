@@ -1,0 +1,176 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Edit Order {{ order.order_number }} - Custom Orders{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-inner">
+    <div class="page-header">
+      <h3 class="fw-bold mb-3">
+        <a href="{% url 'admin_custom_order_detail' order.id %}" class="text-muted"><i class="fas fa-arrow-left"></i></a>
+        Edit Custom Order: {{ order.order_number }}
+      </h3>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Edit Order Details</h5>
+          </div>
+          <div class="card-body">
+            <form method="post">
+              {% csrf_token %}
+
+              <!-- Order Status -->
+              <div class="mb-3">
+                <label for="status" class="form-label"><strong>Order Status</strong> <span class="text-danger">*</span></label>
+                <select class="form-select" id="status" name="status" required>
+                  <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending Review</option>
+                  <option value="quoted" {% if order.status == 'quoted' %}selected{% endif %}>Estimate Sent</option>
+                  <option value="customer_approved" {% if order.status == 'customer_approved' %}selected{% endif %}>Customer Approved</option>
+                  <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                  <option value="preparing" {% if order.status == 'preparing' %}selected{% endif %}>Preparing</option>
+                  <option value="ready" {% if order.status == 'ready' %}selected{% endif %}>Ready for Delivery</option>
+                  <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>Completed</option>
+                  <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+              </div>
+
+              <!-- Custom Flavor Pricing (if custom flavor) -->
+              {% if not order.flavor and order.flavor_description %}
+              <div class="mb-3">
+                <label for="custom_flavor_price_per_kg" class="form-label">
+                  <strong>Custom Flavor Price per kg</strong>
+                  <span class="badge badge-warning">Custom Flavor</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" class="form-control" id="custom_flavor_price_per_kg" name="custom_flavor_price_per_kg" 
+                         value="{{ order.custom_flavor_price_per_kg|default:'' }}" step="0.01" 
+                         placeholder="Set price per kg for: {{ order.flavor_description }}">
+                  <span class="input-group-text">/kg</span>
+                </div>
+                <div class="form-text text-warning">
+                  <i class="fas fa-exclamation-triangle"></i> 
+                  <strong>Customer typed custom flavor:</strong> "{{ order.flavor_description }}" - Set price per kg to calculate estimate accurately
+                </div>
+              </div>
+              {% endif %}
+
+              <!-- Final Price -->
+              <div class="mb-3">
+                <label for="final_price" class="form-label"><strong>Final Agreed Price</strong></label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" class="form-control" id="final_price" name="final_price" 
+                         value="{{ order.final_price|default:'' }}" step="0.01" placeholder="Leave blank if not finalized">
+                </div>
+                <div class="form-text">
+                  Estimated Price: ₹{{ order.estimated_price }} | Range: {{ order.price_range_display }}
+                </div>
+              </div>
+
+              <!-- Delivery Date and Time -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="delivery_date" class="form-label"><strong>Delivery Date</strong> <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control" id="delivery_date" name="delivery_date" 
+                         value="{{ order.delivery_date|date:'Y-m-d' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="delivery_time" class="form-label"><strong>Delivery Time</strong></label>
+                  <input type="time" class="form-control" id="delivery_time" name="delivery_time" 
+                         value="{{ order.delivery_time|default:'' }}">
+                </div>
+              </div>
+
+              <!-- Custom Message -->
+              <div class="mb-3">
+                <label for="custom_message" class="form-label"><strong>Message on Cake</strong></label>
+                <input type="text" class="form-control" id="custom_message" name="custom_message" 
+                       value="{{ order.custom_message|default:'' }}" maxlength="100" 
+                       placeholder="e.g., Happy Birthday John!">
+              </div>
+
+              <!-- Special Instructions -->
+              <div class="mb-3">
+                <label for="special_instructions" class="form-label"><strong>Special Instructions</strong></label>
+                <textarea class="form-control" id="special_instructions" name="special_instructions" 
+                          rows="4" placeholder="Any specific requirements, color preferences, design details, etc.">{{ order.special_instructions|default:'' }}</textarea>
+              </div>
+
+              <hr>
+
+              <!-- Form Actions -->
+              <div class="d-flex justify-content-between">
+                <a href="{% url 'admin_custom_order_detail' order.id %}" class="btn btn-secondary">
+                  <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i> Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary Sidebar -->
+      <div class="col-md-4">
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Order Summary</h5>
+          </div>
+          <div class="card-body">
+            <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+            <p><strong>Customer:</strong> {{ order.customer.name }}</p>
+            <p><strong>Phone:</strong> {{ order.customer.phone_number }}</p>
+            <hr>
+            <h6 class="mb-2">Cake Specifications</h6>
+            <p class="mb-1"><strong>Shape:</strong> {{ order.shape.name }} <small class="text-muted">(₹{{ order.shape.base_price_per_kg }}/kg)</small></p>
+            <p class="mb-1"><strong>Tier:</strong> {{ order.tier.name }} <small class="text-muted">(×{{ order.tier.price_multiplier }})</small></p>
+            <p class="mb-1"><strong>Weight:</strong> {{ order.total_weight }} kg</p>
+            <p class="mb-1"><strong>Flavor:</strong>
+              {% if order.flavor %}
+                {{ order.flavor.name }}
+              {% elif order.flavor_description %}
+                {{ order.flavor_description }}
+              {% else %}
+                Not specified
+              {% endif %}
+            </p>
+
+            {% if order_decorations %}
+            <hr>
+            <h6 class="mb-2">Decorations</h6>
+            <ul class="list-unstyled mb-0">
+              {% for item in order_decorations %}
+              <li><small>{{ item.quantity }}× {{ item.decoration.name }} (₹{{ item.total_price }})</small></li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Pricing</h5>
+          </div>
+          <div class="card-body">
+            <p><strong>Base Estimate:</strong> ₹{{ order.estimated_price }}</p>
+            <p><strong>Price Range:</strong> {{ order.price_range_display }}</p>
+            {% if order.final_price %}
+            <p class="text-success"><strong>Final Price:</strong> ₹{{ order.final_price }}</p>
+            {% else %}
+            <p class="text-muted"><small>Final price not yet set</small></p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,108 @@
+{% load static %}
+
+<!-- Main Slider - Bootstrap carousel (dynamic) -->
+<section class="main-slider">
+    <div class="slider_wave"></div>
+
+    <div id="carouselHomepage" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+        <!-- Indicators -->
+        <div class="carousel-indicators">
+            {% for banner in banners %}
+            <button type="button" data-bs-target="#carouselHomepage" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="Slide {{ forloop.counter }}"></button>
+            {% endfor %}
+        </div>
+
+        <!-- Slides -->
+        <div class="carousel-inner">
+            {% for banner in banners %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{{ banner.image.url }}" loading="lazy" decoding="async" class="d-block w-100" alt="{{ banner.title }}">
+                <div class="carousel-overlay"></div>
+                <div class="carousel-caption-custom">
+                    <div class="container">
+                        <div class="slide-content text-center">
+                            {% if banner.subtitle %}<p class="slide-subtitle animate__animated animate__fadeInDown">{{ banner.subtitle }}</p>{% endif %}
+                            <h1 class="slide-title animate__animated animate__fadeInUp">{{ banner.title }}</h1>
+                            <p class="slide-description animate__animated animate__fadeInUp animate__delay-1s">{{ banner.description }}</p>
+                            {% if banner.button_text and banner.button_link %}
+                            <a href="{{ banner.button_link }}" class="theme-btn btn-style-one animate__animated animate__fadeInUp animate__delay-2s"><span></span>{{ banner.button_text }}<span></span></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="carousel-item active">
+                <img src="{% static 'images/main-slider/slider_bg_1.png' %}" loading="lazy" decoding="async" class="d-block w-100" alt="Welcome">
+                <div class="carousel-overlay"></div>
+                <div class="carousel-caption-custom">
+                    <div class="container">
+                        <div class="slide-content text-center">
+                            <p class="slide-subtitle">We offer delicious homemade cakes</p>
+                            <h1 class="slide-title">Welcome to Cakes by Desti</h1>
+                            <p class="slide-description">Made with love for every celebration</p>
+                            <a href="{% url 'products' %}" class="theme-btn btn-style-one"><span></span>View Products<span></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselHomepage" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselHomepage" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden"></span>
+        </button>
+    </div>
+</section>
+
+<style>
+/* Custom Carousel Styles */
+.main-slider { position: relative; overflow: hidden; margin-top: 0 !important; padding-top: 0 !important; }
+.slider_wave { position: absolute; top: 0; left: 0; right: 0; height: 40px; z-index: 0; pointer-events: none; background: transparent; }
+.carousel-item { height: auto; min-height: 420px; aspect-ratio: 16 / 9; display: block; }
+.carousel-item img { object-fit: cover; height: 100%; width: 100%; object-position: center; }
+.carousel-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.3)); z-index: 1; }
+.carousel-caption-custom { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; width: 100%; }
+.carousel-control-prev, .carousel-control-next, .carousel-indicators { z-index: 4; }
+.slide-content { max-width: 800px; margin: 0 auto; padding: 20px; }
+.slide-subtitle { font-size: 18px; color: #fff; margin-bottom: 15px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; }
+.slide-title { font-size: 72px; line-height: 1.2; color: #fff; margin-bottom: 20px; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-family: 'Leckerli One', cursive; }
+.slide-description { font-size: 20px; color: #fff; margin-bottom: 30px; line-height: 1.6; }
+.carousel-indicators button { width: 12px; height: 12px; border-radius: 50%; margin: 0 5px; }
+.carousel-control-prev-icon, .carousel-control-next-icon { background-color: rgba(255, 107, 157, 0.8); border-radius: 50%; padding: 30px; }
+@media (max-width: 768px) { .carousel-item { min-height: 360px; } .slide-title { font-size: 36px; } }
+@media (max-width: 480px) { .carousel-item { min-height: 280px; } .slide-title { font-size: 28px; } .slide-description { font-size: 14px; } }
+.animate__delay-1s { animation-delay: 0.3s; }
+.animate__delay-2s { animation-delay: 0.6s; }
+</style>
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    try {
+        const carousel = document.getElementById('carouselHomepage');
+        if (!carousel) return;
+        if (window.bootstrap && bootstrap.Carousel) {
+            var carouselInstance = bootstrap.Carousel.getInstance(carousel);
+            if (!carouselInstance) carouselInstance = new bootstrap.Carousel(carousel, { interval: 5000, ride: 'carousel' });
+            try { carouselInstance.cycle(); } catch(e) { /* ignore */ }
+            const btnNext = carousel.querySelector('.carousel-control-next');
+            const btnPrev = carousel.querySelector('.carousel-control-prev');
+            if (btnNext) btnNext.addEventListener('click', function(e){ e.preventDefault(); try { carouselInstance.next(); } catch(_){} });
+            if (btnPrev) btnPrev.addEventListener('click', function(e){ e.preventDefault(); try { carouselInstance.prev(); } catch(_){} });
+        } else if (window.jQuery && jQuery().carousel) {
+            try { jQuery('#carouselHomepage').carousel({ interval: 5000 }); } catch(e) {}
+        } else { console.warn('bootstrap.Carousel not found'); }
+    } catch (err) { console.error('carousel init error', err); }
+});
+</script>
+                            
+

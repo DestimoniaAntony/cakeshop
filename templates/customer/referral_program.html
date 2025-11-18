@@ -1,0 +1,250 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Referral Program - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<section class="page-title" style="background-image: url({% static 'images/background/page-title.jpg' %});">
+    <div class="auto-container">
+        <h1>Referral Program</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'loyalty_dashboard' %}">Loyalty</a></li>
+            <li>Referral Program</li>
+        </ul>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="referral-section" style="padding: 60px 0; background: #FFF9F5;">
+    <div class="container">
+        <!-- Back Button -->
+        <div style="margin-bottom: 20px;">
+            <a href="{% url 'loyalty_dashboard' %}" style="color: #FF6B9D; text-decoration: none; font-weight: bold;">
+                ← Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Hero Section -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    padding: 50px 30px; border-radius: 25px; text-align: center; color: white;
+                    margin-bottom: 40px; box-shadow: 0 15px 40px rgba(102,126,234,0.4);">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🤝</div>
+            <h2 style="margin: 0 0 15px 0; font-size: 2.5rem;">Share the Sweetness!</h2>
+            <p style="margin: 0 0 30px 0; font-size: 1.2rem; opacity: 0.9;">
+                Refer friends and earn <strong>100 bonus points</strong> for each successful referral!<br>
+                Your friends get <strong>10% discount</strong> on their first order!
+            </p>
+            
+            <div class="row" style="max-width: 800px; margin: 0 auto;">
+                <div class="col-md-4" style="margin-bottom: 20px;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">📤</div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">Share</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">Invite your friends</div>
+                    </div>
+                </div>
+                <div class="col-md-4" style="margin-bottom: 20px;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">🛍️</div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">They Order</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">Get 10% off first order</div>
+                    </div>
+                </div>
+                <div class="col-md-4" style="margin-bottom: 20px;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">💎</div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">You Earn</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">Get 100 bonus points</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row" style="margin-bottom: 40px;">
+            <div class="col-md-4" style="margin-bottom: 20px;">
+                <div style="background: white; padding: 30px; border-radius: 15px; text-align: center;
+                            box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                    <div style="font-size: 3rem; color: #4CAF50; margin-bottom: 10px;">{{ successful_referrals }}</div>
+                    <div style="color: #666;">Successful Referrals</div>
+                </div>
+            </div>
+            <div class="col-md-4" style="margin-bottom: 20px;">
+                <div style="background: white; padding: 30px; border-radius: 15px; text-align: center;
+                            box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                    <div style="font-size: 3rem; color: #FFC107; margin-bottom: 10px;">{{ pending_referrals }}</div>
+                    <div style="color: #666;">Pending Referrals</div>
+                </div>
+            </div>
+            <div class="col-md-4" style="margin-bottom: 20px;">
+                <div style="background: white; padding: 30px; border-radius: 15px; text-align: center;
+                            box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                    <div style="font-size: 3rem; color: #FF6B9D; margin-bottom: 10px;">{{ potential_points }}</div>
+                    <div style="color: #666;">Potential Points</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Create New Referral -->
+            <div class="col-md-6">
+                <div style="background: white; padding: 30px; border-radius: 20px; margin-bottom: 30px;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 25px 0; color: #333;">
+                        <span style="color: #FF6B9D;">📤</span> Create New Referral
+                    </h3>
+                    
+                    <form method="post" action="{% url 'create_referral' %}">
+                        {% csrf_token %}
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">
+                                Friend's Name
+                            </label>
+                            <input type="text" name="referred_name" required
+                                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px;
+                                          font-size: 1rem;" placeholder="Enter friend's name">
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">
+                                Friend's Phone Number
+                            </label>
+                            <input type="tel" name="referred_phone" required
+                                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px;
+                                          font-size: 1rem;" placeholder="Enter phone number">
+                        </div>
+                        
+                        <button type="submit" class="btn"
+                                style="width: 100%; background: linear-gradient(135deg, #FF6B9D, #C06C84);
+                                       color: white; padding: 15px; border: none; border-radius: 10px;
+                                       font-size: 1.1rem; font-weight: bold; cursor: pointer;">
+                            Generate Referral Code
+                        </button>
+                    </form>
+                </div>
+
+                <!-- How It Works -->
+                <div style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                            padding: 30px; border-radius: 20px; color: white;
+                            box-shadow: 0 10px 30px rgba(76,175,80,0.3);">
+                    <h4 style="margin: 0 0 20px 0;">How It Works</h4>
+                    <ol style="margin: 0; padding-left: 20px;">
+                        <li style="margin-bottom: 12px;">Create a referral by entering friend's details</li>
+                        <li style="margin-bottom: 12px;">Share the unique referral code with them</li>
+                        <li style="margin-bottom: 12px;">They use the code when placing their first order</li>
+                        <li style="margin-bottom: 12px;">They get 10% discount, you get 100 points!</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Referral History -->
+            <div class="col-md-6">
+                <div style="background: white; padding: 30px; border-radius: 20px;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 25px 0; color: #333;">
+                        <span style="color: #2196F3;">📋</span> My Referrals
+                    </h3>
+                    
+                    {% if referrals %}
+                    <div style="max-height: 600px; overflow-y: auto;">
+                        {% for referral in referrals %}
+                        <div style="padding: 20px; border: 2px solid #f0f0f0; border-radius: 15px; margin-bottom: 15px;
+                                    {% if referral.status == 'completed' %}background: #E8F5E9;{% endif %}">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <div style="font-weight: bold; font-size: 1.1rem; color: #333; margin-bottom: 5px;">
+                                        {{ referral.referred_name }}
+                                    </div>
+                                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 5px;">
+                                        {{ referral.referred_phone }}
+                                    </div>
+                                    <div style="color: #999; font-size: 0.85rem;">
+                                        Created: {{ referral.created_at|date:"M d, Y" }}
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    {% if referral.status == 'completed' %}
+                                    <span style="background: #4CAF50; color: white; padding: 6px 12px;
+                                                 border-radius: 20px; font-size: 0.85rem; font-weight: bold;">
+                                        ✓ Completed
+                                    </span>
+                                    {% elif referral.status == 'pending' %}
+                                    <span style="background: #FFC107; color: white; padding: 6px 12px;
+                                                 border-radius: 20px; font-size: 0.85rem; font-weight: bold;">
+                                        ⏳ Pending
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div style="background: #f9f9f9; padding: 12px; border-radius: 8px;
+                                        display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <small style="color: #666;">Referral Code:</small>
+                                    <div style="font-family: monospace; font-weight: bold; color: #333; font-size: 1.1rem;">
+                                        {{ referral.referral_code }}
+                                    </div>
+                                </div>
+                                <button onclick="copyCode('{{ referral.referral_code }}')" class="btn"
+                                        style="background: #2196F3; color: white; padding: 8px 15px;
+                                               border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
+                                    📋 Copy
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div style="text-align: center; padding: 40px 20px; color: #999;">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">📤</div>
+                        <p>No referrals yet. Create your first referral to start earning!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Share Options -->
+        <div style="background: white; padding: 40px; border-radius: 20px; margin-top: 30px; text-align: center;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <h3 style="margin: 0 0 30px 0; color: #333;">Share & Earn Together!</h3>
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <a href="https://wa.me/?text=Check out Cakes by Desti! Use my referral for 10% off your first order!" 
+                   target="_blank"
+                   style="background: #25D366; color: white; padding: 15px 30px; border-radius: 10px;
+                          text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 10px;">
+                    <i class="fab fa-whatsapp" style="font-size: 1.5rem;"></i>
+                    Share on WhatsApp
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                   target="_blank"
+                   style="background: #1877F2; color: white; padding: 15px 30px; border-radius: 10px;
+                          text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 10px;">
+                    <i class="fab fa-facebook-f" style="font-size: 1.5rem;"></i>
+                    Share on Facebook
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function copyCode(code) {
+        navigator.clipboard.writeText(code).then(function() {
+            alert('Referral code copied: ' + code);
+        }, function() {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('Referral code copied: ' + code);
+        });
+    }
+</script>
+{% endblock %}
+

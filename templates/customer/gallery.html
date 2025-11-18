@@ -1,0 +1,317 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Gallery - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<!--Page Title-->
+{% comment %} Use page-specific banner if available, else global banner, else static fallback {% endcomment %}
+{% include 'partials/page_title.html' with banner=page_title_banners.gallery title_fallback='Our Gallery' %}
+<!--End Page Title-->
+{% endblock %}
+
+{% block content %}
+<!--Portfolio Section-->
+<section class="portfolio-section portfolio-page">
+    <div class="container-fluid">
+        <!-- Portfolio Gallery -->
+        <div class="portfolio-gallery">
+            <!--Event Filter-->
+            <div class="filters clearfix">
+                <ul class="filter-tabs filter-btns">
+                    <li class="filter {% if not selected_event %}active{% endif %}">
+                        <a href="{% url 'gallery' %}" class="{% if not selected_event %}text-pink{% endif %}">All Events</a>
+                    </li>
+                    {% for event in events %}
+                    <li class="filter {% if event.id|stringformat:'s' == selected_event %}active{% endif %}">
+                        <a href="?event={{ event.id }}" class="{% if event.id|stringformat:'s' == selected_event %}text-pink{% endif %}">
+                            {{ event.event_name }}
+                            {% if event.image_count %}
+                            <span class="count">({{ event.image_count }})</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {% if images %}
+            <div class="inner-container">
+                <div class="row">
+                    {% for image in images %}
+                    <!--Gallery Block-->
+                    <div class="gallery-block col-lg-3 col-md-6 col-sm-12">
+                        <div class="inner-box wow fadeInLeft">
+                            <figure class="image">
+                                <img src="{{ image.image.url }}" alt="{{ image.caption }}" loading="lazy">
+                            </figure>
+                            <div class="overlay-box">
+                                <div class="overlay-inner">
+                                    <div class="content">
+                                        <a href="{{ image.image.url }}" class="link" data-fancybox="gallery" data-caption="{{ image.caption }}{% if image.event_type %} - {{ image.event_type.event_name }}{% endif %}">
+                                            <span class="icon flaticon-add"></span>
+                                        </a>
+                                        <div class="text">
+                                            <h3>{{ image.caption }}</h3>
+                                            {% if image.event_type %}
+                                            <a href="?event={{ image.event_type.id }}" class="category">{{ image.event_type.event_name }}</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="no-results text-center">
+                <div class="inner-container">
+                    <h3>No images found for this event.</h3>
+                    <p>Please try another event category or view all images.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+<!--End Portfolio Section-->
+
+<!-- Add required JavaScript for Gallery -->
+{% block extra_js %}
+<script src="{% static 'js/jquery.fancybox.js' %}"></script>
+<script src="{% static 'js/appear.js' %}"></script>
+<script src="{% static 'js/wow.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize WOW.js for animations
+        new WOW().init();
+
+        // Initialize FancyBox with enhanced options
+        $("[data-fancybox]").fancybox({
+            buttons: [
+                'zoom',
+                'slideShow',
+                'fullScreen',
+                'thumbs',
+                'close'
+            ],
+            animationEffect: "zoom-in-out",
+            transitionEffect: "fade",
+            loop: true,
+            protect: true,
+            preventCaptionOverlap: true,
+            infobar: true,
+            slideShow: {
+                autoStart: false,
+                speed: 3000
+            },
+            thumbs: {
+                autoStart: true,
+                hideOnClose: true
+            },
+            mobile: {
+                clickContent: function(current, event) {
+                    return current.type === "image" ? "toggleControls" : false;
+                },
+                clickSlide: function(current, event) {
+                    return current.type === "image" ? "toggleControls" : "close";
+                },
+            }
+        });
+
+        // Active state for filter tabs
+        $('.filter-tabs .filter a').on('click', function() {
+            $(this).closest('ul').find('a').removeClass('text-pink');
+            $(this).addClass('text-pink');
+        });
+    });
+</script>
+
+<style>
+    /* Enhanced Gallery Styles */
+    .portfolio-gallery {
+        position: relative;
+        padding: 30px 0px;
+    }
+
+    .filter-tabs {
+        position: relative;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .filter-tabs .filter {
+        position: relative;
+        display: inline-block;
+        color: #222222;
+        padding: 0px 0px;
+        cursor: pointer;
+        margin: 0px 15px 5px;
+        transition: all 300ms ease;
+        font-size: 16px;
+    }
+
+    .filter-tabs .filter a {
+        color: inherit;
+        text-decoration: none;
+        transition: all 300ms ease;
+        padding: 0px 5px;
+    }
+
+    .filter-tabs .filter a:hover,
+    .filter-tabs .filter a.text-pink,
+    .filter-tabs .filter.active {
+        color: #FF1493;
+    }
+
+    .filter-tabs .count {
+        font-size: 14px;
+        opacity: 0.7;
+        margin-left: 4px;
+    }
+
+    .gallery-block {
+        position: relative;
+        margin-bottom: 30px;
+    }
+
+    .gallery-block .inner-box {
+        position: relative;
+        overflow: hidden;
+        border-radius: 4px;
+    }
+
+    .gallery-block .image {
+        position: relative;
+        overflow: hidden;
+        /* make image container a square (1:1) so cards match portfolio-square appearance */
+        width: 100%;
+        /* use padding-top to lock aspect ratio to 1:1 */
+        padding-top: 100%;
+    }
+
+    .gallery-block .image img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover; /* crop to fill square like portfolio */
+        transition: all 500ms ease;
+    }
+
+    .gallery-block .overlay-box {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 500ms ease;
+        background-color: rgba(255, 20, 147, 0.90);
+    }
+
+    .gallery-block .inner-box:hover .overlay-box {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .gallery-block .overlay-inner {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        display: table;
+        vertical-align: middle;
+        padding: 10px 20px;
+    }
+
+    .gallery-block .overlay-inner .content {
+        position: relative;
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .gallery-block .overlay-inner .link {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        color: #ffffff;
+        line-height: 50px;
+        margin: 0px 5px;
+        display: inline-block;
+        background-color: rgba(255,255,255,0.1);
+        transition: all 300ms ease;
+    }
+
+    .gallery-block .overlay-inner .link:hover {
+        background-color: rgba(255,255,255,0.2);
+    }
+
+    .gallery-block .overlay-inner .text {
+        position: relative;
+        margin-top: 20px;
+    }
+
+    .gallery-block .overlay-inner h3 {
+        position: relative;
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .gallery-block .overlay-inner .category {
+        position: relative;
+        color: rgba(255,255,255,0.9);
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 300ms ease;
+    }
+
+    .gallery-block .overlay-inner .category:hover {
+        color: #ffffff;
+        text-decoration: underline;
+    }
+
+    .no-results {
+        padding: 60px 0;
+    }
+
+    .no-results h3 {
+        color: #222222;
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .no-results p {
+        color: #666666;
+        font-size: 16px;
+    }
+
+    /* Responsive adjustments */
+    @media only screen and (max-width: 1023px) {
+        .gallery-block {
+            width: 50%;
+        }
+    }
+
+    @media only screen and (max-width: 767px) {
+        .gallery-block {
+            width: 100%;
+        }
+        .filter-tabs .filter {
+            margin: 0px 10px 10px;
+            font-size: 14px;
+        }
+    }
+</style>
+{% endblock %}
+{% endblock %}

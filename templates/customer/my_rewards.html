@@ -1,0 +1,192 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}My Rewards - Cakes by Desti{% endblock %}
+
+{% block page_title %}
+<section class="page-title" style="background-image: url({% static 'images/background/page-title.jpg' %});">
+    <div class="auto-container">
+        <h1>My Rewards</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'loyalty_dashboard' %}">Loyalty</a></li>
+            <li>My Rewards</li>
+        </ul>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="rewards-section" style="padding: 60px 0; background: #FFF9F5;">
+    <div class="container">
+        <!-- Back Button -->
+        <div style="margin-bottom: 20px;">
+            <a href="{% url 'loyalty_dashboard' %}" style="color: #FF6B9D; text-decoration: none; font-weight: bold;">
+                ← Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Summary Card -->
+        <div style="background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%); 
+                    padding: 30px; border-radius: 20px; color: white; margin-bottom: 40px;
+                    box-shadow: 0 10px 30px rgba(255,107,157,0.3);">
+            <h2 style="margin: 0 0 10px 0;">Rewards Summary</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div style="font-size: 2.5rem; font-weight: bold;">{{ active_rewards.count }}</div>
+                    <div>Active Rewards</div>
+                </div>
+                <div class="col-md-4">
+                    <div style="font-size: 2.5rem; font-weight: bold;">{{ used_rewards.count }}</div>
+                    <div>Used Rewards</div>
+                </div>
+                <div class="col-md-4">
+                    <div style="font-size: 2.5rem; font-weight: bold;">{{ loyalty_card.rewards_claimed }}</div>
+                    <div>Total Earned</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Rewards -->
+        {% if active_rewards %}
+        <div style="margin-bottom: 40px;">
+            <h3 style="color: #333; margin-bottom: 25px;">
+                <span style="color: #4CAF50;">🎁</span> Active Rewards
+            </h3>
+            <div class="row">
+                {% for reward in active_rewards %}
+                <div class="col-md-6" style="margin-bottom: 20px;">
+                    <div style="background: white; border-radius: 15px; overflow: hidden;
+                                box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                        <div style="background: linear-gradient(135deg, #4CAF50, #45a049); 
+                                    padding: 20px; color: white;">
+                            <div style="font-size: 3rem; font-weight: bold; margin-bottom: 5px;">
+                                {{ reward.discount_percentage }}% OFF
+                            </div>
+                            <div style="font-size: 1.2rem; opacity: 0.9;">
+                                {{ reward.get_reward_type_display }}
+                            </div>
+                        </div>
+                        <div style="padding: 20px;">
+                            <p style="color: #666; margin-bottom: 15px;">
+                                {{ reward.description }}
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center;
+                                        padding: 15px; background: #f9f9f9; border-radius: 10px;">
+                                <div>
+                                    <small style="color: #666;">Expires</small>
+                                    <div style="font-weight: bold; color: #333;">
+                                        {{ reward.expiry_date|date:"M d, Y" }}
+                                    </div>
+                                </div>
+                                <a href="{% url 'products' %}" class="btn" 
+                                   style="background: #4CAF50; color: white; padding: 12px 30px;
+                                          border-radius: 25px; text-decoration: none; font-weight: bold;">
+                                    Use Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 20px; margin-bottom: 40px;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🎁</div>
+            <h3 style="color: #333; margin-bottom: 15px;">No Active Rewards Yet</h3>
+            <p style="color: #666; margin-bottom: 25px;">
+                Complete {{ loyalty_card.stamps_to_reward|add:"-"|add:loyalty_card.current_stamps }} more orders to earn your next reward!
+            </p>
+            <a href="{% url 'products' %}" class="btn" 
+               style="background: linear-gradient(135deg, #FF6B9D, #C06C84); color: white;
+                      padding: 15px 40px; border-radius: 25px; text-decoration: none;
+                      font-weight: bold; display: inline-block;">
+                Shop Now
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Used Rewards -->
+        {% if used_rewards %}
+        <div style="margin-bottom: 40px;">
+            <h3 style="color: #333; margin-bottom: 25px;">
+                <span style="color: #2196F3;">✓</span> Used Rewards
+            </h3>
+            <div style="background: white; border-radius: 15px; padding: 20px;
+                        box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                {% for reward in used_rewards %}
+                <div style="padding: 20px; border-bottom: 1px solid #f0f0f0;
+                            {% if forloop.last %}border-bottom: none;{% endif %}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #333; margin-bottom: 5px;">
+                                {{ reward.discount_percentage }}% OFF
+                            </div>
+                            <div style="color: #666; margin-bottom: 5px;">
+                                {{ reward.get_reward_type_display }}
+                            </div>
+                            <small style="color: #999;">
+                                Used on {{ reward.used_date|date:"M d, Y" }}
+                            </small>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="background: #E3F2FD; color: #2196F3; padding: 8px 15px;
+                                         border-radius: 20px; font-size: 0.9rem; font-weight: bold;">
+                                ✓ Used
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Expired Rewards -->
+        {% if expired_rewards %}
+        <div style="margin-bottom: 40px;">
+            <h3 style="color: #333; margin-bottom: 25px;">
+                <span style="color: #999;">⏰</span> Expired Rewards
+            </h3>
+            <div style="background: white; border-radius: 15px; padding: 20px;
+                        box-shadow: 0 5px 20px rgba(0,0,0,0.1); opacity: 0.7;">
+                {% for reward in expired_rewards|slice:":5" %}
+                <div style="padding: 15px; border-bottom: 1px solid #f0f0f0;
+                            {% if forloop.last %}border-bottom: none;{% endif %}">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: bold; color: #666;">
+                                {{ reward.discount_percentage }}% OFF
+                            </div>
+                            <small style="color: #999;">
+                                Expired on {{ reward.expiry_date|date:"M d, Y" }}
+                            </small>
+                        </div>
+                        <span style="color: #999; font-size: 0.9rem;">Expired</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Call to Action -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    padding: 40px; border-radius: 20px; text-align: center; color: white;
+                    box-shadow: 0 10px 30px rgba(102,126,234,0.4);">
+            <h3 style="margin: 0 0 15px 0;">Keep Earning More Rewards!</h3>
+            <p style="margin: 0 0 25px 0; opacity: 0.9; font-size: 1.1rem;">
+                Every order brings you closer to your next discount. 
+                You're {{ loyalty_card.stamps_to_reward|add:"-"|add:loyalty_card.current_stamps }} stamps away!
+            </p>
+            <a href="{% url 'products' %}" class="btn" 
+               style="background: white; color: #667eea; padding: 15px 40px; border-radius: 25px;
+                      text-decoration: none; font-weight: bold; display: inline-block;">
+                Browse Products
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

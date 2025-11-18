@@ -1,0 +1,20 @@
+{% comment %}
+Include: page_title.html
+Usage: {% include 'partials/page_title.html' with page_key='about' title_fallback='About Us' %}
+Renders a page-title section using page-specific banner (from page_title_banners[page_key])
+or falls back to global page_title_banner or a static image.
+{% endcomment %}
+
+{% load static %}
+{# Accepts either `banner` passed in or falls back to `page_title_banner` #}
+{% with banner=banner|default:page_title_banner %}
+<section class="page-title" style="background-image:url('{% if banner and banner.image %}{{ banner.image.url }}{% else %}{% static 'images/main-slider/slider_bg_01.png' %}{% endif %}')">
+    <div class="auto-container">
+        <h1>{% if banner and banner.title_text %}{{ banner.title_text }}{% else %}{{ title_fallback }}{% endif %}</h1>
+        <ul class="page-breadcrumb">
+            <li><a href="{% url 'home' %}">home</a></li>
+            <li>{% if banner and banner.title_text %}{{ banner.title_text }}{% else %}{{ title_fallback }}{% endif %}</li>
+        </ul>
+    </div>
+</section>
+{% endwith %}
