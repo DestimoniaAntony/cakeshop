@@ -3,4 +3,4 @@ services:
     name: cakeshop
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn cakeshop.wsgi"
+    startCommand: gunicorn cakeshop.wsgi:application
