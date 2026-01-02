@@ -33,7 +33,8 @@ SECRET_KEY = 'django-insecure-*1=5jf-ily(9s$%ly+495lmej$naa*_#eb---udat%(94$84i9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # Set to False to enable custom error pages
 
-ALLOWED_HOSTS = ["127.0.0.1","localhost","192.168.1.4",]  # In production, replace with your actual domain
+# ALLOWED_HOSTS = ["127.0.0.1","localhost","192.168.1.4",]  # In production, replace with your actual domain
+ALLOWED_HOSTS = ['*']
 
 # Custom error page handlers
 HANDLER404 = 'cakeshop_app.views.custom_404'  # Custom 404 error handler
@@ -62,6 +63,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'cakeshop.middleware.AdminLoginRequiredMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'cakeshop.urls'
@@ -92,24 +95,25 @@ WSGI_APPLICATION = 'cakeshop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cake_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'cake_db',
+#         'USER': 'root',
+#         'PASSWORD': '',
+#         'HOST': 'localhost',
+        
+#     }
+# }
 
 # Session Configuration
 # https://docs.djangoproject.com/en/4.2/ref/settings/#sessions
@@ -162,6 +166,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # For better security in production
 SECURE_CONTENT_TYPE_NOSNIFF = True

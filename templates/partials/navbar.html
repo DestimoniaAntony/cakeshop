@@ -10,7 +10,7 @@
         <div class="menu-box">
             <div class="logo">
                 <a href="{% url 'home' %}">
-                    <img src="{% static 'images/logo.png' %}" alt="Cakes by Desti" title="Cakes by Desti">
+                    <img src="{% static 'images/logo_cake.png' %}" alt="Cakes by Desti" title="Cakes by Desti">
                 </a>
             </div>
 
@@ -24,7 +24,23 @@
                             <li class="{% if request.resolver_match.url_name == 'home' %}current{% endif %}">
                                 <a href="{% url 'home' %}">Home</a>
                             </li>
-
+                            <li class="dropdown">
+                                <a href="#">Pages</a>
+                                <ul>
+                                    <li class="{% if request.resolver_match.url_name == 'about' %}current{% endif %}">
+                                        <a href="{% url 'about' %}">About Us</a>
+                                    </li>
+                                    <li class="{% if request.resolver_match.url_name == 'gallery' %}current{% endif %}">
+                                        <a href="{% url 'gallery' %}">Gallery</a>
+                                    </li>
+                                    <li class="{% if request.resolver_match.url_name == 'contact' %}current{% endif %}">
+                                        <a href="{% url 'contact' %}">Contact Us</a>
+                                    </li>
+                                    <li class="{% if request.resolver_match.url_name == 'track_order' %}current{% endif %}">
+                                        <a href="{% url 'track_order' %}">Track Order</a>
+                                    </li>
+                                </ul>
+                            </li>
                             <!-- Products Dropdown with Categories -->
                             <li class="dropdown {% if 'products' in request.resolver_match.url_name %}current{% endif %}">
                                 <a href="{% url 'products' %}">Products</a>
@@ -61,14 +77,9 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li class="{% if request.resolver_match.url_name == 'custom_cakes' %}current{% endif %}">
-                                    <a href="{% url 'custom_cakes' %}">Custom Cakes</a>
-                            </li>
 
-                            <!-- Gift Boxes -->
-                            <li class="{% if 'gift_box' in request.resolver_match.url_name %}current{% endif %}">
-                                <a href="{% url 'gift_boxes' %}">Gift Boxes</a>
-                            </li>
+
+                            
 
                             <!-- GALLERY -->
                             
@@ -82,22 +93,12 @@
 
                         <!-- RIGHT MENU -->
                         <ul class="navigation menu-right clearfix">
-                                                        <li class="dropdown">
-                                <a href="#">Pages</a>
-                                <ul>
-                                    <li class="{% if request.resolver_match.url_name == 'about' %}current{% endif %}">
-                                        <a href="{% url 'about' %}">About Us</a>
-                                    </li>
-                                    <li class="{% if request.resolver_match.url_name == 'gallery' %}current{% endif %}">
-                                        <a href="{% url 'gallery' %}">Gallery</a>
-                                    </li>
-                                    <li class="{% if request.resolver_match.url_name == 'contact' %}current{% endif %}">
-                                        <a href="{% url 'contact' %}">Contact Us</a>
-                                    </li>
-                                    <li class="{% if request.resolver_match.url_name == 'track_order' %}current{% endif %}">
-                                        <a href="{% url 'track_order' %}">Track Order</a>
-                                    </li>
-                                </ul>
+                            <li class="{% if request.resolver_match.url_name == 'custom_cakes' %}current{% endif %}">
+                                <a href="{% url 'custom_cakes' %}">Custom Cakes</a>
+                        </li>
+                            <!-- Gift Boxes -->
+                            <li class="{% if 'gift_box' in request.resolver_match.url_name %}current{% endif %}">
+                                <a href="{% url 'gift_boxes' %}">Gift Boxes</a>
                             </li>
                             {% if request.session.customer_phone %}
                                 <li><a href="#">Hi, {{ current_customer_name|default:request.session.customer_phone }}</a></li>
@@ -106,11 +107,11 @@
                                     <li class="{% if request.resolver_match.url_name == 'customer_login' %}current{% endif %}">
                                         <a href="{% url 'customer_login' %}">Login</a>
                                     </li>
-                                    {% if request.user.is_staff %}
+                                    <!-- {% if request.user.is_staff %}
                                         <li><a href="{% url 'admin_dashboard' %}">Admin</a></li>
                                     {% else %}
                                         <li><a href="{% url 'admin_login' %}">Admin Login</a></li>
-                                    {% endif %}
+                                    {% endif %} -->
                             {% endif %}
                         </ul>
                     </div>
@@ -153,9 +154,9 @@
                     </div>
 
                     <!-- Search Btn -->
-                    <div class="search-box">
+                    <!-- <div class="search-box">
                         <button class="search-btn"><i class="fa fa-search"></i></button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -165,7 +166,7 @@
     <div class="sticky-header">
         <div class="auto-container clearfix">
             <div class="logo">
-                <a href="{% url 'home' %}"><img src="{% static 'images/logo-small.png' %}" alt="Sticky Logo"></a>
+                <a href="{% url 'home' %}"><img src="{% static 'images/logo_small.png' %}" alt="Sticky Logo"></a>
             </div>
             <div class="nav-outer">
                 <nav class="main-menu"><!-- Populated via JS --></nav>
@@ -175,7 +176,9 @@
 
     <!-- Mobile Header -->
     <div class="mobile-header">
-        <div class="logo"><a href="{% url 'home' %}"><img src="{% static 'images/logo-small.png' %}" alt="Cakes by Desti"></a></div>
+        <!-- <div class="logo"><a href="{% url 'home' %}">
+            <img src="{% static 'images/logo_small.png' %}" alt="Cakes by Desti"> 
+        </a></div> -->
         <div class="nav-outer clearfix">
             <div class="cart-btn">
                 <a href="{% url 'view_cart' %}">
@@ -192,13 +195,13 @@
     <div class="mobile-menu">
         <nav class="menu-box">
             <div class="nav-logo">
-                <a href="{% url 'home' %}"><img src="{% static 'images/logo-small.png' %}" alt="Cakes by Desti"></a>
+                <a href="{% url 'home' %}"><img src="{% static 'images/logo_small.png' %}" alt="Cakes by Desti"></a>
             </div>
         </nav>
     </div>
 
     <!-- Search Popup -->
-    <div class="search-popup">
+    <!-- <div class="search-popup">
         <span class="search-back-drop"></span>
         <div class="search-inner">
             <div class="auto-container">
@@ -211,5 +214,5 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> -->
 </header>
